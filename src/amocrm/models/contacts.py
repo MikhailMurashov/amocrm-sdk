@@ -5,60 +5,51 @@ from typing import Any
 
 from .common import CustomFieldValue, Tag
 
-_LEAD_SCALAR_FIELDS = (
-    "id", "name", "price", "status_id", "pipeline_id",
-    "responsible_user_id", "group_id", "created_by", "updated_by",
-    "created_at", "updated_at", "closed_at", "closest_task_at",
-    "is_deleted", "loss_reason_id", "score", "account_id", "labor_cost",
+_CONTACT_SCALAR_FIELDS = (
+    "id", "name", "first_name", "last_name",
+    "responsible_user_id", "group_id",
+    "created_by", "updated_by",
+    "created_at", "updated_at",
+    "closest_task_at", "is_deleted", "account_id",
 )
 
 
 @dataclass(kw_only=True)
-class Lead:
+class Contact:
     id: int | None = None
     name: str | None = None
-    price: int | None = None
-    status_id: int | None = None
-    pipeline_id: int | None = None
+    first_name: str | None = None
+    last_name: str | None = None
     responsible_user_id: int | None = None
     group_id: int | None = None
     created_by: int | None = None
     updated_by: int | None = None
     created_at: int | None = None
     updated_at: int | None = None
-    closed_at: int | None = None
     closest_task_at: int | None = None
     is_deleted: bool | None = None
-    loss_reason_id: int | None = None
-    score: int | None = None
     account_id: int | None = None
-    labor_cost: int | None = None
     tags: list[Tag] | None = None
     custom_fields_values: list[CustomFieldValue] | None = None
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Lead:
+    def from_dict(cls, data: dict[str, Any]) -> Contact:
         tags_raw = data.get("_embedded", {}).get("tags")
         cf_raw = data.get("custom_fields_values")
         return cls(
             id=data.get("id"),
             name=data.get("name"),
-            price=data.get("price"),
-            status_id=data.get("status_id"),
-            pipeline_id=data.get("pipeline_id"),
+            first_name=data.get("first_name"),
+            last_name=data.get("last_name"),
             responsible_user_id=data.get("responsible_user_id"),
             group_id=data.get("group_id"),
             created_by=data.get("created_by"),
             updated_by=data.get("updated_by"),
             created_at=data.get("created_at"),
             updated_at=data.get("updated_at"),
-            closed_at=data.get("closed_at"),
             closest_task_at=data.get("closest_task_at"),
             is_deleted=data.get("is_deleted"),
-            loss_reason_id=data.get("loss_reason_id"),
-            score=data.get("score"),
             account_id=data.get("account_id"),
-            labor_cost=data.get("labor_cost"),
             tags=[Tag.from_dict(t) for t in tags_raw] if tags_raw is not None else None,
             custom_fields_values=(
                 [CustomFieldValue.from_dict(cf) for cf in cf_raw]
@@ -69,7 +60,7 @@ class Lead:
     def to_dict(self) -> dict[str, Any]:
         result: dict[str, Any] = {
             k: getattr(self, k)
-            for k in _LEAD_SCALAR_FIELDS
+            for k in _CONTACT_SCALAR_FIELDS
             if getattr(self, k) is not None
         }
         if self.tags is not None:

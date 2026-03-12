@@ -5,6 +5,8 @@ from typing import Any
 import requests
 
 from .exceptions import AmoCRMAPIError
+from .resources.companies import CompaniesResource
+from .resources.contacts import ContactsResource
 from .resources.leads import LeadsResource
 from .resources.pipelines import PipelinesResource
 
@@ -16,6 +18,8 @@ class AmoCRM:
         self._session.headers.update({"Authorization": f"Bearer {access_token}"})
         self._leads: LeadsResource | None = None
         self._pipelines: PipelinesResource | None = None
+        self._contacts: ContactsResource | None = None
+        self._companies: CompaniesResource | None = None
 
     def _request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         url = self._base_url + path
@@ -37,3 +41,15 @@ class AmoCRM:
         if self._pipelines is None:
             self._pipelines = PipelinesResource(self)
         return self._pipelines
+
+    @property
+    def contacts(self) -> ContactsResource:
+        if self._contacts is None:
+            self._contacts = ContactsResource(self)
+        return self._contacts
+
+    @property
+    def companies(self) -> CompaniesResource:
+        if self._companies is None:
+            self._companies = CompaniesResource(self)
+        return self._companies
