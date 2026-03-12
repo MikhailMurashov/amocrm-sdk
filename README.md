@@ -1,5 +1,8 @@
 # amocrm-sdk
 
+[![PyPI](https://img.shields.io/pypi/v/amocrm-sdk)](https://pypi.org/project/amocrm-sdk/)
+[![Docs](https://readthedocs.org/projects/amocrm-sdk/badge/?version=latest)](https://amocrm-sdk.readthedocs.io)
+
 Python SDK for the [AmoCRM REST API](https://www.amocrm.ru/developers/content/crm_platform/api-reference).
 
 ## Installation
@@ -112,6 +115,8 @@ client.companies.create([Company(name="Рога и копыта")])
 
 ## Links
 
+- [PyPI](https://pypi.org/project/amocrm-sdk/)
+- [Documentation](https://amocrm-sdk.readthedocs.io)
 - [AmoCRM API Reference](https://www.amocrm.ru/developers/content/crm_platform/api-reference)
 - [OAuth2 guide](https://www.amocrm.ru/developers/content/oauth/oauth)
 
