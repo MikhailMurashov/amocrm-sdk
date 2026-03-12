@@ -28,3 +28,8 @@ select = ["E", "F", "I"]
 
 [tool.mypy]
 strict = true
+
+[dependency-groups]
+dev = [
+    "types-requests>=2.32.4.20260107",
+]
