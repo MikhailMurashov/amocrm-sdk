@@ -10,7 +10,16 @@ if TYPE_CHECKING:
 
 
 class PipelinesResource:
+    """Ресурс для работы с воронками и статусами AmoCRM.
+
+    Эндпоинт: ``/api/v4/leads/pipelines``.
+    """
+
     def __init__(self, client: AmoCRM) -> None:
+        """
+        Args:
+            client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+        """
         self._client = client
 
     # ------------------------------------------------------------------ #
@@ -18,7 +27,14 @@ class PipelinesResource:
     # ------------------------------------------------------------------ #
 
     def list(self) -> builtins.list[Pipeline]:
-        """GET /api/v4/leads/pipelines — список воронок."""
+        """Получить список всех воронок аккаунта.
+
+        Returns:
+            Список объектов :class:`~amocrm.models.pipelines.Pipeline`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request("GET", "/api/v4/leads/pipelines")
         return [
             Pipeline.from_dict(d)
@@ -26,12 +42,32 @@ class PipelinesResource:
         ]
 
     def get(self, pipeline_id: int) -> Pipeline:
-        """GET /api/v4/leads/pipelines/{id} — получить воронку по ID."""
+        """Получить воронку по идентификатору.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+
+        Returns:
+            Объект :class:`~amocrm.models.pipelines.Pipeline`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request("GET", f"/api/v4/leads/pipelines/{pipeline_id}")
         return Pipeline.from_dict(raw)
 
     def create(self, pipelines: builtins.list[Pipeline]) -> builtins.list[Pipeline]:
-        """POST /api/v4/leads/pipelines — создать воронки."""
+        """Создать одну или несколько воронок.
+
+        Args:
+            pipelines: Список воронок для создания.
+
+        Returns:
+            Список созданных воронок с заполненными идентификаторами.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "POST",
             "/api/v4/leads/pipelines",
@@ -43,7 +79,18 @@ class PipelinesResource:
         ]
 
     def update(self, pipeline_id: int, data: Pipeline) -> Pipeline:
-        """PATCH /api/v4/leads/pipelines/{id} — обновить воронку."""
+        """Обновить воронку по идентификатору.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+            data: Объект с обновляемыми полями.
+
+        Returns:
+            Обновлённый объект :class:`~amocrm.models.pipelines.Pipeline`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH",
             f"/api/v4/leads/pipelines/{pipeline_id}",
@@ -52,7 +99,14 @@ class PipelinesResource:
         return Pipeline.from_dict(raw)
 
     def delete(self, pipeline_id: int) -> None:
-        """DELETE /api/v4/leads/pipelines/{id} — удалить воронку."""
+        """Удалить воронку по идентификатору.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         self._client._request("DELETE", f"/api/v4/leads/pipelines/{pipeline_id}")
 
     # ------------------------------------------------------------------ #
@@ -65,7 +119,19 @@ class PipelinesResource:
         *,
         with_descriptions: bool = False,
     ) -> builtins.list[PipelineStatus]:
-        """GET /api/v4/leads/pipelines/{pipeline_id}/statuses — список статусов."""
+        """Получить список статусов воронки.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+            with_descriptions: Если ``True``, подгружает описания уровней
+                зрелости для каждого статуса.
+
+        Returns:
+            Список объектов :class:`~amocrm.models.pipelines.PipelineStatus`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params = {"with": "descriptions"} if with_descriptions else {}
         raw = self._client._request(
             "GET",
@@ -84,7 +150,19 @@ class PipelinesResource:
         *,
         with_descriptions: bool = False,
     ) -> PipelineStatus:
-        """GET /api/v4/leads/pipelines/{pipeline_id}/statuses/{id} — получить статус."""
+        """Получить статус воронки по идентификатору.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+            status_id: Идентификатор статуса.
+            with_descriptions: Если ``True``, подгружает описания уровней зрелости.
+
+        Returns:
+            Объект :class:`~amocrm.models.pipelines.PipelineStatus`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params = {"with": "descriptions"} if with_descriptions else {}
         raw = self._client._request(
             "GET",
@@ -98,7 +176,18 @@ class PipelinesResource:
         pipeline_id: int,
         statuses: builtins.list[PipelineStatus],
     ) -> builtins.list[PipelineStatus]:
-        """POST /api/v4/leads/pipelines/{pipeline_id}/statuses — создать статусы."""
+        """Создать статусы в воронке.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+            statuses: Список статусов для создания.
+
+        Returns:
+            Список созданных статусов с заполненными идентификаторами.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "POST",
             f"/api/v4/leads/pipelines/{pipeline_id}/statuses",
@@ -115,7 +204,19 @@ class PipelinesResource:
         status_id: int,
         data: PipelineStatus,
     ) -> PipelineStatus:
-        """PATCH /api/v4/leads/pipelines/{pipeline_id}/statuses/{id} — обновить."""
+        """Обновить статус воронки.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+            status_id: Идентификатор статуса.
+            data: Объект с обновляемыми полями.
+
+        Returns:
+            Обновлённый объект :class:`~amocrm.models.pipelines.PipelineStatus`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH",
             f"/api/v4/leads/pipelines/{pipeline_id}/statuses/{status_id}",
@@ -124,7 +225,15 @@ class PipelinesResource:
         return PipelineStatus.from_dict(raw)
 
     def delete_status(self, pipeline_id: int, status_id: int) -> None:
-        """DELETE /api/v4/leads/pipelines/{pipeline_id}/statuses/{id} — удалить."""
+        """Удалить статус воронки.
+
+        Args:
+            pipeline_id: Идентификатор воронки.
+            status_id: Идентификатор статуса.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         self._client._request(
             "DELETE",
             f"/api/v4/leads/pipelines/{pipeline_id}/statuses/{status_id}",

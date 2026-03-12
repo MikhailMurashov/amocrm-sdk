@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>amocrm.client &mdash; документация amocrm-sdk 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=6ff560e8"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/translations.js?v=cd1d70c9"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="../../genindex.html" />
+    <link rel="search" title="Поиск" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            amocrm-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">amocrm-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Код модуля</a></li>
+      <li class="breadcrumb-item active">amocrm.client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Исходный код amocrm.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuthConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRMAPIError</span><span class="p">,</span> <span class="n">AmoCRMTokenRefreshError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.resources.companies</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompaniesResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.resources.contacts</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContactsResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.resources.leads</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeadsResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.resources.pipelines</span><span class="w"> </span><span class="kn">import</span> <span class="n">PipelinesResource</span>
+
+<span class="n">_TOKEN_URL</span> <span class="o">=</span> <span class="s2">&quot;https://www.amocrm.ru/oauth2/access_token&quot;</span>
+
+
+<div class="viewcode-block" id="AmoCRM">
+<a class="viewcode-back" href="../../api.html#amocrm.client.AmoCRM">[документация]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AmoCRM</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Клиент AmoCRM REST API.</span>
+
+<span class="sd">    Предоставляет доступ к ресурсам сделок, контактов, компаний и воронок</span>
+<span class="sd">    через свойства :attr:`leads`, :attr:`contacts`, :attr:`companies`,</span>
+<span class="sd">    :attr:`pipelines`. Автоматически обновляет токен доступа при получении</span>
+<span class="sd">    ответа 401 Unauthorized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AmoCRM.__init__">
+<a class="viewcode-back" href="../../api.html#amocrm.client.AmoCRM.__init__">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subdomain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">oauth</span><span class="p">:</span> <span class="n">OAuthConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Инициализировать клиент, загрузив токены из хранилища.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            subdomain: Поддомен аккаунта AmoCRM (например, ``&quot;mycompany&quot;``).</span>
+<span class="sd">            oauth: Конфигурация OAuth с реквизитами интеграции и хранилищем</span>
+<span class="sd">                токенов. Токены загружаются из ``oauth.storage.load()``</span>
+<span class="sd">                при создании клиента.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://</span><span class="si">{</span><span class="n">subdomain</span><span class="si">}</span><span class="s2">.amocrm.ru&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_oauth</span> <span class="o">=</span> <span class="n">oauth</span>
+        <span class="n">access_token</span><span class="p">,</span> <span class="n">refresh_token</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_token</span> <span class="o">=</span> <span class="n">refresh_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">access_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_leads</span><span class="p">:</span> <span class="n">LeadsResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pipelines</span><span class="p">:</span> <span class="n">PipelinesResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contacts</span><span class="p">:</span> <span class="n">ContactsResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span><span class="p">:</span> <span class="n">CompaniesResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="AmoCRM.from_code">
+<a class="viewcode-back" href="../../api.html#amocrm.client.AmoCRM.from_code">[документация]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_code</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subdomain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">oauth</span><span class="p">:</span> <span class="n">OAuthConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AmoCRM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Обменять код авторизации на токены, сохранить их и вернуть новый клиент.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            subdomain: Поддомен аккаунта AmoCRM.</span>
+<span class="sd">            code: Одноразовый код авторизации из callback-запроса OAuth 2.0.</span>
+<span class="sd">            oauth: Конфигурация OAuth с реквизитами интеграции и хранилищем токенов.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Инициализированный экземпляр :class:`AmoCRM`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AmoCRMTokenRefreshError: Если обмен кода на токены завершился ошибкой.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">_TOKEN_URL</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+                <span class="s2">&quot;client_secret&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_secret</span><span class="p">,</span>
+                <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;authorization_code&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
+                <span class="s2">&quot;redirect_uri&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resp</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AmoCRMTokenRefreshError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Authorization code exchange failed </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">oauth</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">oauth</span><span class="o">=</span><span class="n">oauth</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_refresh_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Обновить токен доступа через refresh_token и сохранить новые токены.</span>
+
+<span class="sd">        Отправляет запрос к ``www.amocrm.ru`` (не через ``self._session``),</span>
+<span class="sd">        обновляет заголовок ``Authorization`` в сессии и сохраняет токены</span>
+<span class="sd">        в ``oauth.storage``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AmoCRMTokenRefreshError: Если запрос на обновление токена вернул</span>
+<span class="sd">                статус не 2xx.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">_TOKEN_URL</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_oauth</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+                <span class="s2">&quot;client_secret&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_oauth</span><span class="o">.</span><span class="n">client_secret</span><span class="p">,</span>
+                <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;refresh_token&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;refresh_token&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_token</span><span class="p">,</span>
+                <span class="s2">&quot;redirect_uri&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_oauth</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resp</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AmoCRMTokenRefreshError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Token refresh failed </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">new_access</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
+        <span class="n">new_refresh</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">new_access</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_token</span> <span class="o">=</span> <span class="n">new_refresh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_oauth</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_access</span><span class="p">,</span> <span class="n">new_refresh</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Выполнить HTTP-запрос к API, автоматически повторив его при 401.</span>
+
+<span class="sd">        При получении статуса 401 вызывает :meth:`_refresh_tokens` и повторяет</span>
+<span class="sd">        запрос ровно один раз.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: HTTP-метод (``&quot;GET&quot;``, ``&quot;POST&quot;``, ``&quot;PATCH&quot;``, ``&quot;DELETE&quot;``).</span>
+<span class="sd">            path: Путь API относительно базового URL (например, ``&quot;/api/v4/leads&quot;``).</span>
+<span class="sd">            **kwargs: Дополнительные аргументы для ``requests.Session.request``</span>
+<span class="sd">                (``params``, ``json``, ``data`` и др.).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Декодированный JSON-ответ в виде словаря. При статусе 204 или</span>
+<span class="sd">            пустом теле возвращает пустой словарь ``{}``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AmoCRMAPIError: Если статус ответа не 2xx (после возможного повтора).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="n">path</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_tokens</span><span class="p">()</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AmoCRMAPIError</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>  <span class="c1"># type: ignore[no-any-return]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">leads</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LeadsResource</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ресурс для работы со сделками.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leads</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_leads</span> <span class="o">=</span> <span class="n">LeadsResource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leads</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pipelines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PipelinesResource</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ресурс для работы с воронками и их статусами.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipelines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pipelines</span> <span class="o">=</span> <span class="n">PipelinesResource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipelines</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contacts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContactsResource</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ресурс для работы с контактами.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contacts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contacts</span> <span class="o">=</span> <span class="n">ContactsResource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contacts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">companies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompaniesResource</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ресурс для работы с компаниями.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span> <span class="o">=</span> <span class="n">CompaniesResource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права . </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -16,6 +16,26 @@ _CONTACT_SCALAR_FIELDS = (
 
 @dataclass(kw_only=True)
 class Contact:
+    """DTO-модель контакта AmoCRM.
+
+    Attributes:
+        id: Идентификатор контакта.
+        name: Полное имя контакта.
+        first_name: Имя.
+        last_name: Фамилия.
+        responsible_user_id: Идентификатор ответственного пользователя.
+        group_id: Идентификатор группы пользователей.
+        created_by: Идентификатор пользователя, создавшего контакт.
+        updated_by: Идентификатор пользователя, обновившего контакт.
+        created_at: Дата создания (Unix timestamp).
+        updated_at: Дата последнего изменения (Unix timestamp).
+        closest_task_at: Дата ближайшей задачи (Unix timestamp).
+        is_deleted: Признак удалённого контакта.
+        account_id: Идентификатор аккаунта AmoCRM.
+        tags: Список тегов контакта.
+        custom_fields_values: Список значений кастомных полей.
+    """
+
     id: int | None = None
     name: str | None = None
     first_name: str | None = None
@@ -34,6 +54,7 @@ class Contact:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Contact:
+        """Создать экземпляр из словаря API AmoCRM."""
         tags_raw = data.get("_embedded", {}).get("tags")
         cf_raw = data.get("custom_fields_values")
         return cls(
@@ -58,6 +79,7 @@ class Contact:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Сериализовать в словарь для API, исключая поля со значением ``None``."""
         result: dict[str, Any] = {
             k: getattr(self, k)
             for k in _CONTACT_SCALAR_FIELDS

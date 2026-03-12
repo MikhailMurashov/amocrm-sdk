@@ -16,6 +16,24 @@ _COMPANY_SCALAR_FIELDS = (
 
 @dataclass(kw_only=True)
 class Company:
+    """DTO-модель компании AmoCRM.
+
+    Attributes:
+        id: Идентификатор компании.
+        name: Название компании.
+        responsible_user_id: Идентификатор ответственного пользователя.
+        group_id: Идентификатор группы пользователей.
+        created_by: Идентификатор пользователя, создавшего компанию.
+        updated_by: Идентификатор пользователя, обновившего компанию.
+        created_at: Дата создания (Unix timestamp).
+        updated_at: Дата последнего изменения (Unix timestamp).
+        closest_task_at: Дата ближайшей задачи (Unix timestamp).
+        is_deleted: Признак удалённой компании.
+        account_id: Идентификатор аккаунта AmoCRM.
+        tags: Список тегов компании.
+        custom_fields_values: Список значений кастомных полей.
+    """
+
     id: int | None = None
     name: str | None = None
     responsible_user_id: int | None = None
@@ -32,6 +50,7 @@ class Company:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Company:
+        """Создать экземпляр из словаря API AmoCRM."""
         tags_raw = data.get("_embedded", {}).get("tags")
         cf_raw = data.get("custom_fields_values")
         return cls(
@@ -54,6 +73,7 @@ class Company:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Сериализовать в словарь для API, исключая поля со значением ``None``."""
         result: dict[str, Any] = {
             k: getattr(self, k)
             for k in _COMPANY_SCALAR_FIELDS

@@ -10,7 +10,13 @@ if TYPE_CHECKING:
 
 
 class LeadsResource:
+    """Ресурс для работы со сделками AmoCRM (``/api/v4/leads``)."""
+
     def __init__(self, client: AmoCRM) -> None:
+        """
+        Args:
+            client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+        """
         self._client = client
 
     def list(
@@ -23,7 +29,25 @@ class LeadsResource:
         order: dict[str, str] | None = None,
         with_: builtins.list[str] | None = None,
     ) -> builtins.list[Lead]:
-        """GET /api/v4/leads — список сделок с пагинацией и фильтрами."""
+        """Получить список сделок с пагинацией и фильтрами.
+
+        Args:
+            page: Номер страницы (начиная с 1).
+            limit: Количество сделок на странице (максимум 250).
+            query: Строка полнотекстового поиска.
+            filter: Словарь фильтров вида ``{"field": "value"}``; ключи
+                преобразуются в параметры ``filter[field]=value``.
+            order: Словарь сортировки вида ``{"field": "asc"|"desc"}``; ключи
+                преобразуются в параметры ``order[field]=asc``.
+            with_: Список дополнительных данных для подгрузки (например,
+                ``["contacts", "companies"]``).
+
+        Returns:
+            Список объектов :class:`~amocrm.models.leads.Lead`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -45,7 +69,18 @@ class LeadsResource:
     def get(
         self, lead_id: int, *, with_: builtins.list[str] | None = None
     ) -> Lead:
-        """GET /api/v4/leads/{id} — получить сделку по ID."""
+        """Получить сделку по идентификатору.
+
+        Args:
+            lead_id: Идентификатор сделки.
+            with_: Список дополнительных данных для подгрузки.
+
+        Returns:
+            Объект :class:`~amocrm.models.leads.Lead`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params: dict[str, Any] = {}
         if with_ is not None:
             params["with"] = ",".join(with_)
@@ -53,28 +88,73 @@ class LeadsResource:
         return Lead.from_dict(raw)
 
     def create(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
-        """POST /api/v4/leads — создать сделки."""
+        """Создать одну или несколько сделок.
+
+        Args:
+            leads: Список сделок для создания.
+
+        Returns:
+            Список созданных сделок с заполненными идентификаторами.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "POST", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
         )
         return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
 
     def update(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
-        """PATCH /api/v4/leads — обновить сделки (каждая должна содержать id)."""
+        """Обновить одну или несколько сделок (каждая должна содержать ``id``).
+
+        Args:
+            leads: Список сделок для обновления. Каждая сделка обязана
+                содержать заполненное поле ``id``.
+
+        Returns:
+            Список обновлённых сделок.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
         )
         return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
 
     def update_one(self, lead_id: int, data: Lead) -> Lead:
-        """PATCH /api/v4/leads/{id} — обновить одну сделку."""
+        """Обновить одну сделку по идентификатору.
+
+        Args:
+            lead_id: Идентификатор сделки.
+            data: Объект с обновляемыми полями.
+
+        Returns:
+            Обновлённый объект :class:`~amocrm.models.leads.Lead`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH", f"/api/v4/leads/{lead_id}", json=data.to_dict()
         )
         return Lead.from_dict(raw)
 
     def create_complex(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
-        """POST /api/v4/leads/complex — сложное создание со связями."""
+        """Сложное создание сделок со связанными сущностями.
+
+        Использует эндпоинт ``POST /api/v4/leads/complex``, позволяющий
+        одновременно создавать сделки вместе с контактами и компаниями.
+
+        Args:
+            leads: Список сделок для создания.
+
+        Returns:
+            Список созданных сделок с заполненными идентификаторами.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "POST", "/api/v4/leads/complex", json=[lead.to_dict() for lead in leads]
         )

@@ -10,7 +10,13 @@ if TYPE_CHECKING:
 
 
 class CompaniesResource:
+    """Ресурс для работы с компаниями AmoCRM (``/api/v4/companies``)."""
+
     def __init__(self, client: AmoCRM) -> None:
+        """
+        Args:
+            client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+        """
         self._client = client
 
     def list(
@@ -23,7 +29,24 @@ class CompaniesResource:
         order: dict[str, str] | None = None,
         with_: builtins.list[str] | None = None,
     ) -> builtins.list[Company]:
-        """GET /api/v4/companies — список компаний с пагинацией и фильтрами."""
+        """Получить список компаний с пагинацией и фильтрами.
+
+        Args:
+            page: Номер страницы (начиная с 1).
+            limit: Количество компаний на странице (максимум 250).
+            query: Строка полнотекстового поиска.
+            filter: Словарь фильтров вида ``{"field": "value"}``; ключи
+                преобразуются в параметры ``filter[field]=value``.
+            order: Словарь сортировки вида ``{"field": "asc"|"desc"}``; ключи
+                преобразуются в параметры ``order[field]=asc``.
+            with_: Список дополнительных данных для подгрузки.
+
+        Returns:
+            Список объектов :class:`~amocrm.models.companies.Company`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -46,7 +69,18 @@ class CompaniesResource:
     def get(
         self, company_id: int, *, with_: builtins.list[str] | None = None
     ) -> Company:
-        """GET /api/v4/companies/{id} — получить компанию по ID."""
+        """Получить компанию по идентификатору.
+
+        Args:
+            company_id: Идентификатор компании.
+            with_: Список дополнительных данных для подгрузки.
+
+        Returns:
+            Объект :class:`~amocrm.models.companies.Company`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params: dict[str, Any] = {}
         if with_ is not None:
             params["with"] = ",".join(with_)
@@ -56,7 +90,17 @@ class CompaniesResource:
         return Company.from_dict(raw)
 
     def create(self, companies: builtins.list[Company]) -> builtins.list[Company]:
-        """POST /api/v4/companies — создать компании."""
+        """Создать одну или несколько компаний.
+
+        Args:
+            companies: Список компаний для создания.
+
+        Returns:
+            Список созданных компаний с заполненными идентификаторами.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "POST", "/api/v4/companies", json=[c.to_dict() for c in companies]
         )
@@ -64,7 +108,18 @@ class CompaniesResource:
         return [Company.from_dict(d) for d in items]
 
     def update(self, companies: builtins.list[Company]) -> builtins.list[Company]:
-        """PATCH /api/v4/companies — обновить компании (каждая должна содержать id)."""
+        """Обновить одну или несколько компаний (каждая должна содержать ``id``).
+
+        Args:
+            companies: Список компаний для обновления. Каждая компания обязана
+                содержать заполненное поле ``id``.
+
+        Returns:
+            Список обновлённых компаний.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH", "/api/v4/companies", json=[c.to_dict() for c in companies]
         )
@@ -72,7 +127,18 @@ class CompaniesResource:
         return [Company.from_dict(d) for d in items]
 
     def update_one(self, company_id: int, data: Company) -> Company:
-        """PATCH /api/v4/companies/{id} — обновить одну компанию."""
+        """Обновить одну компанию по идентификатору.
+
+        Args:
+            company_id: Идентификатор компании.
+            data: Объект с обновляемыми полями.
+
+        Returns:
+            Обновлённый объект :class:`~amocrm.models.companies.Company`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH", f"/api/v4/companies/{company_id}", json=data.to_dict()
         )

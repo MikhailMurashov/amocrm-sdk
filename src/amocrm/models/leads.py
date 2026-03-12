@@ -15,6 +15,31 @@ _LEAD_SCALAR_FIELDS = (
 
 @dataclass(kw_only=True)
 class Lead:
+    """DTO-модель сделки AmoCRM.
+
+    Attributes:
+        id: Идентификатор сделки.
+        name: Название сделки.
+        price: Бюджет сделки.
+        status_id: Идентификатор статуса воронки.
+        pipeline_id: Идентификатор воронки.
+        responsible_user_id: Идентификатор ответственного пользователя.
+        group_id: Идентификатор группы пользователей.
+        created_by: Идентификатор пользователя, создавшего сделку.
+        updated_by: Идентификатор пользователя, обновившего сделку.
+        created_at: Дата создания (Unix timestamp).
+        updated_at: Дата последнего изменения (Unix timestamp).
+        closed_at: Дата закрытия сделки (Unix timestamp).
+        closest_task_at: Дата ближайшей задачи (Unix timestamp).
+        is_deleted: Признак удалённой сделки.
+        loss_reason_id: Идентификатор причины закрытия (проигрыша).
+        score: Оценка сделки.
+        account_id: Идентификатор аккаунта AmoCRM.
+        labor_cost: Затраченное время (в минутах).
+        tags: Список тегов сделки.
+        custom_fields_values: Список значений кастомных полей.
+    """
+
     id: int | None = None
     name: str | None = None
     price: int | None = None
@@ -38,6 +63,7 @@ class Lead:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Lead:
+        """Создать экземпляр из словаря API AmoCRM."""
         tags_raw = data.get("_embedded", {}).get("tags")
         cf_raw = data.get("custom_fields_values")
         return cls(
@@ -67,6 +93,7 @@ class Lead:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Сериализовать в словарь для API, исключая поля со значением ``None``."""
         result: dict[str, Any] = {
             k: getattr(self, k)
             for k in _LEAD_SCALAR_FIELDS

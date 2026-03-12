@@ -10,7 +10,13 @@ if TYPE_CHECKING:
 
 
 class ContactsResource:
+    """Ресурс для работы с контактами AmoCRM (``/api/v4/contacts``)."""
+
     def __init__(self, client: AmoCRM) -> None:
+        """
+        Args:
+            client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+        """
         self._client = client
 
     def list(
@@ -23,7 +29,24 @@ class ContactsResource:
         order: dict[str, str] | None = None,
         with_: builtins.list[str] | None = None,
     ) -> builtins.list[Contact]:
-        """GET /api/v4/contacts — список контактов с пагинацией и фильтрами."""
+        """Получить список контактов с пагинацией и фильтрами.
+
+        Args:
+            page: Номер страницы (начиная с 1).
+            limit: Количество контактов на странице (максимум 250).
+            query: Строка полнотекстового поиска.
+            filter: Словарь фильтров вида ``{"field": "value"}``; ключи
+                преобразуются в параметры ``filter[field]=value``.
+            order: Словарь сортировки вида ``{"field": "asc"|"desc"}``; ключи
+                преобразуются в параметры ``order[field]=asc``.
+            with_: Список дополнительных данных для подгрузки.
+
+        Returns:
+            Список объектов :class:`~amocrm.models.contacts.Contact`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -46,7 +69,18 @@ class ContactsResource:
     def get(
         self, contact_id: int, *, with_: builtins.list[str] | None = None
     ) -> Contact:
-        """GET /api/v4/contacts/{id} — получить контакт по ID."""
+        """Получить контакт по идентификатору.
+
+        Args:
+            contact_id: Идентификатор контакта.
+            with_: Список дополнительных данных для подгрузки.
+
+        Returns:
+            Объект :class:`~amocrm.models.contacts.Contact`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         params: dict[str, Any] = {}
         if with_ is not None:
             params["with"] = ",".join(with_)
@@ -56,7 +90,17 @@ class ContactsResource:
         return Contact.from_dict(raw)
 
     def create(self, contacts: builtins.list[Contact]) -> builtins.list[Contact]:
-        """POST /api/v4/contacts — создать контакты."""
+        """Создать один или несколько контактов.
+
+        Args:
+            contacts: Список контактов для создания.
+
+        Returns:
+            Список созданных контактов с заполненными идентификаторами.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "POST", "/api/v4/contacts", json=[c.to_dict() for c in contacts]
         )
@@ -64,7 +108,18 @@ class ContactsResource:
         return [Contact.from_dict(d) for d in items]
 
     def update(self, contacts: builtins.list[Contact]) -> builtins.list[Contact]:
-        """PATCH /api/v4/contacts — обновить контакты (каждый должен содержать id)."""
+        """Обновить один или несколько контактов (каждый должен содержать ``id``).
+
+        Args:
+            contacts: Список контактов для обновления. Каждый контакт обязан
+                содержать заполненное поле ``id``.
+
+        Returns:
+            Список обновлённых контактов.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH", "/api/v4/contacts", json=[c.to_dict() for c in contacts]
         )
@@ -72,7 +127,18 @@ class ContactsResource:
         return [Contact.from_dict(d) for d in items]
 
     def update_one(self, contact_id: int, data: Contact) -> Contact:
-        """PATCH /api/v4/contacts/{id} — обновить один контакт."""
+        """Обновить один контакт по идентификатору.
+
+        Args:
+            contact_id: Идентификатор контакта.
+            data: Объект с обновляемыми полями.
+
+        Returns:
+            Обновлённый объект :class:`~amocrm.models.contacts.Contact`.
+
+        Raises:
+            AmoCRMAPIError: При ошибке API (статус не 2xx).
+        """
         raw = self._client._request(
             "PATCH", f"/api/v4/contacts/{contact_id}", json=data.to_dict()
         )

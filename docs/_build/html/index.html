@@ -1,0 +1,153 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>amocrm-sdk &mdash; документация amocrm-sdk 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6ff560e8"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=cd1d70c9"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="API Reference" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            amocrm-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">amocrm-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">amocrm-sdk</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> Просмотреть исходный код страницы</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="amocrm-sdk">
+<h1>amocrm-sdk<a class="headerlink" href="#amocrm-sdk" title="Ссылка на этот заголовок"></a></h1>
+<p>Python SDK для работы с REST API AmoCRM.
+Предоставляет удобный интерфейс для авторизации, сделок, контактов,
+компаний и воронок.</p>
+<section id="id1">
+<h2>Установка<a class="headerlink" href="#id1" title="Ссылка на этот заголовок"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>amocrm-sdk
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>Быстрый старт<a class="headerlink" href="#id2" title="Ссылка на этот заголовок"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRM</span><span class="p">,</span> <span class="n">OAuthConfig</span><span class="p">,</span> <span class="n">DjangoTokenStorage</span>
+
+<span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuthConfig</span><span class="p">(</span>
+    <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">client_secret</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">redirect_uri</span><span class="o">=</span><span class="s2">&quot;https://example.com/callback&quot;</span><span class="p">,</span>
+    <span class="n">storage</span><span class="o">=</span><span class="n">DjangoTokenStorage</span><span class="p">(</span><span class="n">my_model_instance</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">AmoCRM</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="s2">&quot;mycompany&quot;</span><span class="p">,</span> <span class="n">oauth</span><span class="o">=</span><span class="n">oauth</span><span class="p">)</span>
+
+<span class="c1"># Список сделок</span>
+<span class="n">leads</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># Создать контакт</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contact</span>
+<span class="n">contact</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">Contact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Иван Иванов&quot;</span><span class="p">)])[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Документация</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.client">Клиент</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.auth">Авторизация</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.manager">Менеджер (синглтон)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.exceptions">Исключения</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#id5">Ресурсы</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#id10">Модели</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
+        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Следующая <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права . </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

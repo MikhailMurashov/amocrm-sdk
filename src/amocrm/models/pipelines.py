@@ -15,12 +15,21 @@ _STATUS_SCALAR_FIELDS = (
 
 @dataclass(kw_only=True)
 class StatusDescription:
+    """Описание уровня зрелости сделки в статусе воронки.
+
+    Attributes:
+        id: Идентификатор описания.
+        level: Уровень зрелости (``"newbie"``, ``"candidate"``, ``"master"``).
+        text: Текст описания.
+    """
+
     id: int | None = None
     level: str | None = None  # newbie / candidate / master
     text: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> StatusDescription:
+        """Создать экземпляр из словаря API."""
         return cls(
             id=data.get("id"),
             level=data.get("level"),
@@ -28,11 +37,27 @@ class StatusDescription:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Сериализовать в словарь, исключая поля со значением ``None``."""
         return {k: v for k, v in dataclasses.asdict(self).items() if v is not None}
 
 
 @dataclass(kw_only=True)
 class PipelineStatus:
+    """DTO-модель статуса воронки AmoCRM.
+
+    Attributes:
+        id: Идентификатор статуса.
+        name: Название статуса.
+        sort: Порядок сортировки.
+        is_editable: Можно ли редактировать статус.
+        pipeline_id: Идентификатор воронки, которой принадлежит статус.
+        color: HEX-цвет статуса (например, ``"#fffeb2"``).
+        type: Тип статуса (0 — обычный, 142 — успешно завершён,
+            143 — закрыт и не реализован).
+        account_id: Идентификатор аккаунта AmoCRM.
+        descriptions: Описания уровней зрелости сделок в этом статусе.
+    """
+
     id: int | None = None
     name: str | None = None
     sort: int | None = None
@@ -45,6 +70,7 @@ class PipelineStatus:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> PipelineStatus:
+        """Создать экземпляр из словаря API."""
         descriptions_raw = data.get("descriptions")
         return cls(
             id=data.get("id"),
@@ -62,6 +88,7 @@ class PipelineStatus:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Сериализовать в словарь для API, исключая поля со значением ``None``."""
         result: dict[str, Any] = {
             k: getattr(self, k)
             for k in _STATUS_SCALAR_FIELDS
@@ -74,6 +101,19 @@ class PipelineStatus:
 
 @dataclass(kw_only=True)
 class Pipeline:
+    """DTO-модель воронки продаж AmoCRM.
+
+    Attributes:
+        id: Идентификатор воронки.
+        name: Название воронки.
+        sort: Порядок сортировки.
+        is_main: Является ли воронка основной.
+        is_unsorted_on: Включён ли неразобранный раздел.
+        is_archive: Находится ли воронка в архиве.
+        account_id: Идентификатор аккаунта AmoCRM.
+        statuses: Список статусов воронки.
+    """
+
     id: int | None = None
     name: str | None = None
     sort: int | None = None
@@ -85,6 +125,7 @@ class Pipeline:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Pipeline:
+        """Создать экземпляр из словаря API."""
         statuses_raw = data.get("_embedded", {}).get("statuses")
         return cls(
             id=data.get("id"),
@@ -103,6 +144,7 @@ class Pipeline:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Сериализовать в словарь для API, исключая поля со значением ``None``."""
         result: dict[str, Any] = {
             k: getattr(self, k)
             for k in _PIPELINE_SCALAR_FIELDS
