@@ -6,6 +6,7 @@ import requests
 
 from .exceptions import AmoCRMAPIError
 from .resources.leads import LeadsResource
+from .resources.pipelines import PipelinesResource
 
 
 class AmoCRM:
@@ -14,6 +15,7 @@ class AmoCRM:
         self._session = requests.Session()
         self._session.headers.update({"Authorization": f"Bearer {access_token}"})
         self._leads: LeadsResource | None = None
+        self._pipelines: PipelinesResource | None = None
 
     def _request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         url = self._base_url + path
@@ -29,3 +31,9 @@ class AmoCRM:
         if self._leads is None:
             self._leads = LeadsResource(self)
         return self._leads
+
+    @property
+    def pipelines(self) -> PipelinesResource:
+        if self._pipelines is None:
+            self._pipelines = PipelinesResource(self)
+        return self._pipelines

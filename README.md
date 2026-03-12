@@ -72,7 +72,7 @@ https://www.amocrm.ru/developers/content/api/recommendations
 https://www.amocrm.ru/developers/content/crm_platform/account-info
 ~~https://www.amocrm.ru/developers/content/crm_platform/leads-api~~
 https://www.amocrm.ru/developers/content/crm_platform/unsorted-api
-https://www.amocrm.ru/developers/content/crm_platform/leads_pipelines
+~~https://www.amocrm.ru/developers/content/crm_platform/leads_pipelines~~
 https://www.amocrm.ru/developers/content/crm_platform/filters-api
 https://www.amocrm.ru/developers/content/crm_platform/contacts-api
 https://www.amocrm.ru/developers/content/crm_platform/companies-api
