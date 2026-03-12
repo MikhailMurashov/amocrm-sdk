@@ -12,14 +12,55 @@ pip install amocrm-sdk
 
 ## Quick Start
 
-```python
-from amocrm import AmoCRM, Contact, Company, Lead, Tag
+### OAuth2 setup
 
-client = AmoCRM(
-    subdomain="your-company",
-    access_token="your_access_token",
+```python
+from amocrm import AmoCRM, OAuthConfig
+from amocrm.auth import DjangoTokenStorage
+
+oauth = OAuthConfig(
+    client_id="...",
+    client_secret="...",
+    redirect_uri="https://yourapp.com/oauth/callback",
+    storage=DjangoTokenStorage(AmoCRMToken.objects.get(id=1)),
 )
 
+# Первый запуск — обменять код авторизации на токены
+client = AmoCRM.from_code(subdomain="your-company", code=auth_code, oauth=oauth)
+
+# Последующие запуски — токены загружаются из storage автоматически
+client = AmoCRM(subdomain="your-company", oauth=oauth)
+```
+
+### Глобальный менеджер (Django / Flask)
+
+```python
+from amocrm.manager import exchange_code, get_client
+
+# OAuth callback view
+exchange_code(subdomain="your-company", code=request.GET["code"], oauth=oauth)
+
+# В любом месте приложения
+client = get_client(subdomain="your-company", oauth=oauth)
+```
+
+### Кастомное хранилище токенов
+
+```python
+from amocrm import TokenStorage
+
+class RedisTokenStorage:
+    def save(self, access_token: str, refresh_token: str) -> None:
+        redis.set("amo:access", access_token)
+        redis.set("amo:refresh", refresh_token)
+
+    def load(self) -> tuple[str, str]:
+        return redis.get("amo:access"), redis.get("amo:refresh")
+```
+
+### Работа с ресурсами
+
+```python
 # Сделки
 leads = client.leads.list(page=1, limit=50)
 for lead in leads:
@@ -35,7 +76,6 @@ print(created[0].id)
 
 # Контакты
 contacts = client.contacts.list(query="Иван")
-contact = client.contacts.get(10)
 client.contacts.create([Contact(name="Иван Иванов", first_name="Иван")])
 
 # Компании
@@ -58,12 +98,15 @@ client.companies.create([Company(name="Рога и копыта")])
 
 ## Features
 
-- OAuth2 token-based authentication
+- OAuth2 с auto-refresh токенов по 401
+- Гибкое хранилище токенов — любой класс с `save()` / `load()` (Django ORM, Redis, etc.)
+- `DjangoTokenStorage` из коробки
+- Глобальный менеджер (`exchange_code` / `get_client`) для Django/Flask
 - Typed DTO models — никаких сырых словарей
 - Leads (сделки): list, get, create, update, update_one, create_complex
 - Contacts (контакты): list, get, create, update, update_one
 - Companies (компании): list, get, create, update, update_one
-- Pipelines (воронки): list, get
+- Pipelines (воронки): list, get, create, update, delete + statuses CRUD
 - Custom fields support
 - Pagination helpers
 

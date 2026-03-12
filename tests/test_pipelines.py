@@ -2,13 +2,19 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from amocrm import AmoCRM
+from amocrm import AmoCRM, OAuthConfig
 from amocrm.models.pipelines import Pipeline, PipelineStatus, StatusDescription
 
 
 @pytest.fixture
 def client() -> AmoCRM:
-    return AmoCRM(subdomain="test", access_token="token123")
+    storage = MagicMock()
+    storage.load.return_value = ("token123", "refresh123")
+    oauth = OAuthConfig(
+        client_id="id", client_secret="secret",
+        redirect_uri="https://example.com/callback", storage=storage,
+    )
+    return AmoCRM(subdomain="test", oauth=oauth)
 
 
 def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:

@@ -2,13 +2,19 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from amocrm import AmoCRM, Contact
+from amocrm import AmoCRM, Contact, OAuthConfig
 from amocrm.exceptions import AmoCRMAPIError
 
 
 @pytest.fixture
 def client() -> AmoCRM:
-    return AmoCRM(subdomain="test", access_token="token123")
+    storage = MagicMock()
+    storage.load.return_value = ("token123", "refresh123")
+    oauth = OAuthConfig(
+        client_id="id", client_secret="secret",
+        redirect_uri="https://example.com/callback", storage=storage,
+    )
+    return AmoCRM(subdomain="test", oauth=oauth)
 
 
 def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:
@@ -121,9 +127,10 @@ def test_api_error_raises(client: AmoCRM) -> None:
     error_response.ok = False
     error_response.text = "Unauthorized"
 
-    with patch.object(client._session, "request", return_value=error_response):
-        with pytest.raises(AmoCRMAPIError) as exc_info:
-            client.contacts.list()
+    with patch.object(client, "_refresh_tokens"):
+        with patch.object(client._session, "request", return_value=error_response):
+            with pytest.raises(AmoCRMAPIError) as exc_info:
+                client.contacts.list()
 
     assert exc_info.value.status_code == 401
     assert "Unauthorized" in str(exc_info.value)
