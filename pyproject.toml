@@ -1,6 +1,7 @@
 [project.urls]
 Homepage = "https://github.com/MikhailMurashov/amocrm-sdk"
 Repository = "https://github.com/MikhailMurashov/amocrm-sdk"
+Documentation = "https://amocrm-sdk.readthedocs.io"
 
 [project]
 name = "amocrm-sdk"
