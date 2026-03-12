@@ -1,6 +1,10 @@
+[project.urls]
+Homepage = "https://github.com/MikhailMurashov/amocrm-sdk"
+Repository = "https://github.com/MikhailMurashov/amocrm-sdk"
+
 [project]
 name = "amocrm-sdk"
-version = "0.1.0"
+version = "0.2.0"
 description = "Simple Python SDK for AmoCRM API"
 readme = "README.md"
 requires-python = ">=3.10"
