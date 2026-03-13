@@ -3,9 +3,10 @@
 from .auth import DjangoTokenStorage, OAuthConfig, TokenStorage
 from .client import AmoCRM
 from .exceptions import AmoCRMNotConfiguredError, AmoCRMTokenRefreshError
-from .models.common import CustomFieldValue, Tag
+from .models.common import CustomFieldsMixin, CustomFieldValue, Tag
 from .models.companies import Company
 from .models.contacts import Contact
+from .models.custom_fields import CustomFieldDefinition, CustomFieldEnum
 from .models.leads import Lead
 from .models.pipelines import Pipeline, PipelineStatus, StatusDescription
 from .models.tasks import Task
@@ -15,8 +16,9 @@ __all__ = [
     "AmoCRM",
     "OAuthConfig", "TokenStorage", "DjangoTokenStorage",
     "AmoCRMTokenRefreshError", "AmoCRMNotConfiguredError",
-    "Lead", "Tag", "CustomFieldValue",
+    "Lead", "Tag", "CustomFieldValue", "CustomFieldsMixin",
     "Contact", "Company",
     "Pipeline", "PipelineStatus", "StatusDescription",
     "Task",
+    "CustomFieldDefinition", "CustomFieldEnum",
 ]

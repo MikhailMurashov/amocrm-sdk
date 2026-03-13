@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .common import CustomFieldValue, Tag
+from .common import CustomFieldsMixin, CustomFieldValue, Tag
 
 _CONTACT_SCALAR_FIELDS = (
     "id", "name", "first_name", "last_name",
@@ -15,7 +15,7 @@ _CONTACT_SCALAR_FIELDS = (
 
 
 @dataclass(kw_only=True)
-class Contact:
+class Contact(CustomFieldsMixin):
     """DTO-модель контакта AmoCRM.
 
     Attributes:

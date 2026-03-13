@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .common import CustomFieldValue, Tag
+from .common import CustomFieldsMixin, CustomFieldValue, Tag
 
 _LEAD_SCALAR_FIELDS = (
     "id", "name", "price", "status_id", "pipeline_id",
@@ -14,7 +14,7 @@ _LEAD_SCALAR_FIELDS = (
 
 
 @dataclass(kw_only=True)
-class Lead:
+class Lead(CustomFieldsMixin):
     """DTO-модель сделки AmoCRM.
 
     Attributes:

@@ -8,6 +8,7 @@ from .auth import OAuthConfig
 from .exceptions import AmoCRMAPIError, AmoCRMTokenRefreshError
 from .resources.companies import CompaniesResource
 from .resources.contacts import ContactsResource
+from .resources.custom_fields import CustomFieldsResource
 from .resources.leads import LeadsResource
 from .resources.pipelines import PipelinesResource
 from .resources.tasks import TasksResource
@@ -44,6 +45,7 @@ class AmoCRM:
         self._contacts: ContactsResource | None = None
         self._companies: CompaniesResource | None = None
         self._tasks: TasksResource | None = None
+        self._custom_fields: CustomFieldsResource | None = None
 
     @classmethod
     def from_code(cls, subdomain: str, code: str, oauth: OAuthConfig) -> AmoCRM:
@@ -174,3 +176,10 @@ class AmoCRM:
         if self._tasks is None:
             self._tasks = TasksResource(self)
         return self._tasks
+
+    @property
+    def custom_fields(self) -> CustomFieldsResource:
+        """Ресурс для работы с кастомными полями."""
+        if self._custom_fields is None:
+            self._custom_fields = CustomFieldsResource(self)
+        return self._custom_fields
