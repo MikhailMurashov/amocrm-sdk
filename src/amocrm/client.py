@@ -10,6 +10,7 @@ from .resources.companies import CompaniesResource
 from .resources.contacts import ContactsResource
 from .resources.leads import LeadsResource
 from .resources.pipelines import PipelinesResource
+from .resources.tasks import TasksResource
 
 _TOKEN_URL = "https://www.amocrm.ru/oauth2/access_token"
 
@@ -42,6 +43,7 @@ class AmoCRM:
         self._pipelines: PipelinesResource | None = None
         self._contacts: ContactsResource | None = None
         self._companies: CompaniesResource | None = None
+        self._tasks: TasksResource | None = None
 
     @classmethod
     def from_code(cls, subdomain: str, code: str, oauth: OAuthConfig) -> AmoCRM:
@@ -165,3 +167,10 @@ class AmoCRM:
         if self._companies is None:
             self._companies = CompaniesResource(self)
         return self._companies
+
+    @property
+    def tasks(self) -> TasksResource:
+        """Ресурс для работы с задачами."""
+        if self._tasks is None:
+            self._tasks = TasksResource(self)
+        return self._tasks

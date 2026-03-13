@@ -84,6 +84,21 @@ client.contacts.create([Contact(name="Иван Иванов", first_name="Ива
 # Компании
 companies = client.companies.list(page=1, limit=25)
 client.companies.create([Company(name="Рога и копыта")])
+
+# Задачи
+from amocrm import Task
+
+tasks = client.tasks.list(page=1, limit=50)
+for task in tasks:
+    print(task.id, task.text, task.complete_till)
+
+task = client.tasks.get(10)
+task.text = "Updated text"
+client.tasks.update_one(task.id, task)
+
+new_task = Task(text="Call client", task_type_id=1, complete_till=1700000000, entity_id=lead.id, entity_type="leads")
+created = client.tasks.create([new_task])
+print(created[0].id)
 ```
 
 ## Models
@@ -93,6 +108,7 @@ client.companies.create([Company(name="Рога и копыта")])
 | `Lead` | Сделка. Поля: `id`, `name`, `price`, `status_id`, `pipeline_id`, `tags`, `custom_fields_values`, … |
 | `Contact` | Контакт. Поля: `id`, `name`, `first_name`, `last_name`, `tags`, `custom_fields_values`, … |
 | `Company` | Компания. Поля: `id`, `name`, `tags`, `custom_fields_values`, … |
+| `Task` | Задача. Поля: `id`, `text`, `complete_till`, `task_type_id`, `responsible_user_id`, `is_completed`, `entity_id`, `entity_type`, `result`, … |
 | `Tag` | Тег. Поля: `id`, `name` |
 | `CustomFieldValue` | Значение кастомного поля. Поля: `field_id`, `values` |
 | `Pipeline` | Воронка. Поля: `id`, `name`, `statuses` |
@@ -110,6 +126,7 @@ client.companies.create([Company(name="Рога и копыта")])
 - Contacts (контакты): list, get, create, update, update_one
 - Companies (компании): list, get, create, update, update_one
 - Pipelines (воронки): list, get, create, update, delete + statuses CRUD
+- Tasks (задачи): list, get, create, update, update_one
 - Custom fields support
 - Pagination helpers
 
@@ -133,7 +150,7 @@ client.companies.create([Company(name="Рога и копыта")])
 - ~~https://www.amocrm.ru/developers/content/crm_platform/companies-api~~
 - https://www.amocrm.ru/developers/content/crm_platform/catalogs-api
 - https://www.amocrm.ru/developers/content/crm_platform/entity-links-api
-- https://www.amocrm.ru/developers/content/crm_platform/tasks-api
+- ~~https://www.amocrm.ru/developers/content/crm_platform/tasks-api~~
 - https://www.amocrm.ru/developers/content/crm_platform/custom-fields
 - https://www.amocrm.ru/developers/content/crm_platform/tags-api
 - https://www.amocrm.ru/developers/content/crm_platform/events-and-notes
