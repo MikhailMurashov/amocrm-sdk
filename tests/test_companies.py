@@ -11,8 +11,10 @@ def client() -> AmoCRM:
     storage = MagicMock()
     storage.load.return_value = ("token123", "refresh123")
     oauth = OAuthConfig(
-        client_id="id", client_secret="secret",
-        redirect_uri="https://example.com/callback", storage=storage,
+        client_id="id",
+        client_secret="secret",
+        redirect_uri="https://example.com/callback",
+        storage=storage,
     )
     return AmoCRM(subdomain="test", oauth=oauth)
 
@@ -28,9 +30,7 @@ def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:
 
 
 def test_list_companies(client: AmoCRM) -> None:
-    api_response = {
-        "_embedded": {"companies": [{"id": 1, "name": "Acme Corp"}]}
-    }
+    api_response = {"_embedded": {"companies": [{"id": 1, "name": "Acme Corp"}]}}
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.list(page=1, limit=10, with_=["leads"])
@@ -64,9 +64,7 @@ def test_get_company(client: AmoCRM) -> None:
 
 def test_create_companies(client: AmoCRM) -> None:
     new_company = Company(name="New Corp")
-    api_response = {
-        "_embedded": {"companies": [{"id": 10, "name": "New Corp"}]}
-    }
+    api_response = {"_embedded": {"companies": [{"id": 10, "name": "New Corp"}]}}
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.create([new_company])
@@ -144,9 +142,7 @@ def test_company_from_dict_with_tags() -> None:
     raw = {
         "id": 7,
         "name": "Tagged Corp",
-        "_embedded": {
-            "tags": [{"id": 1, "name": "partner"}, {"id": 2, "name": "key"}]
-        },
+        "_embedded": {"tags": [{"id": 1, "name": "partner"}, {"id": 2, "name": "key"}]},
     }
     company = Company.from_dict(raw)
     assert company.id == 7
@@ -161,12 +157,8 @@ def test_roundtrip_company() -> None:
     raw = {
         "id": 42,
         "name": "Original Corp",
-        "_embedded": {
-            "tags": [{"id": 3, "name": "enterprise"}]
-        },
-        "custom_fields_values": [
-            {"field_id": 101, "values": [{"value": "hello"}]}
-        ],
+        "_embedded": {"tags": [{"id": 3, "name": "enterprise"}]},
+        "custom_fields_values": [{"field_id": 101, "values": [{"value": "hello"}]}],
     }
     company = Company.from_dict(raw)
     company.name = "Updated Corp"

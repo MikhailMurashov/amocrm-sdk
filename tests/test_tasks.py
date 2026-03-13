@@ -7,8 +7,10 @@ def _client() -> AmoCRM:
     storage = MagicMock()
     storage.load.return_value = ("token123", "refresh123")
     oauth = OAuthConfig(
-        client_id="id", client_secret="secret",
-        redirect_uri="https://example.com/callback", storage=storage,
+        client_id="id",
+        client_secret="secret",
+        redirect_uri="https://example.com/callback",
+        storage=storage,
     )
     return AmoCRM(subdomain="test", oauth=oauth)
 

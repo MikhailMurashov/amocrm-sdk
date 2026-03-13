@@ -1,4 +1,5 @@
 """Тесты кодогенератора."""
+
 from __future__ import annotations
 
 import ast
@@ -19,22 +20,27 @@ def _field(id: int, name: str, type: str) -> CustomFieldDefinition:
 
 # --- _to_snake_case ---
 
-@pytest.mark.parametrize("input_name,expected", [
-    ("Источник",       "источник"),
-    ("Budget Category", "budget_category"),
-    ("my-field",       "my_field"),
-    ("  spaces  ",     "spaces"),
-    ("a/b\\c",         "a_b_c"),
-    ("123field",       "123field"),
-    ("",               "field"),
-    ("___",            "field"),
-    ("CamelCase",      "camelcase"),
-])
+
+@pytest.mark.parametrize(
+    "input_name,expected",
+    [
+        ("Источник", "источник"),
+        ("Budget Category", "budget_category"),
+        ("my-field", "my_field"),
+        ("  spaces  ", "spaces"),
+        ("a/b\\c", "a_b_c"),
+        ("123field", "123field"),
+        ("", "field"),
+        ("___", "field"),
+        ("CamelCase", "camelcase"),
+    ],
+)
 def test_to_snake_case(input_name: str, expected: str) -> None:
     assert _to_snake_case(input_name) == expected
 
 
 # --- _safe_prop_name ---
+
 
 def test_safe_prop_name_no_conflict():
     used: set[str] = set()
@@ -69,6 +75,7 @@ def test_safe_prop_name_multiple_conflicts():
 
 
 # --- generate_custom_models ---
+
 
 def _make_fields_dict(
     **extra: list[CustomFieldDefinition],

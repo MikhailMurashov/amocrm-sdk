@@ -66,9 +66,7 @@ class LeadsResource:
         raw = self._client._request("GET", "/api/v4/leads", params=params)
         return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
 
-    def get(
-        self, lead_id: int, *, with_: builtins.list[str] | None = None
-    ) -> Lead:
+    def get(self, lead_id: int, *, with_: builtins.list[str] | None = None) -> Lead:
         """Получить сделку по идентификатору.
 
         Args:

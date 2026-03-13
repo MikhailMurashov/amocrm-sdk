@@ -4,10 +4,21 @@ from dataclasses import dataclass
 from typing import Any
 
 _TASK_SCALAR_FIELDS = (
-    "id", "text", "complete_till", "task_type_id", "responsible_user_id",
-    "is_completed", "entity_id", "entity_type", "duration",
-    "created_by", "updated_by", "created_at", "updated_at",
-    "group_id", "account_id",
+    "id",
+    "text",
+    "complete_till",
+    "task_type_id",
+    "responsible_user_id",
+    "is_completed",
+    "entity_id",
+    "entity_type",
+    "duration",
+    "created_by",
+    "updated_by",
+    "created_at",
+    "updated_at",
+    "group_id",
+    "account_id",
 )
 
 

@@ -6,10 +6,24 @@ from typing import Any
 from .common import CustomFieldsMixin, CustomFieldValue, Tag
 
 _LEAD_SCALAR_FIELDS = (
-    "id", "name", "price", "status_id", "pipeline_id",
-    "responsible_user_id", "group_id", "created_by", "updated_by",
-    "created_at", "updated_at", "closed_at", "closest_task_at",
-    "is_deleted", "loss_reason_id", "score", "account_id", "labor_cost",
+    "id",
+    "name",
+    "price",
+    "status_id",
+    "pipeline_id",
+    "responsible_user_id",
+    "group_id",
+    "created_by",
+    "updated_by",
+    "created_at",
+    "updated_at",
+    "closed_at",
+    "closest_task_at",
+    "is_deleted",
+    "loss_reason_id",
+    "score",
+    "account_id",
+    "labor_cost",
 )
 
 
@@ -88,7 +102,8 @@ class Lead(CustomFieldsMixin):
             tags=[Tag.from_dict(t) for t in tags_raw] if tags_raw is not None else None,
             custom_fields_values=(
                 [CustomFieldValue.from_dict(cf) for cf in cf_raw]
-                if cf_raw is not None else None
+                if cf_raw is not None
+                else None
             ),
         )
 

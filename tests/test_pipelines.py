@@ -11,8 +11,10 @@ def client() -> AmoCRM:
     storage = MagicMock()
     storage.load.return_value = ("token123", "refresh123")
     oauth = OAuthConfig(
-        client_id="id", client_secret="secret",
-        redirect_uri="https://example.com/callback", storage=storage,
+        client_id="id",
+        client_secret="secret",
+        redirect_uri="https://example.com/callback",
+        storage=storage,
     )
     return AmoCRM(subdomain="test", oauth=oauth)
 
@@ -72,11 +74,7 @@ def test_get_pipeline(client: AmoCRM) -> None:
 
 def test_create_pipelines(client: AmoCRM) -> None:
     new_pipeline = Pipeline(name="New", sort=20)
-    api_response = {
-        "_embedded": {
-            "pipelines": [{"id": 5, "name": "New", "sort": 20}]
-        }
-    }
+    api_response = {"_embedded": {"pipelines": [{"id": 5, "name": "New", "sort": 20}]}}
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.create([new_pipeline])
@@ -122,9 +120,7 @@ def test_delete_pipeline(client: AmoCRM) -> None:
 
 def test_list_statuses(client: AmoCRM) -> None:
     api_response = {
-        "_embedded": {
-            "statuses": [{"id": 10, "name": "New", "pipeline_id": 1}]
-        }
+        "_embedded": {"statuses": [{"id": 10, "name": "New", "pipeline_id": 1}]}
     }
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
@@ -143,9 +139,7 @@ def test_list_statuses(client: AmoCRM) -> None:
 
 def test_list_statuses_with_descriptions(client: AmoCRM) -> None:
     api_response = {
-        "_embedded": {
-            "statuses": [{"id": 10, "name": "New", "pipeline_id": 1}]
-        }
+        "_embedded": {"statuses": [{"id": 10, "name": "New", "pipeline_id": 1}]}
     }
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
@@ -178,9 +172,7 @@ def test_get_status(client: AmoCRM) -> None:
 def test_create_statuses(client: AmoCRM) -> None:
     new_status = PipelineStatus(name="In Progress", sort=20, pipeline_id=1)
     api_response = {
-        "_embedded": {
-            "statuses": [{"id": 20, "name": "In Progress", "pipeline_id": 1}]
-        }
+        "_embedded": {"statuses": [{"id": 20, "name": "In Progress", "pipeline_id": 1}]}
     }
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:

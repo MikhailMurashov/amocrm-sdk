@@ -13,6 +13,7 @@ from amocrm.exceptions import AmoCRMAPIError, AmoCRMTokenRefreshError
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_oauth(storage: MagicMock | None = None) -> OAuthConfig:
     if storage is None:
         storage = MagicMock()
@@ -43,6 +44,7 @@ def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:
 # _request retry logic
 # ---------------------------------------------------------------------------
 
+
 def test_request_retries_on_401() -> None:
     """401 → refresh → retry → success."""
     client = _make_client()
@@ -52,8 +54,10 @@ def test_request_retries_on_401() -> None:
         {"access_token": "new_access", "refresh_token": "new_refresh"}
     )
 
-    with patch.object(client._session, "request") as mock_req, \
-         patch("amocrm.client.requests.post", return_value=refresh_resp):
+    with (
+        patch.object(client._session, "request") as mock_req,
+        patch("amocrm.client.requests.post", return_value=refresh_resp),
+    ):
 
         unauth = MagicMock(status_code=401, ok=False, content=b"", text="Unauthorized")
         mock_req.side_effect = [unauth, ok_response]
@@ -73,8 +77,10 @@ def test_request_raises_after_failed_refresh() -> None:
     )
     unauth = MagicMock(status_code=401, ok=False, content=b"err", text="Unauthorized")
 
-    with patch.object(client._session, "request", return_value=unauth), \
-         patch("amocrm.client.requests.post", return_value=refresh_resp):
+    with (
+        patch.object(client._session, "request", return_value=unauth),
+        patch("amocrm.client.requests.post", return_value=refresh_resp),
+    ):
 
         with pytest.raises(AmoCRMAPIError) as exc_info:
             client._request("GET", "/api/v4/leads")
@@ -124,6 +130,7 @@ def test_token_refresh_error_on_bad_response() -> None:
 # from_code
 # ---------------------------------------------------------------------------
 
+
 def test_from_code_saves_and_creates_client() -> None:
     storage = MagicMock()
     oauth = _make_oauth(storage)
@@ -145,6 +152,7 @@ def test_from_code_saves_and_creates_client() -> None:
 # ---------------------------------------------------------------------------
 # DjangoTokenStorage
 # ---------------------------------------------------------------------------
+
 
 def test_django_token_storage_save() -> None:
     instance = MagicMock()
@@ -171,6 +179,7 @@ def test_django_token_storage_load() -> None:
 # ---------------------------------------------------------------------------
 # Manager
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(autouse=True)
 def reset_manager() -> None:

@@ -6,11 +6,19 @@ from typing import Any
 from .common import CustomFieldsMixin, CustomFieldValue, Tag
 
 _CONTACT_SCALAR_FIELDS = (
-    "id", "name", "first_name", "last_name",
-    "responsible_user_id", "group_id",
-    "created_by", "updated_by",
-    "created_at", "updated_at",
-    "closest_task_at", "is_deleted", "account_id",
+    "id",
+    "name",
+    "first_name",
+    "last_name",
+    "responsible_user_id",
+    "group_id",
+    "created_by",
+    "updated_by",
+    "created_at",
+    "updated_at",
+    "closest_task_at",
+    "is_deleted",
+    "account_id",
 )
 
 
@@ -74,7 +82,8 @@ class Contact(CustomFieldsMixin):
             tags=[Tag.from_dict(t) for t in tags_raw] if tags_raw is not None else None,
             custom_fields_values=(
                 [CustomFieldValue.from_dict(cf) for cf in cf_raw]
-                if cf_raw is not None else None
+                if cf_raw is not None
+                else None
             ),
         )
 

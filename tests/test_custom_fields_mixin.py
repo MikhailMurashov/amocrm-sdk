@@ -1,4 +1,5 @@
 """Тесты CustomFieldsMixin."""
+
 from __future__ import annotations
 
 from amocrm.models.common import CustomFieldsMixin, CustomFieldValue
@@ -82,9 +83,7 @@ def test_get_cf_enum_id_missing():
 
 def test_get_cf_enum_id_no_enum():
     lead = Lead(
-        custom_fields_values=[
-            CustomFieldValue(field_id=5, values=[{"value": "x"}])
-        ]
+        custom_fields_values=[CustomFieldValue(field_id=5, values=[{"value": "x"}])]
     )
     assert lead.get_cf_enum_id(5) is None
 
@@ -92,6 +91,7 @@ def test_get_cf_enum_id_no_enum():
 def test_mixin_is_not_dataclass():
     """CustomFieldsMixin не должен быть датаклассом."""
     import dataclasses
+
     assert not dataclasses.is_dataclass(CustomFieldsMixin)
 
 

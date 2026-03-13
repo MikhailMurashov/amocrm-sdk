@@ -1,4 +1,5 @@
 """Тесты CustomFieldsResource."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -25,11 +26,7 @@ _FIELD_DATA = {
     ],
 }
 
-_LIST_RESPONSE = {
-    "_embedded": {
-        "custom_fields": [_FIELD_DATA]
-    }
-}
+_LIST_RESPONSE = {"_embedded": {"custom_fields": [_FIELD_DATA]}}
 
 
 def test_list_returns_definitions():
@@ -91,12 +88,14 @@ def test_get_contacts():
 
 def test_field_definition_to_dict():
     f = CustomFieldDefinition(
-        id=1, name="Test", type="text", sort=5,
-        enums=[CustomFieldEnum(id=1, value="A")]
+        id=1, name="Test", type="text", sort=5, enums=[CustomFieldEnum(id=1, value="A")]
     )
     d = f.to_dict()
     assert d == {
-        "id": 1, "name": "Test", "type": "text", "sort": 5,
+        "id": 1,
+        "name": "Test",
+        "type": "text",
+        "sort": 5,
         "enums": [{"id": 1, "value": "A"}],
     }
 

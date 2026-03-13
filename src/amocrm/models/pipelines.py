@@ -5,11 +5,24 @@ from dataclasses import dataclass
 from typing import Any
 
 _PIPELINE_SCALAR_FIELDS = (
-    "id", "name", "sort", "is_main", "is_unsorted_on", "is_archive", "account_id",
+    "id",
+    "name",
+    "sort",
+    "is_main",
+    "is_unsorted_on",
+    "is_archive",
+    "account_id",
 )
 
 _STATUS_SCALAR_FIELDS = (
-    "id", "name", "sort", "is_editable", "pipeline_id", "color", "type", "account_id",
+    "id",
+    "name",
+    "sort",
+    "is_editable",
+    "pipeline_id",
+    "color",
+    "type",
+    "account_id",
 )
 
 
@@ -83,7 +96,8 @@ class PipelineStatus:
             account_id=data.get("account_id"),
             descriptions=(
                 [StatusDescription.from_dict(d) for d in descriptions_raw]
-                if descriptions_raw is not None else None
+                if descriptions_raw is not None
+                else None
             ),
         )
 
@@ -138,8 +152,11 @@ class Pipeline:
             statuses=(
                 [PipelineStatus.from_dict(s) for s in statuses_raw.values()]
                 if isinstance(statuses_raw, dict)
-                else [PipelineStatus.from_dict(s) for s in statuses_raw]
-                if statuses_raw is not None else None
+                else (
+                    [PipelineStatus.from_dict(s) for s in statuses_raw]
+                    if statuses_raw is not None
+                    else None
+                )
             ),
         )
 
@@ -151,7 +168,5 @@ class Pipeline:
             if getattr(self, k) is not None
         }
         if self.statuses is not None:
-            result["_embedded"] = {
-                "statuses": [s.to_dict() for s in self.statuses]
-            }
+            result["_embedded"] = {"statuses": [s.to_dict() for s in self.statuses]}
         return result

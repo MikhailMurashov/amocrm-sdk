@@ -7,9 +7,16 @@ from .pipelines import Pipeline, PipelineStatus, StatusDescription
 from .tasks import Task
 
 __all__ = [
-    "Lead", "Tag", "CustomFieldValue", "CustomFieldsMixin",
-    "Contact", "Company",
-    "Pipeline", "PipelineStatus", "StatusDescription",
+    "Lead",
+    "Tag",
+    "CustomFieldValue",
+    "CustomFieldsMixin",
+    "Contact",
+    "Company",
+    "Pipeline",
+    "PipelineStatus",
+    "StatusDescription",
     "Task",
-    "CustomFieldDefinition", "CustomFieldEnum",
+    "CustomFieldDefinition",
+    "CustomFieldEnum",
 ]

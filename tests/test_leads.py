@@ -11,8 +11,10 @@ def client() -> AmoCRM:
     storage = MagicMock()
     storage.load.return_value = ("token123", "refresh123")
     oauth = OAuthConfig(
-        client_id="id", client_secret="secret",
-        redirect_uri="https://example.com/callback", storage=storage,
+        client_id="id",
+        client_secret="secret",
+        redirect_uri="https://example.com/callback",
+        storage=storage,
     )
     return AmoCRM(subdomain="test", oauth=oauth)
 
@@ -128,9 +130,7 @@ def test_lead_from_dict_with_tags() -> None:
         "id": 7,
         "name": "Tagged Deal",
         "price": 3000,
-        "_embedded": {
-            "tags": [{"id": 1, "name": "vip"}, {"id": 2, "name": "hot"}]
-        },
+        "_embedded": {"tags": [{"id": 1, "name": "vip"}, {"id": 2, "name": "hot"}]},
     }
     lead = Lead.from_dict(raw)
     assert lead.id == 7
@@ -147,12 +147,8 @@ def test_roundtrip_lead() -> None:
         "name": "Original Deal",
         "price": 5000,
         "status_id": 10,
-        "_embedded": {
-            "tags": [{"id": 3, "name": "promo"}]
-        },
-        "custom_fields_values": [
-            {"field_id": 101, "values": [{"value": "hello"}]}
-        ],
+        "_embedded": {"tags": [{"id": 3, "name": "promo"}]},
+        "custom_fields_values": [{"field_id": 101, "values": [{"value": "hello"}]}],
     }
     lead = Lead.from_dict(raw)
     lead.price = 9000

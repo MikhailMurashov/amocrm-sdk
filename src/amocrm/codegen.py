@@ -13,6 +13,7 @@
     )
     generate_custom_fields_dto("mycompany", oauth, output_file="my_models.py")
 """
+
 from __future__ import annotations
 
 import keyword
@@ -39,46 +40,87 @@ _ENTITY_SUBCLASS_MAP: dict[str, str] = {
 
 # (return_type, method, bool_special)
 _TYPE_MAP: dict[str, tuple[str, str, bool]] = {
-    "text":          ("str | None",              "get_cf_value",  False),
-    "textarea":      ("str | None",              "get_cf_value",  False),
-    "url":           ("str | None",              "get_cf_value",  False),
-    "phone":         ("str | None",              "get_cf_value",  False),
-    "email":         ("str | None",              "get_cf_value",  False),
-    "numeric":       ("float | None",            "get_cf_value",  False),
-    "monetary":      ("float | None",            "get_cf_value",  False),
-    "integer":       ("int | None",              "get_cf_value",  False),
-    "select":        ("str | None",              "get_cf_value",  False),
-    "radiobutton":   ("str | None",              "get_cf_value",  False),
-    "multiselect":   ("list[str]",               "get_cf_values", False),
-    "checkbox":      ("bool | None",             "get_cf_value",  True),
-    "bool":          ("bool | None",             "get_cf_value",  True),
-    "date":          ("int | None",              "get_cf_value",  False),
-    "date_time":     ("int | None",              "get_cf_value",  False),
-    "birthday":      ("int | None",              "get_cf_value",  False),
-    "smart_address": ("dict[str, Any] | None",   "get_cf_raw",    False),
+    "text": ("str | None", "get_cf_value", False),
+    "textarea": ("str | None", "get_cf_value", False),
+    "url": ("str | None", "get_cf_value", False),
+    "phone": ("str | None", "get_cf_value", False),
+    "email": ("str | None", "get_cf_value", False),
+    "numeric": ("float | None", "get_cf_value", False),
+    "monetary": ("float | None", "get_cf_value", False),
+    "integer": ("int | None", "get_cf_value", False),
+    "select": ("str | None", "get_cf_value", False),
+    "radiobutton": ("str | None", "get_cf_value", False),
+    "multiselect": ("list[str]", "get_cf_values", False),
+    "checkbox": ("bool | None", "get_cf_value", True),
+    "bool": ("bool | None", "get_cf_value", True),
+    "date": ("int | None", "get_cf_value", False),
+    "date_time": ("int | None", "get_cf_value", False),
+    "birthday": ("int | None", "get_cf_value", False),
+    "smart_address": ("dict[str, Any] | None", "get_cf_raw", False),
 }
 
 # Поля датаклассов Lead/Contact/Company — конфликты по имени нужно разрешать
 _ENTITY_FIELDS: dict[str, frozenset[str]] = {
-    "leads": frozenset({
-        "id", "name", "price", "status_id", "pipeline_id",
-        "responsible_user_id", "group_id", "created_by", "updated_by",
-        "created_at", "updated_at", "closed_at", "closest_task_at",
-        "is_deleted", "loss_reason_id", "score", "account_id", "labor_cost",
-        "tags", "custom_fields_values",
-    }),
-    "contacts": frozenset({
-        "id", "name", "first_name", "last_name",
-        "responsible_user_id", "group_id", "created_by", "updated_by",
-        "created_at", "updated_at", "closest_task_at",
-        "is_deleted", "account_id", "tags", "custom_fields_values",
-    }),
-    "companies": frozenset({
-        "id", "name", "responsible_user_id", "group_id",
-        "created_by", "updated_by", "created_at", "updated_at",
-        "closest_task_at", "is_deleted", "account_id",
-        "tags", "custom_fields_values",
-    }),
+    "leads": frozenset(
+        {
+            "id",
+            "name",
+            "price",
+            "status_id",
+            "pipeline_id",
+            "responsible_user_id",
+            "group_id",
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "closed_at",
+            "closest_task_at",
+            "is_deleted",
+            "loss_reason_id",
+            "score",
+            "account_id",
+            "labor_cost",
+            "tags",
+            "custom_fields_values",
+        }
+    ),
+    "contacts": frozenset(
+        {
+            "id",
+            "name",
+            "first_name",
+            "last_name",
+            "responsible_user_id",
+            "group_id",
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "closest_task_at",
+            "is_deleted",
+            "account_id",
+            "tags",
+            "custom_fields_values",
+        }
+    ),
+    "companies": frozenset(
+        {
+            "id",
+            "name",
+            "responsible_user_id",
+            "group_id",
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "closest_task_at",
+            "is_deleted",
+            "account_id",
+            "tags",
+            "custom_fields_values",
+        }
+    ),
 }
 
 
@@ -173,9 +215,8 @@ def generate_custom_models(
             needed_bases.append(base)
 
     needs_any = any(
-        _TYPE_MAP.get(f.type, ("Any", "get_cf_value", False))[0] in (
-            "dict[str, Any] | None", "Any"
-        )
+        _TYPE_MAP.get(f.type, ("Any", "get_cf_value", False))[0]
+        in ("dict[str, Any] | None", "Any")
         for fields in fields_by_entity.values()
         for f in fields
     )

@@ -37,8 +37,7 @@ class PipelinesResource:
         """
         raw = self._client._request("GET", "/api/v4/leads/pipelines")
         return [
-            Pipeline.from_dict(d)
-            for d in raw.get("_embedded", {}).get("pipelines", [])
+            Pipeline.from_dict(d) for d in raw.get("_embedded", {}).get("pipelines", [])
         ]
 
     def get(self, pipeline_id: int) -> Pipeline:
@@ -74,8 +73,7 @@ class PipelinesResource:
             json=[p.to_dict() for p in pipelines],
         )
         return [
-            Pipeline.from_dict(d)
-            for d in raw.get("_embedded", {}).get("pipelines", [])
+            Pipeline.from_dict(d) for d in raw.get("_embedded", {}).get("pipelines", [])
         ]
 
     def update(self, pipeline_id: int, data: Pipeline) -> Pipeline:
