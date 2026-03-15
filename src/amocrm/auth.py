@@ -47,6 +47,35 @@ class OAuthConfig:
     storage: TokenStorage
 
 
+class InMemoryTokenStorage:
+    """Хранилище токенов в памяти приложения.
+
+    Токены сохраняются в полях ``access_token`` и ``refresh_token``
+    переданного объекта и сохраняются вызовом ``instance.save()``.
+    """
+
+    _access_token: str = None
+    _refresh_token: str = None
+
+    def save(self, access_token: str, refresh_token: str) -> None:
+        """Сохранить токены в модель Django и вызвать ``instance.save()``.
+
+        Args:
+            access_token: Токен доступа OAuth 2.0.
+            refresh_token: Токен обновления OAuth 2.0.
+        """
+        self._access_token = access_token
+        self._refresh_token = refresh_token
+
+    def load(self) -> tuple[str, str]:
+        """Загрузить токены из полей модели Django.
+
+        Returns:
+            Кортеж ``(access_token, refresh_token)``.
+        """
+        return self._access_token, self._refresh_token
+
+
 class DjangoTokenStorage:
     """Хранилище токенов на основе экземпляра модели Django.
 

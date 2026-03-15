@@ -8,8 +8,6 @@ from .exceptions import AmoCRMTokenRefreshError
 
 _client: AmoCRM | None = None
 
-_TOKEN_URL = "https://www.amocrm.ru/oauth2/access_token"
-
 
 def exchange_code(subdomain: str, code: str, oauth: OAuthConfig) -> None:
     """Обменять код авторизации на токены и инициализировать глобальный клиент.
@@ -27,7 +25,7 @@ def exchange_code(subdomain: str, code: str, oauth: OAuthConfig) -> None:
     """
     global _client
     resp = requests.post(
-        _TOKEN_URL,
+        f"https://{subdomain}.amocrm.ru/oauth2/access_token",
         json={
             "client_id": oauth.client_id,
             "client_secret": oauth.client_secret,
