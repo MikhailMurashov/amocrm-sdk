@@ -24,7 +24,7 @@ def _field(id: int, name: str, type: str) -> CustomFieldDefinition:
 @pytest.mark.parametrize(
     "input_name,expected",
     [
-        ("Источник", "источник"),
+        ("Источник", "istochnik"),
         ("Budget Category", "budget_category"),
         ("my-field", "my_field"),
         ("  spaces  ", "spaces"),
@@ -33,6 +33,10 @@ def _field(id: int, name: str, type: str) -> CustomFieldDefinition:
         ("", "field"),
         ("___", "field"),
         ("CamelCase", "camelcase"),
+        ("пользовательское_соглашение", "polzovatelskoe_soglashenie"),
+        ("дкт_client_cid", "dkt_client_cid"),
+        ("предыдущая_сделка_1", "predydushchaya_sdelka_1"),
+        ("Источник трафика", "istochnik_trafika"),
     ],
 )
 def test_to_snake_case(input_name: str, expected: str) -> None:
@@ -117,7 +121,7 @@ def test_generate_custom_base_module():
 
 def test_generate_text_field():
     code = generate_custom_models({"leads": [_field(1, "Источник", "text")]})
-    assert "def источник(self) -> str | None:" in code
+    assert "def istochnik(self) -> str | None:" in code
     assert "get_cf_value(1)" in code
 
 

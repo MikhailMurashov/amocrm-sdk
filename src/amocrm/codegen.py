@@ -124,8 +124,50 @@ _ENTITY_FIELDS: dict[str, frozenset[str]] = {
 }
 
 
+_TRANSLIT_MAP: dict[str, str] = {
+    "а": "a",
+    "б": "b",
+    "в": "v",
+    "г": "g",
+    "д": "d",
+    "е": "e",
+    "ё": "yo",
+    "ж": "zh",
+    "з": "z",
+    "и": "i",
+    "й": "j",
+    "к": "k",
+    "л": "l",
+    "м": "m",
+    "н": "n",
+    "о": "o",
+    "п": "p",
+    "р": "r",
+    "с": "s",
+    "т": "t",
+    "у": "u",
+    "ф": "f",
+    "х": "kh",
+    "ц": "ts",
+    "ч": "ch",
+    "ш": "sh",
+    "щ": "shch",
+    "ъ": "",
+    "ы": "y",
+    "ь": "",
+    "э": "e",
+    "ю": "yu",
+    "я": "ya",
+}
+
+
+def _transliterate(s: str) -> str:
+    return "".join(_TRANSLIT_MAP.get(c, c) for c in s.lower())
+
+
 def _to_snake_case(name: str) -> str:
     """Преобразовать название поля в snake_case."""
+    name = _transliterate(name)
     result = re.sub(r"[\s\-/\\]+", "_", name.strip())
     result = re.sub(r"[^\w]", "_", result)
     result = re.sub(r"_+", "_", result)

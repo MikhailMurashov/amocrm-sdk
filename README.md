@@ -117,6 +117,22 @@ client.companies.update_one(company.id, company)
 
 По умолчанию авто-пагинация запрашивает по **50 элементов** на страницу. Для кастомного размера: `client.leads.list(limit=250)`.
 
+### Кодогенератор (Codegen)
+
+Генерирует типизированные подклассы DTO с named-свойствами для кастомных полей AmoCRM.
+Имена свойств автоматически транслитерируются из кириллицы в латиницу.
+
+```python
+from amocrm import OAuthConfig, DjangoTokenStorage
+from amocrm.codegen import generate_custom_fields_dto
+
+oauth = OAuthConfig(client_id="...", client_secret="...", redirect_uri="...",
+                    storage=DjangoTokenStorage(django_obj))
+generate_custom_fields_dto("mycompany", oauth, output_file="my_models.py")
+```
+
+Подробнее — в [документации](https://amocrm-sdk.readthedocs.io/en/latest/codegen.html).
+
 ## Links
 
 - [PyPI](https://pypi.org/project/amocrm-sdk/)
