@@ -42,6 +42,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pagination.html">Пагинация</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
 
@@ -72,10 +74,15 @@
   <h1>Исходный код amocrm.manager</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuthConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRMTokenRefreshError</span>
 
 <span class="n">_client</span><span class="p">:</span> <span class="n">AmoCRM</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_TOKEN_URL</span> <span class="o">=</span> <span class="s2">&quot;https://www.amocrm.ru/oauth2/access_token&quot;</span>
 
 
 <div class="viewcode-block" id="exchange_code">
@@ -95,7 +102,23 @@
 <span class="sd">        AmoCRMTokenRefreshError: Если обмен кода на токены завершился ошибкой.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_client</span>
-    <span class="n">_client</span> <span class="o">=</span> <span class="n">AmoCRM</span><span class="o">.</span><span class="n">from_code</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">oauth</span><span class="o">=</span><span class="n">oauth</span><span class="p">)</span></div>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">_TOKEN_URL</span><span class="p">,</span>
+        <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+            <span class="s2">&quot;client_secret&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_secret</span><span class="p">,</span>
+            <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;authorization_code&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
+            <span class="s2">&quot;redirect_uri&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">resp</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">AmoCRMTokenRefreshError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Authorization code exchange failed </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">oauth</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">])</span>
+    <span class="n">_client</span> <span class="o">=</span> <span class="n">AmoCRM</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">oauth</span><span class="o">=</span><span class="n">oauth</span><span class="p">)</span></div>
 
 
 

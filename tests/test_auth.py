@@ -127,29 +127,6 @@ def test_token_refresh_error_on_bad_response() -> None:
 
 
 # ---------------------------------------------------------------------------
-# from_code
-# ---------------------------------------------------------------------------
-
-
-def test_from_code_saves_and_creates_client() -> None:
-    storage = MagicMock()
-    oauth = _make_oauth(storage)
-
-    code_resp = _mock_response(
-        {"access_token": "code_access", "refresh_token": "code_refresh"}
-    )
-    # After save, load must return the new tokens for the client constructor
-    storage.load.return_value = ("code_access", "code_refresh")
-
-    with patch("amocrm.client.requests.post", return_value=code_resp):
-        client = AmoCRM.from_code(subdomain="test", code="auth_code", oauth=oauth)
-
-    storage.save.assert_called_once_with("code_access", "code_refresh")
-    assert isinstance(client, AmoCRM)
-    assert client._session.headers["Authorization"] == "Bearer code_access"
-
-
-# ---------------------------------------------------------------------------
 # DjangoTokenStorage
 # ---------------------------------------------------------------------------
 
@@ -224,7 +201,7 @@ def test_manager_exchange_code() -> None:
     code_resp = _mock_response(
         {"access_token": "exchanged_access", "refresh_token": "exchanged_refresh"}
     )
-    with patch("amocrm.client.requests.post", return_value=code_resp):
+    with patch("amocrm.manager.requests.post", return_value=code_resp):
         exchange_code(subdomain="test", code="some_auth_code", oauth=oauth)
 
     client = get_client(subdomain="test", oauth=oauth)

@@ -43,6 +43,7 @@
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pagination.html">Пагинация</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
 
@@ -123,42 +124,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span><span class="p">:</span> <span class="n">CompaniesResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="n">TasksResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fields</span><span class="p">:</span> <span class="n">CustomFieldsResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
-
-
-<div class="viewcode-block" id="AmoCRM.from_code">
-<a class="viewcode-back" href="../../api.html#amocrm.client.AmoCRM.from_code">[документация]</a>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_code</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subdomain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">oauth</span><span class="p">:</span> <span class="n">OAuthConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AmoCRM</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Обменять код авторизации на токены, сохранить их и вернуть новый клиент.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            subdomain: Поддомен аккаунта AmoCRM.</span>
-<span class="sd">            code: Одноразовый код авторизации из callback-запроса OAuth 2.0.</span>
-<span class="sd">            oauth: Конфигурация OAuth с реквизитами интеграции и хранилищем токенов.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Инициализированный экземпляр :class:`AmoCRM`.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            AmoCRMTokenRefreshError: Если обмен кода на токены завершился ошибкой.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="n">_TOKEN_URL</span><span class="p">,</span>
-            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
-                <span class="s2">&quot;client_secret&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_secret</span><span class="p">,</span>
-                <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;authorization_code&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
-                <span class="s2">&quot;redirect_uri&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">resp</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AmoCRMTokenRefreshError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Authorization code exchange failed </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="n">oauth</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">oauth</span><span class="o">=</span><span class="n">oauth</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_refresh_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

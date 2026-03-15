@@ -47,39 +47,6 @@ class AmoCRM:
         self._tasks: TasksResource | None = None
         self._custom_fields: CustomFieldsResource | None = None
 
-    @classmethod
-    def from_code(cls, subdomain: str, code: str, oauth: OAuthConfig) -> AmoCRM:
-        """Обменять код авторизации на токены, сохранить их и вернуть новый клиент.
-
-        Args:
-            subdomain: Поддомен аккаунта AmoCRM.
-            code: Одноразовый код авторизации из callback-запроса OAuth 2.0.
-            oauth: Конфигурация OAuth с реквизитами интеграции и хранилищем токенов.
-
-        Returns:
-            Инициализированный экземпляр :class:`AmoCRM`.
-
-        Raises:
-            AmoCRMTokenRefreshError: Если обмен кода на токены завершился ошибкой.
-        """
-        resp = requests.post(
-            _TOKEN_URL,
-            json={
-                "client_id": oauth.client_id,
-                "client_secret": oauth.client_secret,
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": oauth.redirect_uri,
-            },
-        )
-        if not resp.ok:
-            raise AmoCRMTokenRefreshError(
-                f"Authorization code exchange failed {resp.status_code}: {resp.text}"
-            )
-        data = resp.json()
-        oauth.storage.save(data["access_token"], data["refresh_token"])
-        return cls(subdomain=subdomain, oauth=oauth)
-
     def _refresh_tokens(self) -> None:
         """Обновить токен доступа через refresh_token и сохранить новые токены.
 
