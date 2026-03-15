@@ -42,6 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -278,12 +279,18 @@
 </li>
       <li><a href="api.html#amocrm.resources.companies.CompaniesResource">CompaniesResource (класс в amocrm.resources.companies)</a>
 </li>
+      <li><a href="api.html#amocrm.models.leads.Lead.company">company (атрибут amocrm.models.leads.Lead)</a>
+</li>
       <li><a href="api.html#amocrm.models.companies.Company">Company (класс в amocrm.models.companies)</a>
 </li>
       <li><a href="api.html#amocrm.models.contacts.Contact">Contact (класс в amocrm.models.contacts)</a>
 </li>
-      <li><a href="api.html#amocrm.client.AmoCRM.contacts">contacts (свойство amocrm.client.AmoCRM)</a>
+      <li><a href="api.html#amocrm.models.leads.Lead.contacts">contacts (атрибут amocrm.models.leads.Lead)</a>
+
+      <ul>
+        <li><a href="api.html#amocrm.client.AmoCRM.contacts">(свойство amocrm.client.AmoCRM)</a>
 </li>
+      </ul></li>
       <li><a href="api.html#amocrm.resources.contacts.ContactsResource">ContactsResource (класс в amocrm.resources.contacts)</a>
 </li>
       <li><a href="api.html#amocrm.resources.companies.CompaniesResource.create">create() (метод amocrm.resources.companies.CompaniesResource)</a>
@@ -318,14 +325,20 @@
         <li><a href="api.html#amocrm.models.leads.Lead.created_by">(атрибут amocrm.models.leads.Lead)</a>
 </li>
       </ul></li>
-      <li><a href="api.html#amocrm.models.companies.Company.custom_fields_values">custom_fields_values (атрибут amocrm.models.companies.Company)</a>
+      <li><a href="api.html#amocrm.client.AmoCRM.custom_fields">custom_fields (свойство amocrm.client.AmoCRM)</a>
+</li>
+      <li><a href="api.html#amocrm.models.common.CustomFieldsMixin.custom_fields_values">custom_fields_values (атрибут amocrm.models.common.CustomFieldsMixin)</a>
 
       <ul>
+        <li><a href="api.html#amocrm.models.companies.Company.custom_fields_values">(атрибут amocrm.models.companies.Company)</a>
+</li>
         <li><a href="api.html#amocrm.models.contacts.Contact.custom_fields_values">(атрибут amocrm.models.contacts.Contact)</a>
 </li>
         <li><a href="api.html#amocrm.models.leads.Lead.custom_fields_values">(атрибут amocrm.models.leads.Lead)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#amocrm.models.common.CustomFieldsMixin">CustomFieldsMixin (класс в amocrm.models.common)</a>
+</li>
       <li><a href="api.html#amocrm.models.common.CustomFieldValue">CustomFieldValue (класс в amocrm.models.common)</a>
 </li>
   </ul></td>
@@ -398,8 +411,16 @@
         <li><a href="api.html#amocrm.resources.pipelines.PipelinesResource.get">(метод amocrm.resources.pipelines.PipelinesResource)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#amocrm.models.common.CustomFieldsMixin.get_cf_enum_id">get_cf_enum_id() (метод amocrm.models.common.CustomFieldsMixin)</a>
+</li>
+      <li><a href="api.html#amocrm.models.common.CustomFieldsMixin.get_cf_raw">get_cf_raw() (метод amocrm.models.common.CustomFieldsMixin)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#amocrm.models.common.CustomFieldsMixin.get_cf_value">get_cf_value() (метод amocrm.models.common.CustomFieldsMixin)</a>
+</li>
+      <li><a href="api.html#amocrm.models.common.CustomFieldsMixin.get_cf_values">get_cf_values() (метод amocrm.models.common.CustomFieldsMixin)</a>
+</li>
       <li><a href="api.html#amocrm.manager.get_client">get_client() (в модуле amocrm.manager)</a>
 </li>
       <li><a href="api.html#amocrm.resources.pipelines.PipelinesResource.get_status">get_status() (метод amocrm.resources.pipelines.PipelinesResource)</a>
@@ -647,6 +668,8 @@
         <li><a href="api.html#amocrm.models.leads.Lead.tags">(атрибут amocrm.models.leads.Lead)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#amocrm.client.AmoCRM.tasks">tasks (свойство amocrm.client.AmoCRM)</a>
+</li>
       <li><a href="api.html#amocrm.models.pipelines.StatusDescription.text">text (атрибут amocrm.models.pipelines.StatusDescription)</a>
 </li>
       <li><a href="api.html#amocrm.models.common.CustomFieldValue.to_dict">to_dict() (метод amocrm.models.common.CustomFieldValue)</a>

@@ -42,6 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
 
@@ -75,20 +76,36 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldValue</span><span class="p">,</span> <span class="n">Tag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldsMixin</span><span class="p">,</span> <span class="n">CustomFieldValue</span><span class="p">,</span> <span class="n">Tag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.companies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Company</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.contacts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contact</span>
 
 <span class="n">_LEAD_SCALAR_FIELDS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="s2">&quot;status_id&quot;</span><span class="p">,</span> <span class="s2">&quot;pipeline_id&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;responsible_user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;group_id&quot;</span><span class="p">,</span> <span class="s2">&quot;created_by&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_by&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="s2">&quot;closed_at&quot;</span><span class="p">,</span> <span class="s2">&quot;closest_task_at&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;is_deleted&quot;</span><span class="p">,</span> <span class="s2">&quot;loss_reason_id&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="s2">&quot;account_id&quot;</span><span class="p">,</span> <span class="s2">&quot;labor_cost&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;price&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;status_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pipeline_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;responsible_user_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;group_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;created_by&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;updated_by&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;created_at&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;closed_at&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;closest_task_at&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_deleted&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;loss_reason_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;score&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;account_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;labor_cost&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="Lead">
 <a class="viewcode-back" href="../../../api.html#amocrm.models.leads.Lead">[документация]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Lead</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Lead</span><span class="p">(</span><span class="n">CustomFieldsMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO-модель сделки AmoCRM.</span>
 
 <span class="sd">    Attributes:</span>
@@ -134,13 +151,18 @@
     <span class="n">labor_cost</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tag</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">custom_fields_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CustomFieldValue</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">contacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Contact</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">company</span><span class="p">:</span> <span class="n">Company</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Lead.from_dict">
 <a class="viewcode-back" href="../../../api.html#amocrm.models.leads.Lead.from_dict">[документация]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Lead</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Создать экземпляр из словаря API AmoCRM.&quot;&quot;&quot;</span>
-        <span class="n">tags_raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_embedded&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span>
+        <span class="n">embedded</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_embedded&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">tags_raw</span> <span class="o">=</span> <span class="n">embedded</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span>
+        <span class="n">contacts_raw</span> <span class="o">=</span> <span class="n">embedded</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;contacts&quot;</span><span class="p">)</span>
+        <span class="n">companies_raw</span> <span class="o">=</span> <span class="n">embedded</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;companies&quot;</span><span class="p">)</span>
         <span class="n">cf_raw</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;custom_fields_values&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span>
@@ -164,8 +186,13 @@
             <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tags_raw</span><span class="p">]</span> <span class="k">if</span> <span class="n">tags_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">custom_fields_values</span><span class="o">=</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">CustomFieldValue</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span> <span class="k">for</span> <span class="n">cf</span> <span class="ow">in</span> <span class="n">cf_raw</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">cf_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">cf_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="kc">None</span>
             <span class="p">),</span>
+            <span class="n">contacts</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">Contact</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">contacts_raw</span><span class="p">]</span> <span class="k">if</span> <span class="n">contacts_raw</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="n">company</span><span class="o">=</span><span class="n">Company</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">companies_raw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">companies_raw</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -184,6 +211,13 @@
             <span class="n">result</span><span class="p">[</span><span class="s2">&quot;custom_fields_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">cf</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">cf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_fields_values</span>
             <span class="p">]</span>
+        <span class="n">embedded</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contacts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">embedded</span><span class="p">[</span><span class="s2">&quot;contacts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contacts</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">company</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">embedded</span><span class="p">[</span><span class="s2">&quot;companies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">company</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="n">embedded</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;_embedded&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">embedded</span>
         <span class="k">return</span> <span class="n">result</span></div>
 </div>
 

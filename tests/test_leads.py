@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from amocrm import AmoCRM, Lead, OAuthConfig
-from amocrm.exceptions import AmoCRMAPIError
+from amocrm.exceptions import AmoCRMAPIError, AmoCRMError
+from amocrm.models import Company, Contact
 
 
 @pytest.fixture
@@ -56,12 +57,24 @@ def test_get_lead(client: AmoCRM) -> None:
     mock_req.assert_called_once_with(
         "GET",
         "https://test.amocrm.ru/api/v4/leads/42",
-        params={},
+        params={"with": "contacts"},
     )
     assert isinstance(result, Lead)
     assert result.id == 42
     assert result.name == "Big Deal"
     assert result.price == 1000
+
+
+def test_get_lead_with_empty_with(client: AmoCRM) -> None:
+    mock_resp = _mock_response({"id": 42})
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        client.leads.get(42, with_=[])
+
+    mock_req.assert_called_once_with(
+        "GET",
+        "https://test.amocrm.ru/api/v4/leads/42",
+        params={},
+    )
 
 
 def test_create_leads(client: AmoCRM) -> None:
@@ -165,3 +178,70 @@ def test_roundtrip_lead() -> None:
     ]
     # Теги на верхнем уровне payload, не во _embedded
     assert "_embedded" not in payload
+
+
+def test_lead_from_dict_with_contacts_and_company() -> None:
+    raw = {
+        "id": 1,
+        "_embedded": {
+            "contacts": [{"id": 5, "name": "John"}],
+            "companies": [{"id": 10, "name": "Acme"}],
+        },
+    }
+    lead = Lead.from_dict(raw)
+    assert lead.contacts is not None
+    assert len(lead.contacts) == 1
+    assert lead.contacts[0].id == 5
+    assert lead.contacts[0].name == "John"
+    assert lead.company is not None
+    assert lead.company.id == 10
+    assert lead.company.name == "Acme"
+
+
+def test_lead_to_dict_with_contacts_and_company() -> None:
+    lead = Lead(
+        id=1,
+        contacts=[Contact(id=5)],
+        company=Company(id=10),
+    )
+    result = lead.to_dict()
+    assert result["_embedded"]["contacts"] == [{"id": 5}]
+    assert result["_embedded"]["companies"] == [{"id": 10}]
+
+
+def test_create_complex_with_linked_entities(client: AmoCRM) -> None:
+    lead = Lead(name="Deal", contacts=[Contact(id=5)], company=Company(id=10))
+    api_response = {"_embedded": {"leads": [{"id": 99, "name": "Deal"}]}}
+    mock_resp = _mock_response(api_response)
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        result = client.leads.create_complex([lead])
+
+    call_kwargs = mock_req.call_args
+    body = call_kwargs[1]["json"]
+    assert "_embedded" in body[0]
+    assert len(result) == 1
+    assert result[0].id == 99
+
+
+def test_create_complex_raises_on_multiple_contacts(client: AmoCRM) -> None:
+    lead = Lead(name="Deal", contacts=[Contact(id=1), Contact(id=2)])
+    with pytest.raises(AmoCRMError, match="at most 1 contact"):
+        client.leads.create_complex([lead])
+
+
+def test_create_raises_on_too_many_leads(client: AmoCRM) -> None:
+    leads = [Lead(name=f"Deal {i}") for i in range(51)]
+    with pytest.raises(AmoCRMError, match="at most 50"):
+        client.leads.create(leads)
+
+
+def test_update_raises_on_too_many_leads(client: AmoCRM) -> None:
+    leads = [Lead(id=i) for i in range(51)]
+    with pytest.raises(AmoCRMError, match="at most 50"):
+        client.leads.update(leads)
+
+
+def test_create_complex_raises_on_too_many_leads(client: AmoCRM) -> None:
+    leads = [Lead(name=f"Deal {i}") for i in range(51)]
+    with pytest.raises(AmoCRMError, match="at most 50"):
+        client.leads.create_complex(leads)

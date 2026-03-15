@@ -39,4 +39,5 @@ Python SDK для работы с REST API AmoCRM.
    :maxdepth: 2
    :caption: Документация
 
+   leads
    api

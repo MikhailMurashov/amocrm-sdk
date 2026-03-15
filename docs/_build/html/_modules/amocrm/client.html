@@ -42,6 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
 
@@ -80,8 +81,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRMAPIError</span><span class="p">,</span> <span class="n">AmoCRMTokenRefreshError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.resources.companies</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompaniesResource</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.resources.contacts</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContactsResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.resources.custom_fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldsResource</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.resources.leads</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeadsResource</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.resources.pipelines</span><span class="w"> </span><span class="kn">import</span> <span class="n">PipelinesResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.resources.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">TasksResource</span>
 
 <span class="n">_TOKEN_URL</span> <span class="o">=</span> <span class="s2">&quot;https://www.amocrm.ru/oauth2/access_token&quot;</span>
 
@@ -117,7 +120,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_leads</span><span class="p">:</span> <span class="n">LeadsResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pipelines</span><span class="p">:</span> <span class="n">PipelinesResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_contacts</span><span class="p">:</span> <span class="n">ContactsResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span><span class="p">:</span> <span class="n">CompaniesResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span><span class="p">:</span> <span class="n">CompaniesResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="n">TasksResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fields</span><span class="p">:</span> <span class="n">CustomFieldsResource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="AmoCRM.from_code">
@@ -244,7 +249,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ресурс для работы с компаниями.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span> <span class="o">=</span> <span class="n">CompaniesResource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_companies</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TasksResource</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ресурс для работы с задачами.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="o">=</span> <span class="n">TasksResource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CustomFieldsResource</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ресурс для работы с кастомными полями.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fields</span> <span class="o">=</span> <span class="n">CustomFieldsResource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fields</span></div>
 
 </pre></div>
 

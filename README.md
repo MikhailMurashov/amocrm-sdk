@@ -69,13 +69,24 @@ leads = client.leads.list(page=1, limit=50)
 for lead in leads:
     print(lead.id, lead.name, lead.price)
 
+# get() автоматически подгружает контакты (with=contacts по умолчанию)
 lead = client.leads.get(42)
+print(lead.contacts)       # list[Contact] | None
 lead.price = 9000
 client.leads.update_one(lead.id, lead)
 
 new_lead = Lead(name="Big Deal", price=50000, tags=[Tag(name="vip")])
 created = client.leads.create([new_lead])
 print(created[0].id)
+
+# Создать сделку вместе с контактом и компанией (max 1 контакт, max 50 сделок)
+from amocrm import Contact, Company
+lead = Lead(
+    name="Complex Deal",
+    contacts=[Contact(name="Иван Иванов")],
+    company=Company(name="ООО Ромашка"),
+)
+client.leads.create_complex([lead])
 
 # Контакты
 contacts = client.contacts.list(query="Иван")
@@ -105,7 +116,7 @@ print(created[0].id)
 
 | Класс | Описание |
 |-------|----------|
-| `Lead` | Сделка. Поля: `id`, `name`, `price`, `status_id`, `pipeline_id`, `tags`, `custom_fields_values`, … |
+| `Lead` | Сделка. Поля: `id`, `name`, `price`, `status_id`, `pipeline_id`, `tags`, `custom_fields_values`, `contacts`, `company`, … |
 | `Contact` | Контакт. Поля: `id`, `name`, `first_name`, `last_name`, `tags`, `custom_fields_values`, … |
 | `Company` | Компания. Поля: `id`, `name`, `tags`, `custom_fields_values`, … |
 | `Task` | Задача. Поля: `id`, `text`, `complete_till`, `task_type_id`, `responsible_user_id`, `is_completed`, `entity_id`, `entity_type`, `result`, … |
@@ -122,7 +133,7 @@ print(created[0].id)
 - `DjangoTokenStorage` из коробки
 - Глобальный менеджер (`exchange_code` / `get_client`) для Django/Flask
 - Typed DTO models — никаких сырых словарей
-- Leads (сделки): list, get, create, update, update_one, create_complex
+- Leads (сделки): list, get, create, update, update_one, create_complex; `get()` подгружает контакты по умолчанию; лимит 50 сделок за запрос
 - Contacts (контакты): list, get, create, update, update_one
 - Companies (компании): list, get, create, update, update_one
 - Pipelines (воронки): list, get, create, update, delete + statuses CRUD

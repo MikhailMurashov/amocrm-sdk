@@ -42,6 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
 
@@ -75,7 +76,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRMError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..models.leads</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lead</span>
+
+<span class="n">_MAX_LEADS_PER_REQUEST</span> <span class="o">=</span> <span class="mi">50</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRM</span>
@@ -149,13 +153,22 @@
 <div class="viewcode-block" id="LeadsResource.get">
 <a class="viewcode-back" href="../../../api.html#amocrm.resources.leads.LeadsResource.get">[документация]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">lead_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">with_</span><span class="p">:</span> <span class="n">builtins</span><span class="o">.</span><span class="n">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lead_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">with_</span><span class="p">:</span> <span class="n">builtins</span><span class="o">.</span><span class="n">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lead</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить сделку по идентификатору.</span>
+
+<span class="sd">        По умолчанию подгружает связанные контакты (``contacts``). Чтобы</span>
+<span class="sd">        отключить это поведение или запросить другой набор данных, передайте</span>
+<span class="sd">        ``with_`` явно, например ``with_=[]`` или</span>
+<span class="sd">        ``with_=[&quot;contacts&quot;, &quot;companies&quot;]``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            lead_id: Идентификатор сделки.</span>
 <span class="sd">            with_: Список дополнительных данных для подгрузки.</span>
+<span class="sd">                По умолчанию ``[&quot;contacts&quot;]``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Объект :class:`~amocrm.models.leads.Lead`.</span>
@@ -163,8 +176,10 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            AmoCRMAPIError: При ошибке API (статус не 2xx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">with_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">with_</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;contacts&quot;</span><span class="p">]</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">with_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">with_</span><span class="p">:</span>
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;with&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">with_</span><span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/api/v4/leads/</span><span class="si">{</span><span class="n">lead_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Lead</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
@@ -182,8 +197,13 @@
 <span class="sd">            Список созданных сделок с заполненными идентификаторами.</span>
 
 <span class="sd">        Raises:</span>
+<span class="sd">            AmoCRMError: Если передано более 50 сделок за один запрос.</span>
 <span class="sd">            AmoCRMAPIError: При ошибке API (статус не 2xx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_MAX_LEADS_PER_REQUEST</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AmoCRMError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;create allows at most </span><span class="si">{</span><span class="n">_MAX_LEADS_PER_REQUEST</span><span class="si">}</span><span class="s2"> leads per request&quot;</span>
+            <span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span>
             <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/api/v4/leads&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">[</span><span class="n">lead</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">]</span>
         <span class="p">)</span>
@@ -203,8 +223,13 @@
 <span class="sd">            Список обновлённых сделок.</span>
 
 <span class="sd">        Raises:</span>
+<span class="sd">            AmoCRMError: Если передано более 50 сделок за один запрос.</span>
 <span class="sd">            AmoCRMAPIError: При ошибке API (статус не 2xx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_MAX_LEADS_PER_REQUEST</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AmoCRMError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;update allows at most </span><span class="si">{</span><span class="n">_MAX_LEADS_PER_REQUEST</span><span class="si">}</span><span class="s2"> leads per request&quot;</span>
+            <span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span>
             <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;/api/v4/leads&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">[</span><span class="n">lead</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">]</span>
         <span class="p">)</span>
@@ -247,8 +272,18 @@
 <span class="sd">            Список созданных сделок с заполненными идентификаторами.</span>
 
 <span class="sd">        Raises:</span>
+<span class="sd">            AmoCRMError: Если передано более 50 сделок или у сделки</span>
+<span class="sd">                более одного контакта.</span>
 <span class="sd">            AmoCRMAPIError: При ошибке API (статус не 2xx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_MAX_LEADS_PER_REQUEST</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AmoCRMError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;create_complex allows at most </span><span class="si">{</span><span class="n">_MAX_LEADS_PER_REQUEST</span><span class="si">}</span><span class="s2"> leads&quot;</span>
+                <span class="s2">&quot; per request&quot;</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lead</span><span class="o">.</span><span class="n">contacts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">contacts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">AmoCRMError</span><span class="p">(</span><span class="s2">&quot;create_complex allows at most 1 contact per lead&quot;</span><span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span>
             <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/api/v4/leads/complex&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">[</span><span class="n">lead</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">]</span>
         <span class="p">)</span>

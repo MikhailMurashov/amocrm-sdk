@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from .common import CustomFieldsMixin, CustomFieldValue, Tag
+from .companies import Company
+from .contacts import Contact
 
 _LEAD_SCALAR_FIELDS = (
     "id",
@@ -74,11 +76,16 @@ class Lead(CustomFieldsMixin):
     labor_cost: int | None = None
     tags: list[Tag] | None = None
     custom_fields_values: list[CustomFieldValue] | None = None
+    contacts: list[Contact] | None = None
+    company: Company | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Lead:
         """Создать экземпляр из словаря API AmoCRM."""
-        tags_raw = data.get("_embedded", {}).get("tags")
+        embedded = data.get("_embedded", {})
+        tags_raw = embedded.get("tags")
+        contacts_raw = embedded.get("contacts")
+        companies_raw = embedded.get("companies")
         cf_raw = data.get("custom_fields_values")
         return cls(
             id=data.get("id"),
@@ -105,6 +112,10 @@ class Lead(CustomFieldsMixin):
                 if cf_raw is not None
                 else None
             ),
+            contacts=(
+                [Contact.from_dict(c) for c in contacts_raw] if contacts_raw else None
+            ),
+            company=Company.from_dict(companies_raw[0]) if companies_raw else None,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -120,4 +131,11 @@ class Lead(CustomFieldsMixin):
             result["custom_fields_values"] = [
                 cf.to_dict() for cf in self.custom_fields_values
             ]
+        embedded: dict[str, Any] = {}
+        if self.contacts is not None:
+            embedded["contacts"] = [c.to_dict() for c in self.contacts]
+        if self.company is not None:
+            embedded["companies"] = [self.company.to_dict()]
+        if embedded:
+            result["_embedded"] = embedded
         return result

@@ -3,7 +3,10 @@ from __future__ import annotations
 import builtins
 from typing import TYPE_CHECKING, Any
 
+from ..exceptions import AmoCRMError
 from ..models.leads import Lead
+
+_MAX_LEADS_PER_REQUEST = 50
 
 if TYPE_CHECKING:
     from ..client import AmoCRM
@@ -66,12 +69,23 @@ class LeadsResource:
         raw = self._client._request("GET", "/api/v4/leads", params=params)
         return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
 
-    def get(self, lead_id: int, *, with_: builtins.list[str] | None = None) -> Lead:
+    def get(
+        self,
+        lead_id: int,
+        *,
+        with_: builtins.list[str] | None = None,
+    ) -> Lead:
         """Получить сделку по идентификатору.
+
+        По умолчанию подгружает связанные контакты (``contacts``). Чтобы
+        отключить это поведение или запросить другой набор данных, передайте
+        ``with_`` явно, например ``with_=[]`` или
+        ``with_=["contacts", "companies"]``.
 
         Args:
             lead_id: Идентификатор сделки.
             with_: Список дополнительных данных для подгрузки.
+                По умолчанию ``["contacts"]``.
 
         Returns:
             Объект :class:`~amocrm.models.leads.Lead`.
@@ -79,8 +93,10 @@ class LeadsResource:
         Raises:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if with_ is None:
+            with_ = ["contacts"]
         params: dict[str, Any] = {}
-        if with_ is not None:
+        if with_:
             params["with"] = ",".join(with_)
         raw = self._client._request("GET", f"/api/v4/leads/{lead_id}", params=params)
         return Lead.from_dict(raw)
@@ -95,8 +111,13 @@ class LeadsResource:
             Список созданных сделок с заполненными идентификаторами.
 
         Raises:
+            AmoCRMError: Если передано более 50 сделок за один запрос.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if len(leads) > _MAX_LEADS_PER_REQUEST:
+            raise AmoCRMError(
+                f"create allows at most {_MAX_LEADS_PER_REQUEST} leads per request"
+            )
         raw = self._client._request(
             "POST", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
         )
@@ -113,8 +134,13 @@ class LeadsResource:
             Список обновлённых сделок.
 
         Raises:
+            AmoCRMError: Если передано более 50 сделок за один запрос.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if len(leads) > _MAX_LEADS_PER_REQUEST:
+            raise AmoCRMError(
+                f"update allows at most {_MAX_LEADS_PER_REQUEST} leads per request"
+            )
         raw = self._client._request(
             "PATCH", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
         )
@@ -151,8 +177,18 @@ class LeadsResource:
             Список созданных сделок с заполненными идентификаторами.
 
         Raises:
+            AmoCRMError: Если передано более 50 сделок или у сделки
+                более одного контакта.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if len(leads) > _MAX_LEADS_PER_REQUEST:
+            raise AmoCRMError(
+                f"create_complex allows at most {_MAX_LEADS_PER_REQUEST} leads"
+                " per request"
+            )
+        for lead in leads:
+            if lead.contacts is not None and len(lead.contacts) > 1:
+                raise AmoCRMError("create_complex allows at most 1 contact per lead")
         raw = self._client._request(
             "POST", "/api/v4/leads/complex", json=[lead.to_dict() for lead in leads]
         )

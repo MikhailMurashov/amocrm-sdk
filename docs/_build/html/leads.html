@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сделки (Leads) &mdash; документация amocrm-sdk 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6ff560e8"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=cd1d70c9"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="amocrm-sdk" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            amocrm-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Сделки (Leads)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Получение сделок</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Список сделок</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id">Одна сделка по ID</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Создание и обновление</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">Связанные сущности: контакты и компании</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Загрузка при чтении</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#complex">Создание сделок со связанными сущностями (complex)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#to-dict">Сериализация в <code class="docutils literal notranslate"><span class="pre">to_dict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">Обработка ошибок</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">amocrm-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Сделки (Leads)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/leads.rst.txt" rel="nofollow"> Просмотреть исходный код страницы</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="leads">
+<h1>Сделки (Leads)<a class="headerlink" href="#leads" title="Ссылка на этот заголовок"></a></h1>
+<p>Ресурс <code class="docutils literal notranslate"><span class="pre">client.leads</span></code> предоставляет полный набор методов для работы со сделками AmoCRM.</p>
+<section id="id1">
+<h2>Получение сделок<a class="headerlink" href="#id1" title="Ссылка на этот заголовок"></a></h2>
+<section id="id2">
+<h3>Список сделок<a class="headerlink" href="#id2" title="Ссылка на этот заголовок"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">leads</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Доступные параметры:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">page</span></code> — номер страницы (начиная с 1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code> — количество сделок на странице (максимум 250)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">query</span></code> — строка полнотекстового поиска</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> — словарь фильтров: <code class="docutils literal notranslate"><span class="pre">{&quot;status_id&quot;:</span> <span class="pre">123}</span></code> → <code class="docutils literal notranslate"><span class="pre">filter[status_id]=123</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">order</span></code> — словарь сортировки: <code class="docutils literal notranslate"><span class="pre">{&quot;created_at&quot;:</span> <span class="pre">&quot;desc&quot;}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">with_</span></code> — дополнительные связанные данные (см. ниже)</p></li>
+</ul>
+</section>
+<section id="id">
+<h3>Одна сделка по ID<a class="headerlink" href="#id" title="Ссылка на этот заголовок"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>По умолчанию <code class="docutils literal notranslate"><span class="pre">get()</span></code> автоматически добавляет <code class="docutils literal notranslate"><span class="pre">with=contacts</span></code>, поэтому
+поле <code class="docutils literal notranslate"><span class="pre">lead.contacts</span></code> будет заполнено без дополнительных параметров.</p>
+<p>Чтобы отключить подгрузку контактов, передайте пустой список:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">with_</span><span class="o">=</span><span class="p">[])</span>
+</pre></div>
+</div>
+<p>Чтобы запросить дополнительные данные, передайте нужные ключи явно:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">with_</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;contacts&quot;</span><span class="p">,</span> <span class="s2">&quot;companies&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id3">
+<h2>Создание и обновление<a class="headerlink" href="#id3" title="Ссылка на этот заголовок"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lead</span>
+
+<span class="c1"># Создать одну или несколько сделок (не более 50 за запрос)</span>
+<span class="n">new_leads</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">create</span><span class="p">([</span>
+    <span class="n">Lead</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Новая сделка&quot;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">status_id</span><span class="o">=</span><span class="mi">1234</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="c1"># Обновить (не более 50 за запрос, каждая сделка должна содержать id)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">Lead</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">9000</span><span class="p">)])</span>
+
+<span class="c1"># Обновить одну сделку по ID</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">Lead</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="mi">9000</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Предупреждение</p>
+<p>За один запрос можно передать не более <strong>50 сделок</strong>. При превышении
+лимита выбрасывается <a class="reference internal" href="api.html#amocrm.exceptions.AmoCRMError" title="amocrm.exceptions.AmoCRMError"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRMError</span></code></a>.</p>
+</div>
+</section>
+<section id="id4">
+<h2>Связанные сущности: контакты и компании<a class="headerlink" href="#id4" title="Ссылка на этот заголовок"></a></h2>
+<section id="id5">
+<h3>Загрузка при чтении<a class="headerlink" href="#id5" title="Ссылка на этот заголовок"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">get()</span></code> подгружает контакты автоматически (<code class="docutils literal notranslate"><span class="pre">with=contacts</span></code> по умолчанию).
+Для компаний добавьте <code class="docutils literal notranslate"><span class="pre">&quot;companies&quot;</span></code> явно:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">with_</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;contacts&quot;</span><span class="p">,</span> <span class="s2">&quot;companies&quot;</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="n">lead</span><span class="o">.</span><span class="n">contacts</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">contact</span> <span class="ow">in</span> <span class="n">lead</span><span class="o">.</span><span class="n">contacts</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">contact</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">contact</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">lead</span><span class="o">.</span><span class="n">company</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">company</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">lead</span><span class="o">.</span><span class="n">company</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Поля модели <a class="reference internal" href="api.html#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lead</span></code></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">contacts:</span> <span class="pre">list[Contact]</span> <span class="pre">|</span> <span class="pre">None</span></code> — список связанных контактов
+(API может вернуть несколько)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">company:</span> <span class="pre">Company</span> <span class="pre">|</span> <span class="pre">None</span></code> — первая связанная компания
+(берётся <code class="docutils literal notranslate"><span class="pre">_embedded.companies[0]</span></code>)</p></li>
+</ul>
+</section>
+<section id="complex">
+<h3>Создание сделок со связанными сущностями (complex)<a class="headerlink" href="#complex" title="Ссылка на этот заголовок"></a></h3>
+<p>Эндпоинт <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v4/leads/complex</span></code> позволяет за один запрос
+создать сделку вместе с контактом и компанией:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lead</span><span class="p">,</span> <span class="n">Contact</span><span class="p">,</span> <span class="n">Company</span>
+
+<span class="n">lead</span> <span class="o">=</span> <span class="n">Lead</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Комплексная сделка&quot;</span><span class="p">,</span>
+    <span class="n">price</span><span class="o">=</span><span class="mi">15000</span><span class="p">,</span>
+    <span class="n">contacts</span><span class="o">=</span><span class="p">[</span><span class="n">Contact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Иван Иванов&quot;</span><span class="p">,</span> <span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;Иван&quot;</span><span class="p">)],</span>
+    <span class="n">company</span><span class="o">=</span><span class="n">Company</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ООО Ромашка&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">create_complex</span><span class="p">([</span><span class="n">lead</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Ограничения <code class="docutils literal notranslate"><span class="pre">create_complex</span></code>:</p>
+<ul class="simple">
+<li><p>не более <strong>50 сделок</strong> за запрос</p></li>
+<li><p>не более <strong>1 контакта</strong> на сделку</p></li>
+</ul>
+<p>При нарушении любого ограничения выбрасывается
+<a class="reference internal" href="api.html#amocrm.exceptions.AmoCRMError" title="amocrm.exceptions.AmoCRMError"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRMError</span></code></a> до отправки запроса.</p>
+</section>
+<section id="to-dict">
+<h3>Сериализация в <code class="docutils literal notranslate"><span class="pre">to_dict</span></code><a class="headerlink" href="#to-dict" title="Ссылка на этот заголовок"></a></h3>
+<p>При передаче в API контакты и компания попадают в ключ <code class="docutils literal notranslate"><span class="pre">_embedded</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">Lead</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Сделка&quot;</span><span class="p">,</span>
+    <span class="n">contacts</span><span class="o">=</span><span class="p">[</span><span class="n">Contact</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">5</span><span class="p">)],</span>
+    <span class="n">company</span><span class="o">=</span><span class="n">Company</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">lead</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="c1"># {</span>
+<span class="c1">#     &quot;name&quot;: &quot;Сделка&quot;,</span>
+<span class="c1">#     &quot;_embedded&quot;: {</span>
+<span class="c1">#         &quot;contacts&quot;: [{&quot;id&quot;: 5}],</span>
+<span class="c1">#         &quot;companies&quot;: [{&quot;id&quot;: 10}],</span>
+<span class="c1">#     }</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Примечание</p>
+<p>Теги (<code class="docutils literal notranslate"><span class="pre">tags</span></code>) остаются на верхнем уровне словаря — это соглашение
+AmoCRM API для операций записи. Связанные сущности (контакты, компании)
+при записи передаются через <code class="docutils literal notranslate"><span class="pre">_embedded</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2>Обработка ошибок<a class="headerlink" href="#id6" title="Ссылка на этот заголовок"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRMError</span><span class="p">,</span> <span class="n">AmoCRMAPIError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">Lead</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Deal </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">51</span><span class="p">)])</span>
+<span class="k">except</span> <span class="n">AmoCRMError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>  <span class="c1"># create allows at most 50 leads per request</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">lead</span> <span class="o">=</span> <span class="n">Lead</span><span class="p">(</span><span class="n">contacts</span><span class="o">=</span><span class="p">[</span><span class="n">Contact</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">Contact</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">)])</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">create_complex</span><span class="p">([</span><span class="n">lead</span><span class="p">])</span>
+<span class="k">except</span> <span class="n">AmoCRMError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>  <span class="c1"># create_complex allows at most 1 contact per lead</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
+        <a href="index.html" class="btn btn-neutral float-left" title="amocrm-sdk" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Следующая <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права . </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

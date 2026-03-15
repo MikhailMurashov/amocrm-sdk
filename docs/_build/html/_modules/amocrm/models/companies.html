@@ -42,6 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
 
@@ -75,21 +76,27 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldValue</span><span class="p">,</span> <span class="n">Tag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldsMixin</span><span class="p">,</span> <span class="n">CustomFieldValue</span><span class="p">,</span> <span class="n">Tag</span>
 
 <span class="n">_COMPANY_SCALAR_FIELDS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;responsible_user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;group_id&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;created_by&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_by&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;closest_task_at&quot;</span><span class="p">,</span> <span class="s2">&quot;is_deleted&quot;</span><span class="p">,</span> <span class="s2">&quot;account_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;responsible_user_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;group_id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;created_by&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;updated_by&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;created_at&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;closest_task_at&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_deleted&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;account_id&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="Company">
 <a class="viewcode-back" href="../../../api.html#amocrm.models.companies.Company">[документация]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Company</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Company</span><span class="p">(</span><span class="n">CustomFieldsMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO-модель компании AmoCRM.</span>
 
 <span class="sd">    Attributes:</span>
@@ -144,7 +151,8 @@
             <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tags_raw</span><span class="p">]</span> <span class="k">if</span> <span class="n">tags_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">custom_fields_values</span><span class="o">=</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">CustomFieldValue</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span> <span class="k">for</span> <span class="n">cf</span> <span class="ow">in</span> <span class="n">cf_raw</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">cf_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">cf_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="kc">None</span>
             <span class="p">),</span>
         <span class="p">)</span></div>
 
