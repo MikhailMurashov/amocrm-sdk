@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import builtins
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
 from ..models.tasks import Task
+from ._utils import _iter_all_pages
 
 if TYPE_CHECKING:
     from ..client import AmoCRM
@@ -26,26 +28,27 @@ class TasksResource:
         limit: int | None = None,
         filter: dict[str, Any] | None = None,
         order: dict[str, str] | None = None,
-    ) -> builtins.list[Task]:
+    ) -> builtins.list[Task] | Iterator[Task]:
         """Получить список задач с пагинацией и фильтрами.
 
         Args:
-            page: Номер страницы (начиная с 1).
-            limit: Количество задач на странице (максимум 250).
+            page: Номер страницы (начиная с 1). Если не передан — автоматически
+                обходит все страницы и возвращает ``Iterator[Task]``.
+            limit: Количество задач на странице (максимум 250). По умолчанию 50
+                при авто-пагинации.
             filter: Словарь фильтров вида ``{"field": "value"}``; ключи
                 преобразуются в параметры ``filter[field]=value``.
             order: Словарь сортировки вида ``{"field": "asc"|"desc"}``; ключи
                 преобразуются в параметры ``order[field]=asc``.
 
         Returns:
-            Список объектов :class:`~amocrm.models.tasks.Task`.
+            Если ``page`` передан — список объектов :class:`~amocrm.models.tasks.Task`.
+            Если ``page`` не передан — ``Iterator[Task]`` по всем страницам.
 
         Raises:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
         params: dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
         if limit is not None:
             params["limit"] = limit
         if filter is not None:
@@ -54,8 +57,16 @@ class TasksResource:
         if order is not None:
             for key, value in order.items():
                 params[f"order[{key}]"] = value
-        raw = self._client._request("GET", "/api/v4/tasks", params=params)
-        return [Task.from_dict(d) for d in raw.get("_embedded", {}).get("tasks", [])]
+        if page is not None:
+            params["page"] = page
+            raw = self._client._request("GET", "/api/v4/tasks", params=params)
+            return [
+                Task.from_dict(d) for d in raw.get("_embedded", {}).get("tasks", [])
+            ]
+        return (
+            Task.from_dict(d)
+            for d in _iter_all_pages(self._client, "/api/v4/tasks", "tasks", params)
+        )
 
     def get(self, task_id: int) -> Task:
         """Получить задачу по идентификатору.

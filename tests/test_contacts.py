@@ -132,7 +132,7 @@ def test_api_error_raises(client: AmoCRM) -> None:
     with patch.object(client, "_refresh_tokens"):
         with patch.object(client._session, "request", return_value=error_response):
             with pytest.raises(AmoCRMAPIError) as exc_info:
-                client.contacts.list()
+                list(client.contacts.list())
 
     assert exc_info.value.status_code == 401
     assert "Unauthorized" in str(exc_info.value)
@@ -185,3 +185,42 @@ def test_roundtrip_contact() -> None:
         {"field_id": 101, "values": [{"value": "hello"}]}
     ]
     assert "_embedded" not in payload
+
+
+def test_list_all_autopagination(client: AmoCRM) -> None:
+    page1_items = [{"id": i, "first_name": f"Name{i}"} for i in range(1, 51)]
+    page2_items = [{"id": i, "first_name": f"Name{i}"} for i in range(51, 56)]
+    mock_resp1 = _mock_response({"_embedded": {"contacts": page1_items}})
+    mock_resp2 = _mock_response({"_embedded": {"contacts": page2_items}})
+    with patch.object(
+        client._session, "request", side_effect=[mock_resp1, mock_resp2]
+    ) as mock_req:
+        result = list(client.contacts.list())
+
+    assert mock_req.call_count == 2
+    assert len(result) == 55
+    assert all(isinstance(r, Contact) for r in result)
+
+
+def test_list_single_page_explicit(client: AmoCRM) -> None:
+    api_response = {"_embedded": {"contacts": [{"id": 1, "first_name": "John"}]}}
+    mock_resp = _mock_response(api_response)
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        result = client.contacts.list(page=3, limit=25)
+
+    mock_req.assert_called_once_with(
+        "GET",
+        "https://test.amocrm.ru/api/v4/contacts",
+        params={"limit": 25, "page": 3},
+    )
+    assert isinstance(result, list)
+    assert len(result) == 1
+
+
+def test_list_empty_result(client: AmoCRM) -> None:
+    mock_resp = _mock_response({"_embedded": {"contacts": []}})
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        result = list(client.contacts.list())
+
+    mock_req.assert_called_once()
+    assert result == []

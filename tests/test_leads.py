@@ -1,3 +1,4 @@
+import builtins
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -124,7 +125,7 @@ def test_api_error_raises(client: AmoCRM) -> None:
     with patch.object(client, "_refresh_tokens"):
         with patch.object(client._session, "request", return_value=error_response):
             with pytest.raises(AmoCRMAPIError) as exc_info:
-                client.leads.list()
+                list(client.leads.list())
 
     assert exc_info.value.status_code == 401
     assert "Unauthorized" in str(exc_info.value)
@@ -245,3 +246,46 @@ def test_create_complex_raises_on_too_many_leads(client: AmoCRM) -> None:
     leads = [Lead(name=f"Deal {i}") for i in range(51)]
     with pytest.raises(AmoCRMError, match="at most 50"):
         client.leads.create_complex(leads)
+
+
+def test_list_all_autopagination(client: AmoCRM) -> None:
+    page1_items = [
+        {"id": i, "name": f"Deal {i}", "price": i * 10} for i in range(1, 51)
+    ]
+    page2_items = [
+        {"id": i, "name": f"Deal {i}", "price": i * 10} for i in range(51, 61)
+    ]
+    mock_resp1 = _mock_response({"_embedded": {"leads": page1_items}})
+    mock_resp2 = _mock_response({"_embedded": {"leads": page2_items}})
+    with patch.object(
+        client._session, "request", side_effect=[mock_resp1, mock_resp2]
+    ) as mock_req:
+        result = list(client.leads.list())
+
+    assert mock_req.call_count == 2
+    assert len(result) == 60
+    assert all(isinstance(r, Lead) for r in result)
+
+
+def test_list_single_page_explicit(client: AmoCRM) -> None:
+    api_response = {"_embedded": {"leads": [{"id": 5, "name": "Deal 5", "price": 50}]}}
+    mock_resp = _mock_response(api_response)
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        result = client.leads.list(page=2, limit=10)
+
+    mock_req.assert_called_once_with(
+        "GET",
+        "https://test.amocrm.ru/api/v4/leads",
+        params={"limit": 10, "page": 2},
+    )
+    assert isinstance(result, builtins.list)
+    assert len(result) == 1
+
+
+def test_list_empty_result(client: AmoCRM) -> None:
+    mock_resp = _mock_response({"_embedded": {"leads": []}})
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        result = list(client.leads.list())
+
+    mock_req.assert_called_once()
+    assert result == []

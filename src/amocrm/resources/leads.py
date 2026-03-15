@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import builtins
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
 from ..exceptions import AmoCRMError
 from ..models.leads import Lead
+from ._utils import _iter_all_pages
 
 _MAX_LEADS_PER_REQUEST = 50
 
@@ -31,12 +33,14 @@ class LeadsResource:
         filter: dict[str, Any] | None = None,
         order: dict[str, str] | None = None,
         with_: builtins.list[str] | None = None,
-    ) -> builtins.list[Lead]:
+    ) -> builtins.list[Lead] | Iterator[Lead]:
         """Получить список сделок с пагинацией и фильтрами.
 
         Args:
-            page: Номер страницы (начиная с 1).
-            limit: Количество сделок на странице (максимум 250).
+            page: Номер страницы (начиная с 1). Если не передан — автоматически
+                обходит все страницы и возвращает ``Iterator[Lead]``.
+            limit: Количество сделок на странице (максимум 250). По умолчанию 50
+                при авто-пагинации.
             query: Строка полнотекстового поиска.
             filter: Словарь фильтров вида ``{"field": "value"}``; ключи
                 преобразуются в параметры ``filter[field]=value``.
@@ -46,14 +50,13 @@ class LeadsResource:
                 ``["contacts", "companies"]``).
 
         Returns:
-            Список объектов :class:`~amocrm.models.leads.Lead`.
+            Если ``page`` передан — список объектов :class:`~amocrm.models.leads.Lead`.
+            Если ``page`` не передан — ``Iterator[Lead]`` по всем страницам.
 
         Raises:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
         params: dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
         if limit is not None:
             params["limit"] = limit
         if query is not None:
@@ -66,8 +69,16 @@ class LeadsResource:
                 params[f"order[{key}]"] = value
         if with_ is not None:
             params["with"] = ",".join(with_)
-        raw = self._client._request("GET", "/api/v4/leads", params=params)
-        return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
+        if page is not None:
+            params["page"] = page
+            raw = self._client._request("GET", "/api/v4/leads", params=params)
+            return [
+                Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])
+            ]
+        return (
+            Lead.from_dict(d)
+            for d in _iter_all_pages(self._client, "/api/v4/leads", "leads", params)
+        )
 
     def get(
         self,

@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Алфавитный указатель" href="genindex.html" />
     <link rel="search" title="Поиск" href="search.html" />
-    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="next" title="Пагинация" href="pagination.html" />
     <link rel="prev" title="amocrm-sdk" href="index.html" /> 
 </head>
 
@@ -61,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#id6">Обработка ошибок</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -95,18 +96,32 @@
 <h2>Получение сделок<a class="headerlink" href="#id1" title="Ссылка на этот заголовок"></a></h2>
 <section id="id2">
 <h3>Список сделок<a class="headerlink" href="#id2" title="Ссылка на этот заголовок"></a></h3>
+<p><strong>Авто-пагинация</strong> (рекомендуется): без <code class="docutils literal notranslate"><span class="pre">page</span></code> метод возвращает <code class="docutils literal notranslate"><span class="pre">Iterator[Lead]</span></code>
+и автоматически обходит все страницы, запрашивая по 50 элементов:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">lead</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">lead</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
+
+<span class="c1"># Или собрать в список сразу</span>
+<span class="n">all_leads</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><strong>Одна страница</strong>: передайте <code class="docutils literal notranslate"><span class="pre">page</span></code> явно — метод вернёт <code class="docutils literal notranslate"><span class="pre">list[Lead]</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">leads</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Доступные параметры:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">page</span></code> — номер страницы (начиная с 1)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code> — количество сделок на странице (максимум 250)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">page</span></code> — номер страницы (начиная с 1); если не передан — авто-пагинация</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code> — количество сделок на странице (максимум 250; по умолчанию 50 при авто-пагинации)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">query</span></code> — строка полнотекстового поиска</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> — словарь фильтров: <code class="docutils literal notranslate"><span class="pre">{&quot;status_id&quot;:</span> <span class="pre">123}</span></code> → <code class="docutils literal notranslate"><span class="pre">filter[status_id]=123</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">order</span></code> — словарь сортировки: <code class="docutils literal notranslate"><span class="pre">{&quot;created_at&quot;:</span> <span class="pre">&quot;desc&quot;}</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">with_</span></code> — дополнительные связанные данные (см. ниже)</p></li>
 </ul>
+<div class="admonition seealso">
+<p class="admonition-title">См. также</p>
+<p><a class="reference internal" href="pagination.html"><span class="doc">Пагинация</span></a> — подробнее про авто-пагинацию и оба режима работы <code class="docutils literal notranslate"><span class="pre">list()</span></code>.</p>
+</div>
 </section>
 <section id="id">
 <h3>Одна сделка по ID<a class="headerlink" href="#id" title="Ссылка на этот заголовок"></a></h3>
@@ -120,7 +135,7 @@
 </pre></div>
 </div>
 <p>Чтобы запросить дополнительные данные, передайте нужные ключи явно:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">with_</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;contacts&quot;</span><span class="p">,</span> <span class="s2">&quot;companies&quot;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">with_</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;contacts&quot;</span><span class="p">,</span> <span class="s2">&quot;loss_reason&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -245,7 +260,7 @@ AmoCRM API для операций записи. Связанные сущнос
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
         <a href="index.html" class="btn btn-neutral float-left" title="amocrm-sdk" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
-        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Следующая <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pagination.html" class="btn btn-neutral float-right" title="Пагинация" accesskey="n" rel="next">Следующая <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

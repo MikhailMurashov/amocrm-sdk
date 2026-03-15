@@ -3,7 +3,7 @@ amocrm-sdk
 
 Python SDK для работы с REST API AmoCRM.
 Предоставляет удобный интерфейс для авторизации, сделок, контактов,
-компаний и воронок.
+компаний, задач и воронок.
 
 Установка
 ---------
@@ -28,8 +28,12 @@ Python SDK для работы с REST API AmoCRM.
 
    client = AmoCRM(subdomain="mycompany", oauth=oauth)
 
-   # Список сделок
-   leads = client.leads.list(limit=50)
+   # Все сделки — авто-пагинация (Iterator, обходит все страницы)
+   for lead in client.leads.list():
+       print(lead.id, lead.name)
+
+   # Одна страница — передайте page явно
+   leads = client.leads.list(page=1, limit=50)
 
    # Создать контакт
    from amocrm import Contact
@@ -40,4 +44,5 @@ Python SDK для работы с REST API AmoCRM.
    :caption: Документация
 
    leads
+   pagination
    api

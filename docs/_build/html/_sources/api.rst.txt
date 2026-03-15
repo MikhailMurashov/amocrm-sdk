@@ -52,6 +52,12 @@ API Reference
 .. automodule:: amocrm.resources.pipelines
    :members:
 
+Задачи
+~~~~~~
+
+.. automodule:: amocrm.resources.tasks
+   :members:
+
 Модели
 ------
 
@@ -83,4 +89,10 @@ API Reference
 ~~~~~~~~~~~~~~~~~
 
 .. automodule:: amocrm.models.pipelines
+   :members:
+
+Задачи
+~~~~~~
+
+.. automodule:: amocrm.models.tasks
    :members:

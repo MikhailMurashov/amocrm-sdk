@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import builtins
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
 from ..models.companies import Company
+from ._utils import _iter_all_pages
 
 if TYPE_CHECKING:
     from ..client import AmoCRM
@@ -28,12 +30,14 @@ class CompaniesResource:
         filter: dict[str, Any] | None = None,
         order: dict[str, str] | None = None,
         with_: builtins.list[str] | None = None,
-    ) -> builtins.list[Company]:
+    ) -> builtins.list[Company] | Iterator[Company]:
         """Получить список компаний с пагинацией и фильтрами.
 
         Args:
-            page: Номер страницы (начиная с 1).
-            limit: Количество компаний на странице (максимум 250).
+            page: Номер страницы (начиная с 1). Если не передан — автоматически
+                обходит все страницы и возвращает ``Iterator[Company]``.
+            limit: Количество компаний на странице (максимум 250). По умолчанию 50
+                при авто-пагинации.
             query: Строка полнотекстового поиска.
             filter: Словарь фильтров вида ``{"field": "value"}``; ключи
                 преобразуются в параметры ``filter[field]=value``.
@@ -42,14 +46,13 @@ class CompaniesResource:
             with_: Список дополнительных данных для подгрузки.
 
         Returns:
-            Список объектов :class:`~amocrm.models.companies.Company`.
+            Если ``page`` передан — список :class:`~amocrm.models.companies.Company`.
+            Если ``page`` не передан — ``Iterator[Company]`` по всем страницам.
 
         Raises:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
         params: dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
         if limit is not None:
             params["limit"] = limit
         if query is not None:
@@ -62,9 +65,19 @@ class CompaniesResource:
                 params[f"order[{key}]"] = value
         if with_ is not None:
             params["with"] = ",".join(with_)
-        raw = self._client._request("GET", "/api/v4/companies", params=params)
-        items = raw.get("_embedded", {}).get("companies", [])
-        return [Company.from_dict(d) for d in items]
+        if page is not None:
+            params["page"] = page
+            raw = self._client._request("GET", "/api/v4/companies", params=params)
+            return [
+                Company.from_dict(d)
+                for d in raw.get("_embedded", {}).get("companies", [])
+            ]
+        return (
+            Company.from_dict(d)
+            for d in _iter_all_pages(
+                self._client, "/api/v4/companies", "companies", params
+            )
+        )
 
     def get(
         self, company_id: int, *, with_: builtins.list[str] | None = None

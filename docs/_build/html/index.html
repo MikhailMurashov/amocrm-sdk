@@ -45,6 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -76,7 +77,7 @@
 <h1>amocrm-sdk<a class="headerlink" href="#amocrm-sdk" title="Ссылка на этот заголовок"></a></h1>
 <p>Python SDK для работы с REST API AmoCRM.
 Предоставляет удобный интерфейс для авторизации, сделок, контактов,
-компаний и воронок.</p>
+компаний, задач и воронок.</p>
 <section id="id1">
 <h2>Установка<a class="headerlink" href="#id1" title="Ссылка на этот заголовок"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>amocrm-sdk
@@ -96,8 +97,12 @@
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">AmoCRM</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="s2">&quot;mycompany&quot;</span><span class="p">,</span> <span class="n">oauth</span><span class="o">=</span><span class="n">oauth</span><span class="p">)</span>
 
-<span class="c1"># Список сделок</span>
-<span class="n">leads</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="c1"># Все сделки — авто-пагинация (Iterator, обходит все страницы)</span>
+<span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">lead</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># Одна страница — передайте page явно</span>
+<span class="n">leads</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 <span class="c1"># Создать контакт</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contact</span>
@@ -114,13 +119,20 @@
 <li class="toctree-l2"><a class="reference internal" href="leads.html#id6">Обработка ошибок</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#list">Режимы работы <code class="docutils literal notranslate"><span class="pre">list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#id2">Авто-пагинация (рекомендуется)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#id3">Одна страница</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#id4">Сигнал конца данных</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.client">Клиент</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.auth">Авторизация</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.manager">Менеджер (синглтон)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-amocrm.exceptions">Исключения</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#id5">Ресурсы</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#id10">Модели</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#id11">Модели</a></li>
 </ul>
 </li>
 </ul>

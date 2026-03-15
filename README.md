@@ -64,10 +64,12 @@ class RedisTokenStorage:
 ### Работа с ресурсами
 
 ```python
-# Сделки
-leads = client.leads.list(page=1, limit=50)
-for lead in leads:
+# Сделки — авто-пагинация (обходит все страницы, возвращает Iterator)
+for lead in client.leads.list():
     print(lead.id, lead.name, lead.price)
+
+# Одна страница — передайте page явно
+leads = client.leads.list(page=1, limit=50)
 
 # get() автоматически подгружает контакты (with=contacts по умолчанию)
 lead = client.leads.get(42)
@@ -88,19 +90,22 @@ lead = Lead(
 )
 client.leads.create_complex([lead])
 
-# Контакты
-contacts = client.contacts.list(query="Иван")
+# Контакты — авто-пагинация
+for contact in client.contacts.list(query="Иван"):
+    print(contact.name)
+
 client.contacts.create([Contact(name="Иван Иванов", first_name="Иван")])
 
-# Компании
-companies = client.companies.list(page=1, limit=25)
+# Компании — авто-пагинация
+for company in client.companies.list():
+    print(company.name)
+
 client.companies.create([Company(name="Рога и копыта")])
 
-# Задачи
+# Задачи — авто-пагинация
 from amocrm import Task
 
-tasks = client.tasks.list(page=1, limit=50)
-for task in tasks:
+for task in client.tasks.list():
     print(task.id, task.text, task.complete_till)
 
 task = client.tasks.get(10)
@@ -111,6 +116,17 @@ new_task = Task(text="Call client", task_type_id=1, complete_till=1700000000, en
 created = client.tasks.create([new_task])
 print(created[0].id)
 ```
+
+### Пагинация
+
+Методы `list()` у всех ресурсов поддерживают два режима:
+
+| Вызов | Поведение | Возвращает |
+|-------|-----------|------------|
+| `client.leads.list()` | Авто-пагинация — обходит все страницы | `Iterator[Lead]` |
+| `client.leads.list(page=2)` | Одна конкретная страница | `list[Lead]` |
+
+По умолчанию авто-пагинация запрашивает по **50 элементов** на страницу. Для кастомного размера: `client.leads.list(limit=250)`.
 
 ## Models
 
@@ -139,7 +155,7 @@ print(created[0].id)
 - Pipelines (воронки): list, get, create, update, delete + statuses CRUD
 - Tasks (задачи): list, get, create, update, update_one
 - Custom fields support
-- Pagination helpers
+- Авто-пагинация — `list()` без `page` автоматически обходит все страницы и возвращает `Iterator[T]`
 
 ## Links
 

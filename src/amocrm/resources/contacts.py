@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import builtins
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
 from ..models.contacts import Contact
+from ._utils import _iter_all_pages
 
 if TYPE_CHECKING:
     from ..client import AmoCRM
@@ -28,12 +30,14 @@ class ContactsResource:
         filter: dict[str, Any] | None = None,
         order: dict[str, str] | None = None,
         with_: builtins.list[str] | None = None,
-    ) -> builtins.list[Contact]:
+    ) -> builtins.list[Contact] | Iterator[Contact]:
         """Получить список контактов с пагинацией и фильтрами.
 
         Args:
-            page: Номер страницы (начиная с 1).
-            limit: Количество контактов на странице (максимум 250).
+            page: Номер страницы (начиная с 1). Если не передан — автоматически
+                обходит все страницы и возвращает ``Iterator[Contact]``.
+            limit: Количество контактов на странице (максимум 250). По умолчанию 50
+                при авто-пагинации.
             query: Строка полнотекстового поиска.
             filter: Словарь фильтров вида ``{"field": "value"}``; ключи
                 преобразуются в параметры ``filter[field]=value``.
@@ -42,14 +46,13 @@ class ContactsResource:
             with_: Список дополнительных данных для подгрузки.
 
         Returns:
-            Список объектов :class:`~amocrm.models.contacts.Contact`.
+            Если ``page`` передан — список :class:`~amocrm.models.contacts.Contact`.
+            Если ``page`` не передан — ``Iterator[Contact]`` по всем страницам.
 
         Raises:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
         params: dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
         if limit is not None:
             params["limit"] = limit
         if query is not None:
@@ -62,9 +65,19 @@ class ContactsResource:
                 params[f"order[{key}]"] = value
         if with_ is not None:
             params["with"] = ",".join(with_)
-        raw = self._client._request("GET", "/api/v4/contacts", params=params)
-        items = raw.get("_embedded", {}).get("contacts", [])
-        return [Contact.from_dict(d) for d in items]
+        if page is not None:
+            params["page"] = page
+            raw = self._client._request("GET", "/api/v4/contacts", params=params)
+            return [
+                Contact.from_dict(d)
+                for d in raw.get("_embedded", {}).get("contacts", [])
+            ]
+        return (
+            Contact.from_dict(d)
+            for d in _iter_all_pages(
+                self._client, "/api/v4/contacts", "contacts", params
+            )
+        )
 
     def get(
         self, contact_id: int, *, with_: builtins.list[str] | None = None

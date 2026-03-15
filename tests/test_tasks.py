@@ -51,12 +51,14 @@ def test_list_tasks_with_filter() -> None:
     api_response = {"_embedded": {"tasks": []}}
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
-        client.tasks.list(filter={"responsible_user_id": 42}, order={"id": "asc"})
+        client.tasks.list(
+            page=1, filter={"responsible_user_id": 42}, order={"id": "asc"}
+        )
 
     mock_req.assert_called_once_with(
         "GET",
         "https://test.amocrm.ru/api/v4/tasks",
-        params={"filter[responsible_user_id]": 42, "order[id]": "asc"},
+        params={"filter[responsible_user_id]": 42, "order[id]": "asc", "page": 1},
     )
 
 
@@ -164,3 +166,51 @@ def test_roundtrip_task() -> None:
     # None-поля не включаются
     assert "duration" not in payload
     assert "group_id" not in payload
+
+
+def test_list_all_autopagination() -> None:
+    client = _client()
+    page1_items = [
+        {"id": i, "text": f"Task {i}", "task_type_id": 1} for i in range(1, 51)
+    ]
+    page2_items = [
+        {"id": i, "text": f"Task {i}", "task_type_id": 1} for i in range(51, 54)
+    ]
+    mock_resp1 = _mock_response({"_embedded": {"tasks": page1_items}})
+    mock_resp2 = _mock_response({"_embedded": {"tasks": page2_items}})
+    with patch.object(
+        client._session, "request", side_effect=[mock_resp1, mock_resp2]
+    ) as mock_req:
+        result = list(client.tasks.list())
+
+    assert mock_req.call_count == 2
+    assert len(result) == 53
+    assert all(isinstance(r, Task) for r in result)
+
+
+def test_list_single_page_explicit_tasks() -> None:
+    client = _client()
+    api_response = {
+        "_embedded": {"tasks": [{"id": 7, "text": "Follow up", "task_type_id": 2}]}
+    }
+    mock_resp = _mock_response(api_response)
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        result = client.tasks.list(page=1, limit=5)
+
+    mock_req.assert_called_once_with(
+        "GET",
+        "https://test.amocrm.ru/api/v4/tasks",
+        params={"limit": 5, "page": 1},
+    )
+    assert isinstance(result, list)
+    assert len(result) == 1
+
+
+def test_list_empty_result_tasks() -> None:
+    client = _client()
+    mock_resp = _mock_response({"_embedded": {"tasks": []}})
+    with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
+        result = list(client.tasks.list())
+
+    mock_req.assert_called_once()
+    assert result == []
