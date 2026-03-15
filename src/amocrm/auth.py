@@ -54,8 +54,8 @@ class InMemoryTokenStorage:
     переданного объекта и сохраняются вызовом ``instance.save()``.
     """
 
-    _access_token: str = None
-    _refresh_token: str = None
+    _access_token: str | None = None
+    _refresh_token: str | None = None
 
     def save(self, access_token: str, refresh_token: str) -> None:
         """Сохранить токены в модель Django и вызвать ``instance.save()``.
@@ -73,7 +73,7 @@ class InMemoryTokenStorage:
         Returns:
             Кортеж ``(access_token, refresh_token)``.
         """
-        return self._access_token, self._refresh_token
+        return self._access_token, self._refresh_token  # type: ignore[return-value]
 
 
 class DjangoTokenStorage:

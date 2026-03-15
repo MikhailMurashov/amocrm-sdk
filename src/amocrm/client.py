@@ -6,6 +6,9 @@ import requests
 
 from .auth import OAuthConfig
 from .exceptions import AmoCRMAPIError, AmoCRMTokenRefreshError
+from .models.companies import Company
+from .models.contacts import Contact
+from .models.leads import Lead
 from .resources.companies import CompaniesResource
 from .resources.contacts import ContactsResource
 from .resources.custom_fields import CustomFieldsResource
@@ -150,3 +153,35 @@ class AmoCRM:
         if self._custom_fields is None:
             self._custom_fields = CustomFieldsResource(self)
         return self._custom_fields
+
+    def configure_dto(
+        self,
+        *,
+        leads: type[Lead] | None = None,
+        contacts: type[Contact] | None = None,
+        companies: type[Company] | None = None,
+    ) -> None:
+        """Задать кастомные DTO-классы для ресурсов.
+
+        Позволяет использовать подклассы стандартных DTO, чтобы методы
+        ресурсов возвращали экземпляры собственного класса.
+
+        Args:
+            leads: Подкласс :class:`~amocrm.models.leads.Lead` для
+                :attr:`leads`. Если не передан — ресурс не изменяется.
+            contacts: Подкласс :class:`~amocrm.models.contacts.Contact` для
+                :attr:`contacts`. Если не передан — ресурс не изменяется.
+            companies: Подкласс :class:`~amocrm.models.companies.Company` для
+                :attr:`companies`. Если не передан — ресурс не изменяется.
+
+        Example::
+
+            client.configure_dto(leads=MyLead, contacts=MyContact)
+            lead = client.leads.get(123)  # → MyLead
+        """
+        if leads is not None:
+            self._leads = LeadsResource(self, dto_class=leads)
+        if contacts is not None:
+            self._contacts = ContactsResource(self, dto_class=contacts)
+        if companies is not None:
+            self._companies = CompaniesResource(self, dto_class=companies)

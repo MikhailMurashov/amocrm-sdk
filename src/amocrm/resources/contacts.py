@@ -14,12 +14,16 @@ if TYPE_CHECKING:
 class ContactsResource:
     """Ресурс для работы с контактами AmoCRM (``/api/v4/contacts``)."""
 
-    def __init__(self, client: AmoCRM) -> None:
+    def __init__(self, client: AmoCRM, dto_class: type[Contact] = Contact) -> None:
         """
         Args:
             client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+            dto_class: Класс DTO для десериализации контактов. По умолчанию
+                :class:`~amocrm.models.contacts.Contact`. Передайте подкласс,
+                чтобы получать экземпляры собственного класса.
         """
         self._client = client
+        self._dto_class = dto_class
 
     def list(
         self,
@@ -69,11 +73,11 @@ class ContactsResource:
             params["page"] = page
             raw = self._client._request("GET", "/api/v4/contacts", params=params)
             return [
-                Contact.from_dict(d)
+                self._dto_class.from_dict(d)
                 for d in raw.get("_embedded", {}).get("contacts", [])
             ]
         return (
-            Contact.from_dict(d)
+            self._dto_class.from_dict(d)
             for d in _iter_all_pages(
                 self._client, "/api/v4/contacts", "contacts", params
             )
@@ -100,7 +104,7 @@ class ContactsResource:
         raw = self._client._request(
             "GET", f"/api/v4/contacts/{contact_id}", params=params
         )
-        return Contact.from_dict(raw)
+        return self._dto_class.from_dict(raw)
 
     def create(self, contacts: builtins.list[Contact]) -> builtins.list[Contact]:
         """Создать один или несколько контактов.
@@ -118,7 +122,7 @@ class ContactsResource:
             "POST", "/api/v4/contacts", json=[c.to_dict() for c in contacts]
         )
         items = raw.get("_embedded", {}).get("contacts", [])
-        return [Contact.from_dict(d) for d in items]
+        return [self._dto_class.from_dict(d) for d in items]
 
     def update(self, contacts: builtins.list[Contact]) -> builtins.list[Contact]:
         """Обновить один или несколько контактов (каждый должен содержать ``id``).
@@ -137,7 +141,7 @@ class ContactsResource:
             "PATCH", "/api/v4/contacts", json=[c.to_dict() for c in contacts]
         )
         items = raw.get("_embedded", {}).get("contacts", [])
-        return [Contact.from_dict(d) for d in items]
+        return [self._dto_class.from_dict(d) for d in items]
 
     def update_one(self, contact_id: int, data: Contact) -> Contact:
         """Обновить один контакт по идентификатору.
@@ -155,4 +159,4 @@ class ContactsResource:
         raw = self._client._request(
             "PATCH", f"/api/v4/contacts/{contact_id}", json=data.to_dict()
         )
-        return Contact.from_dict(raw)
+        return self._dto_class.from_dict(raw)

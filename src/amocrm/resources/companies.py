@@ -14,12 +14,16 @@ if TYPE_CHECKING:
 class CompaniesResource:
     """Ресурс для работы с компаниями AmoCRM (``/api/v4/companies``)."""
 
-    def __init__(self, client: AmoCRM) -> None:
+    def __init__(self, client: AmoCRM, dto_class: type[Company] = Company) -> None:
         """
         Args:
             client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+            dto_class: Класс DTO для десериализации компаний. По умолчанию
+                :class:`~amocrm.models.companies.Company`. Передайте подкласс,
+                чтобы получать экземпляры собственного класса.
         """
         self._client = client
+        self._dto_class = dto_class
 
     def list(
         self,
@@ -69,11 +73,11 @@ class CompaniesResource:
             params["page"] = page
             raw = self._client._request("GET", "/api/v4/companies", params=params)
             return [
-                Company.from_dict(d)
+                self._dto_class.from_dict(d)
                 for d in raw.get("_embedded", {}).get("companies", [])
             ]
         return (
-            Company.from_dict(d)
+            self._dto_class.from_dict(d)
             for d in _iter_all_pages(
                 self._client, "/api/v4/companies", "companies", params
             )
@@ -100,7 +104,7 @@ class CompaniesResource:
         raw = self._client._request(
             "GET", f"/api/v4/companies/{company_id}", params=params
         )
-        return Company.from_dict(raw)
+        return self._dto_class.from_dict(raw)
 
     def create(self, companies: builtins.list[Company]) -> builtins.list[Company]:
         """Создать одну или несколько компаний.
@@ -118,7 +122,7 @@ class CompaniesResource:
             "POST", "/api/v4/companies", json=[c.to_dict() for c in companies]
         )
         items = raw.get("_embedded", {}).get("companies", [])
-        return [Company.from_dict(d) for d in items]
+        return [self._dto_class.from_dict(d) for d in items]
 
     def update(self, companies: builtins.list[Company]) -> builtins.list[Company]:
         """Обновить одну или несколько компаний (каждая должна содержать ``id``).
@@ -137,7 +141,7 @@ class CompaniesResource:
             "PATCH", "/api/v4/companies", json=[c.to_dict() for c in companies]
         )
         items = raw.get("_embedded", {}).get("companies", [])
-        return [Company.from_dict(d) for d in items]
+        return [self._dto_class.from_dict(d) for d in items]
 
     def update_one(self, company_id: int, data: Company) -> Company:
         """Обновить одну компанию по идентификатору.
@@ -155,4 +159,4 @@ class CompaniesResource:
         raw = self._client._request(
             "PATCH", f"/api/v4/companies/{company_id}", json=data.to_dict()
         )
-        return Company.from_dict(raw)
+        return self._dto_class.from_dict(raw)

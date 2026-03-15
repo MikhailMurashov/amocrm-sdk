@@ -210,7 +210,7 @@ def _render_property(
         ]
     else:
         lines += [
-            f"        return self.{method}({field.id})  # type: ignore[return-value]",
+            f"        return self.{method}({field.id})  # type: ignore[no-any-return]",
         ]
     return "\n".join(lines)
 

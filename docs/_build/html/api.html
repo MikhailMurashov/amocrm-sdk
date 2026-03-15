@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Алфавитный указатель" href="genindex.html" />
     <link rel="search" title="Поиск" href="search.html" />
-    <link rel="prev" title="Пагинация" href="pagination.html" /> 
+    <link rel="prev" title="Кодогенератор (Codegen)" href="codegen.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,6 +46,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-amocrm.client">Клиент</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#amocrm.client.AmoCRM"><code class="docutils literal notranslate"><span class="pre">AmoCRM</span></code></a></li>
@@ -54,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-amocrm.auth">Авторизация</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#amocrm.auth.TokenStorage"><code class="docutils literal notranslate"><span class="pre">TokenStorage</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#amocrm.auth.OAuthConfig"><code class="docutils literal notranslate"><span class="pre">OAuthConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amocrm.auth.InMemoryTokenStorage"><code class="docutils literal notranslate"><span class="pre">InMemoryTokenStorage</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#amocrm.auth.DjangoTokenStorage"><code class="docutils literal notranslate"><span class="pre">DjangoTokenStorage</span></code></a></li>
 </ul>
 </li>
@@ -191,6 +193,34 @@
 <dd><p>Ресурс для работы с кастомными полями.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.client.AmoCRM.configure_dto">
+<span class="sig-name descname"><span class="pre">configure_dto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">leads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contacts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">companies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/client.html#AmoCRM.configure_dto"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.client.AmoCRM.configure_dto" title="Ссылка на это определение"></a></dt>
+<dd><p>Задать кастомные DTO-классы для ресурсов.</p>
+<p>Позволяет использовать подклассы стандартных DTO, чтобы методы
+ресурсов возвращали экземпляры собственного класса.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leads</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><em>Lead</em></a><em>] </em><em>| </em><em>None</em>) – Подкласс <a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lead</span></code></a> для
+<a class="reference internal" href="#amocrm.client.AmoCRM.leads" title="amocrm.client.AmoCRM.leads"><code class="xref py py-attr docutils literal notranslate"><span class="pre">leads</span></code></a>. Если не передан — ресурс не изменяется.</p></li>
+<li><p><strong>contacts</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><em>Contact</em></a><em>] </em><em>| </em><em>None</em>) – Подкласс <a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contact</span></code></a> для
+<a class="reference internal" href="#amocrm.client.AmoCRM.contacts" title="amocrm.client.AmoCRM.contacts"><code class="xref py py-attr docutils literal notranslate"><span class="pre">contacts</span></code></a>. Если не передан — ресурс не изменяется.</p></li>
+<li><p><strong>companies</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><em>Company</em></a><em>] </em><em>| </em><em>None</em>) – Подкласс <a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><code class="xref py py-class docutils literal notranslate"><span class="pre">Company</span></code></a> для
+<a class="reference internal" href="#amocrm.client.AmoCRM.companies" title="amocrm.client.AmoCRM.companies"><code class="xref py py-attr docutils literal notranslate"><span class="pre">companies</span></code></a>. Если не передан — ресурс не изменяется.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">configure_dto</span><span class="p">(</span><span class="n">leads</span><span class="o">=</span><span class="n">MyLead</span><span class="p">,</span> <span class="n">contacts</span><span class="o">=</span><span class="n">MyContact</span><span class="p">)</span>
+<span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>  <span class="c1"># → MyLead</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -299,6 +329,46 @@ access_token / refresh_token из произвольного хранилища
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amocrm.auth.InMemoryTokenStorage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.auth.</span></span><span class="sig-name descname"><span class="pre">InMemoryTokenStorage</span></span><a class="reference internal" href="_modules/amocrm/auth.html#InMemoryTokenStorage"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.auth.InMemoryTokenStorage" title="Ссылка на это определение"></a></dt>
+<dd><p>Базовые классы: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Хранилище токенов в памяти приложения.</p>
+<p>Токены сохраняются в полях <code class="docutils literal notranslate"><span class="pre">access_token</span></code> и <code class="docutils literal notranslate"><span class="pre">refresh_token</span></code>
+переданного объекта и сохраняются вызовом <code class="docutils literal notranslate"><span class="pre">instance.save()</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.auth.InMemoryTokenStorage.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/auth.html#InMemoryTokenStorage.save"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.auth.InMemoryTokenStorage.save" title="Ссылка на это определение"></a></dt>
+<dd><p>Сохранить токены в модель Django и вызвать <code class="docutils literal notranslate"><span class="pre">instance.save()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>access_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Токен доступа OAuth 2.0.</p></li>
+<li><p><strong>refresh_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Токен обновления OAuth 2.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.auth.InMemoryTokenStorage.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/auth.html#InMemoryTokenStorage.load"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.auth.InMemoryTokenStorage.load" title="Ссылка на это определение"></a></dt>
+<dd><p>Загрузить токены из полей модели Django.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Кортеж <code class="docutils literal notranslate"><span class="pre">(access_token,</span> <span class="pre">refresh_token)</span></code>.</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -494,20 +564,28 @@ access_token / refresh_token из произвольного хранилища
 <span id="id6"></span><h3>Сделки<a class="headerlink" href="#module-amocrm.resources.leads" title="Ссылка на этот заголовок"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="amocrm.resources.leads.LeadsResource">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.resources.leads.</span></span><span class="sig-name descname"><span class="pre">LeadsResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/leads.html#LeadsResource"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.leads.LeadsResource" title="Ссылка на это определение"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.resources.leads.</span></span><span class="sig-name descname"><span class="pre">LeadsResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'amocrm.models.leads.Lead'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/leads.html#LeadsResource"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.leads.LeadsResource" title="Ссылка на это определение"></a></dt>
 <dd><p>Базовые классы: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Ресурс для работы со сделками AmoCRM (<code class="docutils literal notranslate"><span class="pre">/api/v4/leads</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>)</p></li>
+<li><p><strong>dto_class</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><em>Lead</em></a><em>]</em>)</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="amocrm.resources.leads.LeadsResource.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/leads.html#LeadsResource.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.leads.LeadsResource.__init__" title="Ссылка на это определение"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'amocrm.models.leads.Lead'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/leads.html#LeadsResource.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.leads.LeadsResource.__init__" title="Ссылка на это определение"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Экземпляр клиента <a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Экземпляр клиента <a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p></li>
+<li><p><strong>dto_class</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><em>Lead</em></a><em>]</em>) – Класс DTO для десериализации сделок. По умолчанию
+<a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lead</span></code></a>. Передайте подкласс,
+чтобы получать экземпляры собственного класса.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -681,20 +759,28 @@ access_token / refresh_token из произвольного хранилища
 <span id="id7"></span><h3>Контакты<a class="headerlink" href="#module-amocrm.resources.contacts" title="Ссылка на этот заголовок"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="amocrm.resources.contacts.ContactsResource">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.resources.contacts.</span></span><span class="sig-name descname"><span class="pre">ContactsResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/contacts.html#ContactsResource"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.contacts.ContactsResource" title="Ссылка на это определение"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.resources.contacts.</span></span><span class="sig-name descname"><span class="pre">ContactsResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'amocrm.models.contacts.Contact'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/contacts.html#ContactsResource"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.contacts.ContactsResource" title="Ссылка на это определение"></a></dt>
 <dd><p>Базовые классы: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Ресурс для работы с контактами AmoCRM (<code class="docutils literal notranslate"><span class="pre">/api/v4/contacts</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>)</p></li>
+<li><p><strong>dto_class</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><em>Contact</em></a><em>]</em>)</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="amocrm.resources.contacts.ContactsResource.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/contacts.html#ContactsResource.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.contacts.ContactsResource.__init__" title="Ссылка на это определение"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'amocrm.models.contacts.Contact'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/contacts.html#ContactsResource.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.contacts.ContactsResource.__init__" title="Ссылка на это определение"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Экземпляр клиента <a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Экземпляр клиента <a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p></li>
+<li><p><strong>dto_class</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><em>Contact</em></a><em>]</em>) – Класс DTO для десериализации контактов. По умолчанию
+<a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contact</span></code></a>. Передайте подкласс,
+чтобы получать экземпляры собственного класса.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -830,20 +916,28 @@ access_token / refresh_token из произвольного хранилища
 <span id="id8"></span><h3>Компании<a class="headerlink" href="#module-amocrm.resources.companies" title="Ссылка на этот заголовок"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="amocrm.resources.companies.CompaniesResource">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.resources.companies.</span></span><span class="sig-name descname"><span class="pre">CompaniesResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/companies.html#CompaniesResource"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.companies.CompaniesResource" title="Ссылка на это определение"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.resources.companies.</span></span><span class="sig-name descname"><span class="pre">CompaniesResource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'amocrm.models.companies.Company'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/companies.html#CompaniesResource"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.companies.CompaniesResource" title="Ссылка на это определение"></a></dt>
 <dd><p>Базовые классы: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Ресурс для работы с компаниями AmoCRM (<code class="docutils literal notranslate"><span class="pre">/api/v4/companies</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>)</p></li>
+<li><p><strong>dto_class</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><em>Company</em></a><em>]</em>)</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="amocrm.resources.companies.CompaniesResource.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/companies.html#CompaniesResource.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.companies.CompaniesResource.__init__" title="Ссылка на это определение"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dto_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'amocrm.models.companies.Company'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/companies.html#CompaniesResource.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.companies.CompaniesResource.__init__" title="Ссылка на это определение"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Экземпляр клиента <a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Экземпляр клиента <a class="reference internal" href="#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p></li>
+<li><p><strong>dto_class</strong> (<a class="reference internal" href="#amocrm.models.pipelines.PipelineStatus.type" title="amocrm.models.pipelines.PipelineStatus.type"><em>type</em></a><em>[</em><a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><em>Company</em></a><em>]</em>) – Класс DTO для десериализации компаний. По умолчанию
+<a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><code class="xref py py-class docutils literal notranslate"><span class="pre">Company</span></code></a>. Передайте подкласс,
+чтобы получать экземпляры собственного класса.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -2681,7 +2775,7 @@ access_token / refresh_token из произвольного хранилища
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
-        <a href="pagination.html" class="btn btn-neutral float-left" title="Пагинация" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
+        <a href="codegen.html" class="btn btn-neutral float-left" title="Кодогенератор (Codegen)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
     </div>
 
   <hr/>

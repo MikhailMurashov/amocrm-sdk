@@ -139,4 +139,5 @@ Python SDK для работы с REST API AmoCRM.
 
    leads
    pagination
+   codegen
    api

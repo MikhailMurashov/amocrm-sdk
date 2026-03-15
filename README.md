@@ -19,6 +19,7 @@ Python SDK for the [AmoCRM REST API](https://www.amocrm.ru/developers/content/cr
 - Tasks (задачи): list, get, create, update, update_one
 - Custom fields support
 - Авто-пагинация — `list()` без `page` автоматически обходит все страницы и возвращает `Iterator[T]`
+- Кастомные DTO — `configure_dto()` позволяет подменить базовые классы своими подклассами
 
 ## Installation
 
@@ -129,6 +130,24 @@ from amocrm.codegen import generate_custom_fields_dto
 oauth = OAuthConfig(client_id="...", client_secret="...", redirect_uri="...",
                     storage=DjangoTokenStorage(django_obj))
 generate_custom_fields_dto("mycompany", oauth, output_file="my_models.py")
+```
+
+### Подключение кастомных DTO
+
+После кодогенерации подключите свои классы к клиенту через `configure_dto()` — все методы
+`get`, `list`, `create`, `update` начнут возвращать экземпляры вашего подкласса:
+
+```python
+from my_models import MyLead, MyContact, MyCompany
+
+client = get_client(subdomain="mycompany", oauth=oauth)
+client.configure_dto(leads=MyLead, contacts=MyContact, companies=MyCompany)
+
+lead = client.leads.get(123)   # → MyLead
+lead.inn                        # → str | None  (property из MyLead)
+
+for lead in client.leads.list():
+    print(lead.istochnik_trafika)  # → str | None
 ```
 
 Подробнее — в [документации](https://amocrm-sdk.readthedocs.io/en/latest/codegen.html).

@@ -44,6 +44,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
 
@@ -82,8 +83,6 @@
 
 <span class="n">_client</span><span class="p">:</span> <span class="n">AmoCRM</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">_TOKEN_URL</span> <span class="o">=</span> <span class="s2">&quot;https://www.amocrm.ru/oauth2/access_token&quot;</span>
-
 
 <div class="viewcode-block" id="exchange_code">
 <a class="viewcode-back" href="../../api.html#amocrm.manager.exchange_code">[документация]</a>
@@ -103,7 +102,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_client</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">_TOKEN_URL</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;https://</span><span class="si">{</span><span class="n">subdomain</span><span class="si">}</span><span class="s2">.amocrm.ru/oauth2/access_token&quot;</span><span class="p">,</span>
         <span class="n">json</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
             <span class="s2">&quot;client_secret&quot;</span><span class="p">:</span> <span class="n">oauth</span><span class="o">.</span><span class="n">client_secret</span><span class="p">,</span>

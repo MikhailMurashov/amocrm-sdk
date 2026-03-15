@@ -42,6 +42,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
 
@@ -128,6 +131,44 @@
     <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">redirect_uri</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">storage</span><span class="p">:</span> <span class="n">TokenStorage</span></div>
+
+
+
+<div class="viewcode-block" id="InMemoryTokenStorage">
+<a class="viewcode-back" href="../../api.html#amocrm.auth.InMemoryTokenStorage">[документация]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InMemoryTokenStorage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Хранилище токенов в памяти приложения.</span>
+
+<span class="sd">    Токены сохраняются в полях ``access_token`` и ``refresh_token``</span>
+<span class="sd">    переданного объекта и сохраняются вызовом ``instance.save()``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_refresh_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="InMemoryTokenStorage.save">
+<a class="viewcode-back" href="../../api.html#amocrm.auth.InMemoryTokenStorage.save">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">refresh_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Сохранить токены в модель Django и вызвать ``instance.save()``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            access_token: Токен доступа OAuth 2.0.</span>
+<span class="sd">            refresh_token: Токен обновления OAuth 2.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_access_token</span> <span class="o">=</span> <span class="n">access_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_token</span> <span class="o">=</span> <span class="n">refresh_token</span></div>
+
+
+<div class="viewcode-block" id="InMemoryTokenStorage.load">
+<a class="viewcode-back" href="../../api.html#amocrm.auth.InMemoryTokenStorage.load">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Загрузить токены из полей модели Django.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Кортеж ``(access_token, refresh_token)``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_access_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_token</span>  <span class="c1"># type: ignore[return-value]</span></div>
+</div>
 
 
 

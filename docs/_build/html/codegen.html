@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Кодогенератор (Codegen) &mdash; документация amocrm-sdk 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6ff560e8"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=cd1d70c9"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Пагинация" href="pagination.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            amocrm-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Кодогенератор (Codegen)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Обзор</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Быстрый старт</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Пример сгенерированного файла</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-dto">Подключение к клиенту через <code class="docutils literal notranslate"><span class="pre">configure_dto</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">Транслитерация имён</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">Конфигурация</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">Использование без записи в файл</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API-справочник</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#amocrm.codegen.generate_custom_fields_dto"><code class="docutils literal notranslate"><span class="pre">generate_custom_fields_dto()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amocrm.codegen.generate_and_print"><code class="docutils literal notranslate"><span class="pre">generate_and_print()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amocrm.codegen.fetch_custom_fields"><code class="docutils literal notranslate"><span class="pre">fetch_custom_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amocrm.codegen.generate_custom_models"><code class="docutils literal notranslate"><span class="pre">generate_custom_models()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">amocrm-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Кодогенератор (Codegen)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/codegen.rst.txt" rel="nofollow"> Просмотреть исходный код страницы</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="codegen">
+<h1>Кодогенератор (Codegen)<a class="headerlink" href="#codegen" title="Ссылка на этот заголовок"></a></h1>
+<section id="id1">
+<h2>Обзор<a class="headerlink" href="#id1" title="Ссылка на этот заголовок"></a></h2>
+<p>Кастомные поля AmoCRM имеют числовые ID и произвольные названия, часто на русском языке.
+Кодогенератор автоматически создаёт типизированные подклассы DTO (<code class="docutils literal notranslate"><span class="pre">MyLead</span></code>, <code class="docutils literal notranslate"><span class="pre">MyContact</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MyCompany</span></code>) с named-свойствами для каждого кастомного поля, что позволяет обращаться к ним
+как к обычным атрибутам Python вместо <code class="docutils literal notranslate"><span class="pre">get_cf_value(123)</span></code>.</p>
+<p>Имена свойств автоматически транслитерируются из кириллицы в латиницу и приводятся к
+snake_case: <code class="docutils literal notranslate"><span class="pre">Источник</span> <span class="pre">трафика</span></code> → <code class="docutils literal notranslate"><span class="pre">istochnik_trafika</span></code>.</p>
+</section>
+<section id="id2">
+<h2>Быстрый старт<a class="headerlink" href="#id2" title="Ссылка на этот заголовок"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuthConfig</span><span class="p">,</span> <span class="n">DjangoTokenStorage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">amocrm.codegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_custom_fields_dto</span>
+
+<span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuthConfig</span><span class="p">(</span>
+    <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">client_secret</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">redirect_uri</span><span class="o">=</span><span class="s2">&quot;https://yourapp.com/oauth/callback&quot;</span><span class="p">,</span>
+    <span class="n">storage</span><span class="o">=</span><span class="n">DjangoTokenStorage</span><span class="p">(</span><span class="n">my_settings_obj</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">generate_custom_fields_dto</span><span class="p">(</span><span class="s2">&quot;mycompany&quot;</span><span class="p">,</span> <span class="n">oauth</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;my_models.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Функция подключится к AmoCRM, загрузит определения кастомных полей и запишет
+готовый Python-код в файл <code class="docutils literal notranslate"><span class="pre">my_models.py</span></code>.</p>
+</section>
+<section id="id3">
+<h2>Пример сгенерированного файла<a class="headerlink" href="#id3" title="Ссылка на этот заголовок"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generated by amocrm-sdk codegen. DO NOT EDIT.</span>
+<span class="c1"># Regenerate: from amocrm.codegen import generate_custom_fields_dto</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lead</span><span class="p">,</span> <span class="n">Contact</span><span class="p">,</span> <span class="n">Company</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyLead</span><span class="p">(</span><span class="n">Lead</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Типизированные кастомные поля для сделок.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">istochnik_trafika</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Источник трафика (text, id=101)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cf_value</span><span class="p">(</span><span class="mi">101</span><span class="p">)</span>  <span class="c1"># type: ignore[no-any-return]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">byudzhet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Бюджет (numeric, id=102)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cf_value</span><span class="p">(</span><span class="mi">102</span><span class="p">)</span>  <span class="c1"># type: ignore[no-any-return]</span>
+
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-dto">
+<h2>Подключение к клиенту через <code class="docutils literal notranslate"><span class="pre">configure_dto</span></code><a class="headerlink" href="#configure-dto" title="Ссылка на этот заголовок"></a></h2>
+<p>После генерации подключите классы к клиенту. Все методы <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>,
+<code class="docutils literal notranslate"><span class="pre">create</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code> начнут возвращать экземпляры вашего подкласса:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyLead</span><span class="p">,</span> <span class="n">MyContact</span><span class="p">,</span> <span class="n">MyCompany</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">get_client</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="s2">&quot;mycompany&quot;</span><span class="p">,</span> <span class="n">oauth</span><span class="o">=</span><span class="n">oauth</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">configure_dto</span><span class="p">(</span><span class="n">leads</span><span class="o">=</span><span class="n">MyLead</span><span class="p">,</span> <span class="n">contacts</span><span class="o">=</span><span class="n">MyContact</span><span class="p">,</span> <span class="n">companies</span><span class="o">=</span><span class="n">MyCompany</span><span class="p">)</span>
+
+<span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>          <span class="c1"># → MyLead</span>
+<span class="n">lead</span><span class="o">.</span><span class="n">istochnik_trafika</span>                <span class="c1"># → str | None</span>
+
+<span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>      <span class="c1"># → Iterator[MyLead]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">byudzhet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Параметры <code class="docutils literal notranslate"><span class="pre">configure_dto</span></code> — все необязательны, можно подменить только часть ресурсов:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">configure_dto</span><span class="p">(</span><span class="n">leads</span><span class="o">=</span><span class="n">MyLead</span><span class="p">)</span>    <span class="c1"># contacts и companies остаются стандартными</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Примечание</p>
+<p>Вложенные объекты внутри <code class="docutils literal notranslate"><span class="pre">Lead</span></code> (<code class="docutils literal notranslate"><span class="pre">lead.contacts</span></code>, <code class="docutils literal notranslate"><span class="pre">lead.company</span></code>) остаются
+стандартными классами <code class="docutils literal notranslate"><span class="pre">Contact</span></code> / <code class="docutils literal notranslate"><span class="pre">Company</span></code>. Чтобы и они были вашими подклассами,
+переопределите <code class="docutils literal notranslate"><span class="pre">from_dict</span></code> в <code class="docutils literal notranslate"><span class="pre">MyLead</span></code>.</p>
+</div>
+</section>
+<section id="id4">
+<h2>Транслитерация имён<a class="headerlink" href="#id4" title="Ссылка на этот заголовок"></a></h2>
+<p>Названия кастомных полей на кириллице автоматически транслитерируются перед
+преобразованием в snake_case. Это позволяет использовать имена свойств как
+стандартные Python-атрибуты.</p>
+<p>Примеры транслитерации:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Оригинал</p></th>
+<th class="head"><p>Результат</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Источник</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">istochnik</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Источник</span> <span class="pre">трафика</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">istochnik_trafika</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">пользовательское_соглашение</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">polzovatelskoe_soglashenie</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">предыдущая_сделка_1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">predydushchaya_sdelka_1</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Таблица транслитерации (кириллица → латиница):</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Символ</p></th>
+<th class="head"><p>Транслит</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>а, б, в, г, д</p></td>
+<td><p>a, b, v, g, d</p></td>
+</tr>
+<tr class="row-odd"><td><p>е, ё, ж, з, и</p></td>
+<td><p>e, yo, zh, z, i</p></td>
+</tr>
+<tr class="row-even"><td><p>й, к, л, м, н</p></td>
+<td><p>j, k, l, m, n</p></td>
+</tr>
+<tr class="row-odd"><td><p>о, п, р, с, т</p></td>
+<td><p>o, p, r, s, t</p></td>
+</tr>
+<tr class="row-even"><td><p>у, ф, х, ц, ч</p></td>
+<td><p>u, f, kh, ts, ch</p></td>
+</tr>
+<tr class="row-odd"><td><p>ш, щ, ъ, ы, ь</p></td>
+<td><p>sh, shch, (пусто), y, (пусто)</p></td>
+</tr>
+<tr class="row-even"><td><p>э, ю, я</p></td>
+<td><p>e, yu, ya</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id5">
+<h2>Конфигурация<a class="headerlink" href="#id5" title="Ссылка на этот заголовок"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">generate_custom_fields_dto</span></code> принимает следующие параметры:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Параметр</p></th>
+<th class="head"><p>По умолчанию</p></th>
+<th class="head"><p>Описание</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">subdomain</span></code></p></td>
+<td><p>—</p></td>
+<td><p>Поддомен аккаунта AmoCRM (например, <code class="docutils literal notranslate"><span class="pre">&quot;mycompany&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">oauth</span></code></p></td>
+<td><p>—</p></td>
+<td><p>Объект <code class="xref py py-class docutils literal notranslate"><span class="pre">OAuthConfig</span></code> с реквизитами и хранилищем токенов</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">entities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[&quot;leads&quot;,</span> <span class="pre">&quot;contacts&quot;,</span> <span class="pre">&quot;companies&quot;]</span></code></p></td>
+<td><p>Список сущностей для генерации</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">base_module</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;amocrm&quot;</span></code></p></td>
+<td><p>Модуль, из которого импортируются базовые классы</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">output_file</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Путь к выходному файлу; если <code class="docutils literal notranslate"><span class="pre">None</span></code> — вывод в stdout</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h2>Использование без записи в файл<a class="headerlink" href="#id6" title="Ссылка на этот заголовок"></a></h2>
+<p>Если <code class="docutils literal notranslate"><span class="pre">output_file</span></code> не передан, код выводится в stdout:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">generate_custom_fields_dto</span><span class="p">(</span><span class="s2">&quot;mycompany&quot;</span><span class="p">,</span> <span class="n">oauth</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Это удобно для просмотра результата перед сохранением или для использования
+вывода в пайплайне.</p>
+<p>Генерация только для части сущностей:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">generate_custom_fields_dto</span><span class="p">(</span>
+    <span class="s2">&quot;mycompany&quot;</span><span class="p">,</span> <span class="n">oauth</span><span class="p">,</span>
+    <span class="n">entities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;leads&quot;</span><span class="p">],</span>
+    <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;lead_models.py&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="api">
+<h2>API-справочник<a class="headerlink" href="#api" title="Ссылка на этот заголовок"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="amocrm.codegen.generate_custom_fields_dto">
+<span class="sig-prename descclassname"><span class="pre">amocrm.codegen.</span></span><span class="sig-name descname"><span class="pre">generate_custom_fields_dto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subdomain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'amocrm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/codegen.html#generate_custom_fields_dto"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.codegen.generate_custom_fields_dto" title="Ссылка на это определение"></a></dt>
+<dd><p>Подключиться к AmoCRM, получить кастомные поля и записать Python-код.</p>
+<p>Создаёт клиент, загружает определения кастомных полей и генерирует
+типизированные подклассы DTO для использования в проекте.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subdomain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Поддомен аккаунта AmoCRM (например, <code class="docutils literal notranslate"><span class="pre">&quot;mycompany&quot;</span></code>).</p></li>
+<li><p><strong>oauth</strong> (<a class="reference internal" href="api.html#amocrm.auth.OAuthConfig" title="amocrm.auth.OAuthConfig"><em>OAuthConfig</em></a>) – Конфигурация OAuth с реквизитами и хранилищем токенов.</p></li>
+<li><p><strong>entities</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>) – Список сущностей для обработки. По умолчанию
+<code class="docutils literal notranslate"><span class="pre">[&quot;leads&quot;,</span> <span class="pre">&quot;contacts&quot;,</span> <span class="pre">&quot;companies&quot;]</span></code>.</p></li>
+<li><p><strong>base_module</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Имя модуля для импорта базовых классов.
+По умолчанию <code class="docutils literal notranslate"><span class="pre">&quot;amocrm&quot;</span></code>.</p></li>
+<li><p><strong>output_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Путь к файлу для записи. Если <code class="docutils literal notranslate"><span class="pre">None</span></code> — вывод в stdout.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuthConfig</span><span class="p">,</span> <span class="n">DjangoTokenStorage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">amocrm.codegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_custom_fields_dto</span>
+
+<span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuthConfig</span><span class="p">(</span>
+    <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">client_secret</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">redirect_uri</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">storage</span><span class="o">=</span><span class="n">DjangoTokenStorage</span><span class="p">(</span><span class="n">my_settings_obj</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">generate_custom_fields_dto</span><span class="p">(</span><span class="s2">&quot;mycompany&quot;</span><span class="p">,</span> <span class="n">oauth</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;my_models.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="amocrm.codegen.generate_and_print">
+<span class="sig-prename descclassname"><span class="pre">amocrm.codegen.</span></span><span class="sig-name descname"><span class="pre">generate_and_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'amocrm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/codegen.html#generate_and_print"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.codegen.generate_and_print" title="Ссылка на это определение"></a></dt>
+<dd><p>Получить кастомные поля и вывести/записать сгенерированный Python-код.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="api.html#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Инициализированный клиент <a class="reference internal" href="api.html#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p></li>
+<li><p><strong>entities</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>) – Список типов сущностей. По умолчанию
+<code class="docutils literal notranslate"><span class="pre">[&quot;leads&quot;,</span> <span class="pre">&quot;contacts&quot;,</span> <span class="pre">&quot;companies&quot;]</span></code>.</p></li>
+<li><p><strong>base_module</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Имя модуля для импорта базовых классов.</p></li>
+<li><p><strong>output_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Путь к файлу для записи. Если <code class="docutils literal notranslate"><span class="pre">None</span></code> — вывод в stdout.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="amocrm.codegen.fetch_custom_fields">
+<span class="sig-prename descclassname"><span class="pre">amocrm.codegen.</span></span><span class="sig-name descname"><span class="pre">fetch_custom_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/codegen.html#fetch_custom_fields"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.codegen.fetch_custom_fields" title="Ссылка на это определение"></a></dt>
+<dd><p>Загрузить определения кастомных полей из AmoCRM для заданных сущностей.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<a class="reference internal" href="api.html#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><em>AmoCRM</em></a>) – Инициализированный клиент <a class="reference internal" href="api.html#amocrm.client.AmoCRM" title="amocrm.client.AmoCRM"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmoCRM</span></code></a>.</p></li>
+<li><p><strong>entities</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>) – Список типов сущностей. По умолчанию
+<code class="docutils literal notranslate"><span class="pre">[&quot;leads&quot;,</span> <span class="pre">&quot;contacts&quot;,</span> <span class="pre">&quot;companies&quot;]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Словарь <code class="docutils literal notranslate"><span class="pre">{entity:</span> <span class="pre">[CustomFieldDefinition,</span> <span class="pre">...]}</span></code>.</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<em>CustomFieldDefinition</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="amocrm.codegen.generate_custom_models">
+<span class="sig-prename descclassname"><span class="pre">amocrm.codegen.</span></span><span class="sig-name descname"><span class="pre">generate_custom_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields_by_entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'amocrm'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/codegen.html#generate_custom_models"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.codegen.generate_custom_models" title="Ссылка на это определение"></a></dt>
+<dd><p>Сгенерировать Python-код типизированных подклассов DTO.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fields_by_entity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>CustomFieldDefinition</em><em>]</em><em>]</em>) – Словарь <code class="docutils literal notranslate"><span class="pre">{entity:</span> <span class="pre">[CustomFieldDefinition,</span> <span class="pre">...]}</span></code>,
+полученный из <a class="reference internal" href="#amocrm.codegen.fetch_custom_fields" title="amocrm.codegen.fetch_custom_fields"><code class="xref py py-func docutils literal notranslate"><span class="pre">fetch_custom_fields()</span></code></a>.</p></li>
+<li><p><strong>base_module</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Имя модуля, из которого импортируются базовые классы.
+По умолчанию <code class="docutils literal notranslate"><span class="pre">&quot;amocrm&quot;</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Строка с Python-кодом, готовая к записи в файл.</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
+        <a href="pagination.html" class="btn btn-neutral float-left" title="Пагинация" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Следующая <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права . </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -17,12 +17,16 @@ if TYPE_CHECKING:
 class LeadsResource:
     """Ресурс для работы со сделками AmoCRM (``/api/v4/leads``)."""
 
-    def __init__(self, client: AmoCRM) -> None:
+    def __init__(self, client: AmoCRM, dto_class: type[Lead] = Lead) -> None:
         """
         Args:
             client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+            dto_class: Класс DTO для десериализации сделок. По умолчанию
+                :class:`~amocrm.models.leads.Lead`. Передайте подкласс,
+                чтобы получать экземпляры собственного класса.
         """
         self._client = client
+        self._dto_class = dto_class
 
     def list(
         self,
@@ -73,10 +77,11 @@ class LeadsResource:
             params["page"] = page
             raw = self._client._request("GET", "/api/v4/leads", params=params)
             return [
-                Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])
+                self._dto_class.from_dict(d)
+                for d in raw.get("_embedded", {}).get("leads", [])
             ]
         return (
-            Lead.from_dict(d)
+            self._dto_class.from_dict(d)
             for d in _iter_all_pages(self._client, "/api/v4/leads", "leads", params)
         )
 
@@ -110,7 +115,7 @@ class LeadsResource:
         if with_:
             params["with"] = ",".join(with_)
         raw = self._client._request("GET", f"/api/v4/leads/{lead_id}", params=params)
-        return Lead.from_dict(raw)
+        return self._dto_class.from_dict(raw)
 
     def create(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
         """Создать одну или несколько сделок.
@@ -132,7 +137,10 @@ class LeadsResource:
         raw = self._client._request(
             "POST", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
         )
-        return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
+        return [
+            self._dto_class.from_dict(d)
+            for d in raw.get("_embedded", {}).get("leads", [])
+        ]
 
     def update(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
         """Обновить одну или несколько сделок (каждая должна содержать ``id``).
@@ -155,7 +163,10 @@ class LeadsResource:
         raw = self._client._request(
             "PATCH", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
         )
-        return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
+        return [
+            self._dto_class.from_dict(d)
+            for d in raw.get("_embedded", {}).get("leads", [])
+        ]
 
     def update_one(self, lead_id: int, data: Lead) -> Lead:
         """Обновить одну сделку по идентификатору.
@@ -173,7 +184,7 @@ class LeadsResource:
         raw = self._client._request(
             "PATCH", f"/api/v4/leads/{lead_id}", json=data.to_dict()
         )
-        return Lead.from_dict(raw)
+        return self._dto_class.from_dict(raw)
 
     def create_complex(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
         """Сложное создание сделок со связанными сущностями.
@@ -203,4 +214,7 @@ class LeadsResource:
         raw = self._client._request(
             "POST", "/api/v4/leads/complex", json=[lead.to_dict() for lead in leads]
         )
-        return [Lead.from_dict(d) for d in raw.get("_embedded", {}).get("leads", [])]
+        return [
+            self._dto_class.from_dict(d)
+            for d in raw.get("_embedded", {}).get("leads", [])
+        ]

@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>amocrm.codegen &mdash; документация amocrm-sdk 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=6ff560e8"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/translations.js?v=cd1d70c9"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="../../genindex.html" />
+    <link rel="search" title="Поиск" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            amocrm-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../codegen.html">Кодогенератор (Codegen)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">amocrm-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Код модуля</a></li>
+      <li class="breadcrumb-item active">amocrm.codegen</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Исходный код amocrm.codegen</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Кодогенератор типизированных DTO для кастомных полей AmoCRM.</span>
+
+<span class="sd">Пример использования:</span>
+
+<span class="sd">    from amocrm import OAuthConfig, DjangoTokenStorage</span>
+<span class="sd">    from amocrm.codegen import generate_custom_fields_dto</span>
+
+<span class="sd">    oauth = OAuthConfig(</span>
+<span class="sd">        client_id=&quot;...&quot;,</span>
+<span class="sd">        client_secret=&quot;...&quot;,</span>
+<span class="sd">        redirect_uri=&quot;...&quot;,</span>
+<span class="sd">        storage=DjangoTokenStorage(my_settings_obj),</span>
+<span class="sd">    )</span>
+<span class="sd">    generate_custom_fields_dto(&quot;mycompany&quot;, oauth, output_file=&quot;my_models.py&quot;)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">keyword</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuthConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.custom_fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldDefinition</span>
+
+<span class="n">_DEFAULT_ENTITIES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;leads&quot;</span><span class="p">,</span> <span class="s2">&quot;contacts&quot;</span><span class="p">,</span> <span class="s2">&quot;companies&quot;</span><span class="p">]</span>
+
+<span class="n">_ENTITY_CLASS_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;leads&quot;</span><span class="p">:</span> <span class="s2">&quot;Lead&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contacts&quot;</span><span class="p">:</span> <span class="s2">&quot;Contact&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;companies&quot;</span><span class="p">:</span> <span class="s2">&quot;Company&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_ENTITY_SUBCLASS_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;leads&quot;</span><span class="p">:</span> <span class="s2">&quot;MyLead&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contacts&quot;</span><span class="p">:</span> <span class="s2">&quot;MyContact&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;companies&quot;</span><span class="p">:</span> <span class="s2">&quot;MyCompany&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># (return_type, method, bool_special)</span>
+<span class="n">_TYPE_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;str | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;textarea&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;str | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;str | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;phone&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;str | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;str | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;numeric&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;float | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;monetary&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;float | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;integer&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;int | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;select&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;str | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;radiobutton&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;str | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;multiselect&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;list[str]&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_values&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;checkbox&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;bool | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;bool | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;int | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;date_time&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;int | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;birthday&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;int | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;smart_address&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;dict[str, Any] | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_raw&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="c1"># Поля датаклассов Lead/Contact/Company — конфликты по имени нужно разрешать</span>
+<span class="n">_ENTITY_FIELDS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;leads&quot;</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;price&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;status_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pipeline_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;responsible_user_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;group_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_by&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_by&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;closed_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;closest_task_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_deleted&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;loss_reason_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;score&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;account_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;labor_cost&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;custom_fields_values&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;contacts&quot;</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;first_name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;last_name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;responsible_user_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;group_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_by&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_by&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;closest_task_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_deleted&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;account_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;custom_fields_values&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;companies&quot;</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;responsible_user_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;group_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_by&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_by&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;closest_task_at&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_deleted&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;account_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;custom_fields_values&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+
+<span class="n">_TRANSLIT_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;а&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;б&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;в&quot;</span><span class="p">:</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;г&quot;</span><span class="p">:</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;д&quot;</span><span class="p">:</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;е&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ё&quot;</span><span class="p">:</span> <span class="s2">&quot;yo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ж&quot;</span><span class="p">:</span> <span class="s2">&quot;zh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;з&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;и&quot;</span><span class="p">:</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;й&quot;</span><span class="p">:</span> <span class="s2">&quot;j&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;к&quot;</span><span class="p">:</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;л&quot;</span><span class="p">:</span> <span class="s2">&quot;l&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;м&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;н&quot;</span><span class="p">:</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;о&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;п&quot;</span><span class="p">:</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;р&quot;</span><span class="p">:</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;с&quot;</span><span class="p">:</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;т&quot;</span><span class="p">:</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;у&quot;</span><span class="p">:</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ф&quot;</span><span class="p">:</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;х&quot;</span><span class="p">:</span> <span class="s2">&quot;kh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ц&quot;</span><span class="p">:</span> <span class="s2">&quot;ts&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ч&quot;</span><span class="p">:</span> <span class="s2">&quot;ch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ш&quot;</span><span class="p">:</span> <span class="s2">&quot;sh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;щ&quot;</span><span class="p">:</span> <span class="s2">&quot;shch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ъ&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ы&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ь&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;э&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ю&quot;</span><span class="p">:</span> <span class="s2">&quot;yu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;я&quot;</span><span class="p">:</span> <span class="s2">&quot;ya&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_transliterate</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_TRANSLIT_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_snake_case</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Преобразовать название поля в snake_case.&quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">_transliterate</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\s\-/</span><span class="se">\\</span><span class="s2">]+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\w]&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span> <span class="ow">or</span> <span class="s2">&quot;field&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_safe_prop_name</span><span class="p">(</span><span class="n">raw_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">used</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Вернуть безопасное имя property, избегая конфликтов.&quot;&quot;&quot;</span>
+    <span class="n">snake</span> <span class="o">=</span> <span class="n">_to_snake_case</span><span class="p">(</span><span class="n">raw_name</span><span class="p">)</span>
+    <span class="n">reserved</span> <span class="o">=</span> <span class="n">_ENTITY_FIELDS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">())</span>
+    <span class="n">candidate</span> <span class="o">=</span> <span class="n">snake</span>
+    <span class="k">if</span> <span class="n">keyword</span><span class="o">.</span><span class="n">iskeyword</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span> <span class="ow">or</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">reserved</span> <span class="ow">or</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">used</span><span class="p">:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">candidate</span> <span class="o">+</span> <span class="s2">&quot;_cf&quot;</span>
+    <span class="c1"># На случай если и с суффиксом конфликт</span>
+    <span class="k">while</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">used</span><span class="p">:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">candidate</span> <span class="o">+</span> <span class="s2">&quot;_cf&quot;</span>
+    <span class="n">used</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">candidate</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_render_property</span><span class="p">(</span>
+    <span class="n">prop_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">field</span><span class="p">:</span> <span class="n">CustomFieldDefinition</span><span class="p">,</span>
+    <span class="n">return_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bool_special</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Сгенерировать код property для одного поля.&quot;&quot;&quot;</span>
+    <span class="n">docstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;&quot;&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">, id=</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">)&quot;&quot;&quot;&#39;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;    @property&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;    def </span><span class="si">{</span><span class="n">prop_name</span><span class="si">}</span><span class="s2">(self) -&gt; </span><span class="si">{</span><span class="n">return_type</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;        </span><span class="si">{</span><span class="n">docstring</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">bool_special</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;        v = self.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;        return bool(v) if v is not None else None&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;        return self.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)  # type: ignore[no-any-return]&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="fetch_custom_fields">
+<a class="viewcode-back" href="../../codegen.html#amocrm.codegen.fetch_custom_fields">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_custom_fields</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">AmoCRM</span><span class="p">,</span>
+    <span class="n">entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">CustomFieldDefinition</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Загрузить определения кастомных полей из AmoCRM для заданных сущностей.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client: Инициализированный клиент :class:`~amocrm.client.AmoCRM`.</span>
+<span class="sd">        entities: Список типов сущностей. По умолчанию</span>
+<span class="sd">            ``[&quot;leads&quot;, &quot;contacts&quot;, &quot;companies&quot;]``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Словарь ``{entity: [CustomFieldDefinition, ...]}``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">entities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="n">_DEFAULT_ENTITIES</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">entity</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">custom_fields</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="generate_custom_models">
+<a class="viewcode-back" href="../../codegen.html#amocrm.codegen.generate_custom_models">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_custom_models</span><span class="p">(</span>
+    <span class="n">fields_by_entity</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">CustomFieldDefinition</span><span class="p">]],</span>
+    <span class="n">base_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;amocrm&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Сгенерировать Python-код типизированных подклассов DTO.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fields_by_entity: Словарь ``{entity: [CustomFieldDefinition, ...]}``,</span>
+<span class="sd">            полученный из :func:`fetch_custom_fields`.</span>
+<span class="sd">        base_module: Имя модуля, из которого импортируются базовые классы.</span>
+<span class="sd">            По умолчанию ``&quot;amocrm&quot;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Строка с Python-кодом, готовая к записи в файл.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Определяем, какие базовые классы нужны</span>
+    <span class="n">needed_bases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">fields_by_entity</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">_ENTITY_CLASS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="ow">and</span> <span class="n">base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">needed_bases</span><span class="p">:</span>
+            <span class="n">needed_bases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+
+    <span class="n">needs_any</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">_TYPE_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Any&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;dict[str, Any] | None&quot;</span><span class="p">,</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">fields</span> <span class="ow">in</span> <span class="n">fields_by_entity</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span>
+    <span class="p">)</span>
+
+    <span class="n">header_lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;# Generated by amocrm-sdk codegen. DO NOT EDIT.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;# Regenerate: from amocrm.codegen import generate_custom_fields_dto&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;from __future__ import annotations&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">needs_any</span><span class="p">:</span>
+        <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;from typing import Any&quot;</span><span class="p">)</span>
+        <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;from </span><span class="si">{</span><span class="n">base_module</span><span class="si">}</span><span class="s2"> import </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">needed_bases</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">class_blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">fields</span> <span class="ow">in</span> <span class="n">fields_by_entity</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">base_class</span> <span class="o">=</span> <span class="n">_ENTITY_CLASS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">base_class</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">subclass_name</span> <span class="o">=</span> <span class="n">_ENTITY_SUBCLASS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;My</span><span class="si">{</span><span class="n">base_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">docstring_entity</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;leads&quot;</span><span class="p">:</span> <span class="s2">&quot;сделок&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;contacts&quot;</span><span class="p">:</span> <span class="s2">&quot;контактов&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;companies&quot;</span><span class="p">:</span> <span class="s2">&quot;компаний&quot;</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">entity</span><span class="p">)</span>
+
+        <span class="n">class_lines</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;class </span><span class="si">{</span><span class="n">subclass_name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">base_class</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;    &quot;&quot;&quot;Типизированные кастомные поля для </span><span class="si">{</span><span class="n">docstring_entity</span><span class="si">}</span><span class="s1">.&quot;&quot;&quot;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">used_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">field_def</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">return_type</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">bool_special</span> <span class="o">=</span> <span class="n">_TYPE_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">field_def</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Any&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">prop_name</span> <span class="o">=</span> <span class="n">_safe_prop_name</span><span class="p">(</span><span class="n">field_def</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">used_names</span><span class="p">)</span>
+            <span class="n">prop_code</span> <span class="o">=</span> <span class="n">_render_property</span><span class="p">(</span>
+                <span class="n">prop_name</span><span class="p">,</span> <span class="n">field_def</span><span class="p">,</span> <span class="n">return_type</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">bool_special</span>
+            <span class="p">)</span>
+            <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop_code</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">properties</span><span class="p">:</span>
+            <span class="n">class_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">properties</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">class_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;    pass&quot;</span><span class="p">)</span>
+
+        <span class="n">class_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">class_lines</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header_lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">class_blocks</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="generate_and_print">
+<a class="viewcode-back" href="../../codegen.html#amocrm.codegen.generate_and_print">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_and_print</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">AmoCRM</span><span class="p">,</span>
+    <span class="n">entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;amocrm&quot;</span><span class="p">,</span>
+    <span class="n">output_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Получить кастомные поля и вывести/записать сгенерированный Python-код.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client: Инициализированный клиент :class:`~amocrm.client.AmoCRM`.</span>
+<span class="sd">        entities: Список типов сущностей. По умолчанию</span>
+<span class="sd">            ``[&quot;leads&quot;, &quot;contacts&quot;, &quot;companies&quot;]``.</span>
+<span class="sd">        base_module: Имя модуля для импорта базовых классов.</span>
+<span class="sd">        output_file: Путь к файлу для записи. Если ``None`` — вывод в stdout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fields_by_entity</span> <span class="o">=</span> <span class="n">fetch_custom_fields</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">entities</span><span class="p">)</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="n">generate_custom_models</span><span class="p">(</span><span class="n">fields_by_entity</span><span class="p">,</span> <span class="n">base_module</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">code</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="generate_custom_fields_dto">
+<a class="viewcode-back" href="../../codegen.html#amocrm.codegen.generate_custom_fields_dto">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_custom_fields_dto</span><span class="p">(</span>
+    <span class="n">subdomain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">oauth</span><span class="p">:</span> <span class="n">OAuthConfig</span><span class="p">,</span>
+    <span class="n">entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;amocrm&quot;</span><span class="p">,</span>
+    <span class="n">output_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Подключиться к AmoCRM, получить кастомные поля и записать Python-код.</span>
+
+<span class="sd">    Создаёт клиент, загружает определения кастомных полей и генерирует</span>
+<span class="sd">    типизированные подклассы DTO для использования в проекте.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subdomain: Поддомен аккаунта AmoCRM (например, ``&quot;mycompany&quot;``).</span>
+<span class="sd">        oauth: Конфигурация OAuth с реквизитами и хранилищем токенов.</span>
+<span class="sd">        entities: Список сущностей для обработки. По умолчанию</span>
+<span class="sd">            ``[&quot;leads&quot;, &quot;contacts&quot;, &quot;companies&quot;]``.</span>
+<span class="sd">        base_module: Имя модуля для импорта базовых классов.</span>
+<span class="sd">            По умолчанию ``&quot;amocrm&quot;``.</span>
+<span class="sd">        output_file: Путь к файлу для записи. Если ``None`` — вывод в stdout.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        from amocrm import OAuthConfig, DjangoTokenStorage</span>
+<span class="sd">        from amocrm.codegen import generate_custom_fields_dto</span>
+
+<span class="sd">        oauth = OAuthConfig(</span>
+<span class="sd">            client_id=&quot;...&quot;,</span>
+<span class="sd">            client_secret=&quot;...&quot;,</span>
+<span class="sd">            redirect_uri=&quot;...&quot;,</span>
+<span class="sd">            storage=DjangoTokenStorage(my_settings_obj),</span>
+<span class="sd">        )</span>
+<span class="sd">        generate_custom_fields_dto(&quot;mycompany&quot;, oauth, output_file=&quot;my_models.py&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AmoCRM</span><span class="p">(</span><span class="n">subdomain</span><span class="p">,</span> <span class="n">oauth</span><span class="p">)</span>
+    <span class="n">generate_and_print</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">entities</span><span class="p">,</span> <span class="n">base_module</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права . </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
