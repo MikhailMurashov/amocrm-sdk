@@ -9,6 +9,36 @@ from .contacts import Contact
 
 
 @dataclass(kw_only=True)
+class ComplexLeadResult:
+    """Результат создания сделки через ``/api/v4/leads/complex``.
+
+    Attributes:
+        id: Идентификатор созданной сделки.
+        contact_id: Идентификатор связанного контакта.
+        company_id: Идентификатор связанной компании.
+        merged: Признак слияния с существующей сделкой.
+        request_id: Список идентификаторов запросов.
+    """
+
+    id: int
+    contact_id: int | None = None
+    company_id: int | None = None
+    merged: bool = False
+    request_id: list[str] | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ComplexLeadResult:
+        """Создать экземпляр из словаря API AmoCRM."""
+        return cls(
+            id=data["id"],
+            contact_id=data.get("contact_id"),
+            company_id=data.get("company_id"),
+            merged=data.get("merged", False),
+            request_id=data.get("request_id"),
+        )
+
+
+@dataclass(kw_only=True)
 class Lead(BaseModel):
     """DTO-модель сделки AmoCRM.
 

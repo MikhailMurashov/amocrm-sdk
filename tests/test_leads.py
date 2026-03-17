@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from amocrm import AmoCRM, Lead
+from amocrm import AmoCRM, ComplexLeadResult, Lead
 from amocrm.exceptions import AmoCRMAPIError, AmoCRMError
 from amocrm.models import Company, Contact
 
@@ -191,7 +191,15 @@ def test_lead_to_dict_with_contacts_and_company() -> None:
 
 def test_create_complex_with_linked_entities(client: AmoCRM) -> None:
     lead = Lead(name="Deal", contacts=[Contact(id=5)], company=Company(id=10))
-    api_response = {"_embedded": {"leads": [{"id": 99, "name": "Deal"}]}}
+    api_response = [
+        {
+            "id": 99,
+            "contact_id": 5,
+            "company_id": 10,
+            "merged": False,
+            "request_id": [],
+        }
+    ]
     mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.leads.create_complex([lead])
@@ -200,7 +208,11 @@ def test_create_complex_with_linked_entities(client: AmoCRM) -> None:
     body = call_kwargs[1]["json"]
     assert "_embedded" in body[0]
     assert len(result) == 1
+    assert isinstance(result[0], ComplexLeadResult)
     assert result[0].id == 99
+    assert result[0].contact_id == 5
+    assert result[0].company_id == 10
+    assert result[0].merged is False
 
 
 def test_create_complex_raises_on_multiple_contacts(client: AmoCRM) -> None:

@@ -9,7 +9,7 @@ from .models.common import CustomFieldsMixin, CustomFieldValue, Tag
 from .models.companies import Company
 from .models.contacts import Contact
 from .models.custom_fields import CustomFieldDefinition, CustomFieldEnum
-from .models.leads import Lead
+from .models.leads import ComplexLeadResult, Lead
 from .models.pipelines import Pipeline, PipelineStatus, StatusDescription
 from .models.tasks import Task
 
@@ -22,6 +22,7 @@ __all__ = [
     "DjangoTokenStorage",
     "AmoCRMTokenRefreshError",
     "AmoCRMNotConfiguredError",
+    "ComplexLeadResult",
     "Lead",
     "Tag",
     "CustomFieldValue",

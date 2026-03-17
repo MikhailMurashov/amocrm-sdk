@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import builtins
+from typing import Any
 
 from ..exceptions import AmoCRMError
-from ..models.leads import Lead
+from ..models.leads import ComplexLeadResult, Lead
 from ._base import BaseResource
 
 
@@ -42,7 +43,9 @@ class LeadsResource(BaseResource[Lead]):
             with_ = ["contacts"]
         return super().get(lead_id, with_=with_)
 
-    def create_complex(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
+    def create_complex(
+        self, leads: builtins.list[Lead]
+    ) -> builtins.list[ComplexLeadResult]:
         """Сложное создание сделок со связанными сущностями.
 
         Использует эндпоинт ``POST /api/v4/leads/complex``, позволяющий
@@ -52,7 +55,8 @@ class LeadsResource(BaseResource[Lead]):
             leads: Список сделок для создания.
 
         Returns:
-            Список созданных сделок с заполненными идентификаторами.
+            Список результатов создания с идентификаторами сделок и связанных
+            сущностей.
 
         Raises:
             AmoCRMError: Если передано более 50 сделок или у сделки
@@ -67,7 +71,7 @@ class LeadsResource(BaseResource[Lead]):
         for lead in leads:
             if lead.contacts is not None and len(lead.contacts) > 1:
                 raise AmoCRMError("create_complex allows at most 1 contact per lead")
-        raw = self._client._request(
+        raw: list[dict[str, Any]] = self._client._request(  # type: ignore[assignment]
             "POST", "/api/v4/leads/complex", json=[lead.to_dict() for lead in leads]
         )
-        return self._parse_list(raw)
+        return [ComplexLeadResult.from_dict(d) for d in raw]
