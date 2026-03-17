@@ -144,7 +144,10 @@ client = get_client(subdomain="mycompany", oauth=oauth)
 client.configure_dto(leads=MyLead, contacts=MyContact, companies=MyCompany)
 
 lead = client.leads.get(123)  # → MyLead
-lead.inn  # → str | None  (property из MyLead)
+lead.inn  # → str | None  (геттер из MyLead)
+
+lead.inn = "new_inn"  # записывает в custom_fields_values
+client.leads.update([lead])  # сохраняет изменения в AmoCRM
 
 for lead in client.leads.list():
     print(lead.istochnik_trafika)  # → str | None
