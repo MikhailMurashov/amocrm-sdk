@@ -12,11 +12,12 @@ Python SDK for the [AmoCRM REST API](https://www.amocrm.ru/developers/content/cr
 - `DjangoTokenStorage` из коробки
 - Глобальный менеджер (`exchange_code` / `get_client`) для Django/Flask
 - Typed DTO models — никаких сырых словарей
-- Leads (сделки): list, get, create, update, update_one, create_complex; `get()` подгружает контакты по умолчанию; лимит 50 сделок за запрос
+- Leads (сделки): list, get, create, update, update_one, create_complex; `get()` подгружает контакты по умолчанию
 - Contacts (контакты): list, get, create, update, update_one
 - Companies (компании): list, get, create, update, update_one
 - Pipelines (воронки): list, get, create, update, delete + statuses CRUD
 - Tasks (задачи): list, get, create, update, update_one
+- Лимит 50 элементов за batch-запрос (create/update) — для всех ресурсов
 - Custom fields support
 - Авто-пагинация — `list()` без `page` автоматически обходит все страницы и возвращает `Iterator[T]`
 - Кастомные DTO — `configure_dto()` позволяет подменить базовые классы своими подклассами

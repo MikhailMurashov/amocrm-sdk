@@ -1,36 +1,18 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-from amocrm import AmoCRM, OAuthConfig, Task
+import pytest
 
+from amocrm import AmoCRM, Task
+from amocrm.exceptions import AmoCRMError
 
-def _client() -> AmoCRM:
-    storage = MagicMock()
-    storage.load.return_value = ("token123", "refresh123")
-    oauth = OAuthConfig(
-        client_id="id",
-        client_secret="secret",
-        redirect_uri="https://example.com/callback",
-        storage=storage,
-    )
-    return AmoCRM(subdomain="test", oauth=oauth)
+from .conftest import mock_response
 
 
-def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:
-    mock = MagicMock()
-    mock.status_code = status_code
-    mock.ok = status_code < 400
-    mock.content = b"data"
-    mock.json.return_value = json_data
-    mock.text = str(json_data)
-    return mock
-
-
-def test_list_tasks() -> None:
-    client = _client()
+def test_list_tasks(client: AmoCRM) -> None:
     api_response = {
         "_embedded": {"tasks": [{"id": 1, "text": "Call client", "task_type_id": 1}]}
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.tasks.list(page=1, limit=10)
 
@@ -46,10 +28,9 @@ def test_list_tasks() -> None:
     assert result[0].task_type_id == 1
 
 
-def test_list_tasks_with_filter() -> None:
-    client = _client()
+def test_list_tasks_with_filter(client: AmoCRM) -> None:
     api_response = {"_embedded": {"tasks": []}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         client.tasks.list(
             page=1, filter={"responsible_user_id": 42}, order={"id": "asc"}
@@ -62,16 +43,16 @@ def test_list_tasks_with_filter() -> None:
     )
 
 
-def test_get_task() -> None:
-    client = _client()
+def test_get_task(client: AmoCRM) -> None:
     api_response = {"id": 5, "text": "Send docs", "complete_till": 1700000000}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.tasks.get(5)
 
     mock_req.assert_called_once_with(
         "GET",
         "https://test.amocrm.ru/api/v4/tasks/5",
+        params={},
     )
     assert isinstance(result, Task)
     assert result.id == 5
@@ -79,13 +60,12 @@ def test_get_task() -> None:
     assert result.complete_till == 1700000000
 
 
-def test_create_tasks() -> None:
-    client = _client()
+def test_create_tasks(client: AmoCRM) -> None:
     new_task = Task(text="Follow up", task_type_id=1, complete_till=1700000000)
     api_response = {
         "_embedded": {"tasks": [{"id": 20, "text": "Follow up", "task_type_id": 1}]}
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.tasks.create([new_task])
 
@@ -100,11 +80,10 @@ def test_create_tasks() -> None:
     assert result[0].text == "Follow up"
 
 
-def test_update_tasks() -> None:
-    client = _client()
+def test_update_tasks(client: AmoCRM) -> None:
     updated_task = Task(id=20, text="Updated text")
     api_response = {"_embedded": {"tasks": [{"id": 20, "text": "Updated text"}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.tasks.update([updated_task])
 
@@ -119,11 +98,10 @@ def test_update_tasks() -> None:
     assert result[0].text == "Updated text"
 
 
-def test_update_one_task() -> None:
-    client = _client()
+def test_update_one_task(client: AmoCRM) -> None:
     data = Task(id=20, text="Done", is_completed=True)
     api_response = {"id": 20, "text": "Done", "is_completed": True}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.tasks.update_one(data)
 
@@ -168,16 +146,15 @@ def test_roundtrip_task() -> None:
     assert "group_id" not in payload
 
 
-def test_list_all_autopagination() -> None:
-    client = _client()
+def test_list_all_autopagination(client: AmoCRM) -> None:
     page1_items = [
         {"id": i, "text": f"Task {i}", "task_type_id": 1} for i in range(1, 51)
     ]
     page2_items = [
         {"id": i, "text": f"Task {i}", "task_type_id": 1} for i in range(51, 54)
     ]
-    mock_resp1 = _mock_response({"_embedded": {"tasks": page1_items}})
-    mock_resp2 = _mock_response({"_embedded": {"tasks": page2_items}})
+    mock_resp1 = mock_response({"_embedded": {"tasks": page1_items}})
+    mock_resp2 = mock_response({"_embedded": {"tasks": page2_items}})
     with patch.object(
         client._session, "request", side_effect=[mock_resp1, mock_resp2]
     ) as mock_req:
@@ -188,12 +165,11 @@ def test_list_all_autopagination() -> None:
     assert all(isinstance(r, Task) for r in result)
 
 
-def test_list_single_page_explicit_tasks() -> None:
-    client = _client()
+def test_list_single_page_explicit_tasks(client: AmoCRM) -> None:
     api_response = {
         "_embedded": {"tasks": [{"id": 7, "text": "Follow up", "task_type_id": 2}]}
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.tasks.list(page=1, limit=5)
 
@@ -206,11 +182,22 @@ def test_list_single_page_explicit_tasks() -> None:
     assert len(result) == 1
 
 
-def test_list_empty_result_tasks() -> None:
-    client = _client()
-    mock_resp = _mock_response({"_embedded": {"tasks": []}})
+def test_list_empty_result_tasks(client: AmoCRM) -> None:
+    mock_resp = mock_response({"_embedded": {"tasks": []}})
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = list(client.tasks.list())
 
     mock_req.assert_called_once()
     assert result == []
+
+
+def test_create_raises_on_too_many_tasks(client: AmoCRM) -> None:
+    tasks = [Task(text=f"T{i}") for i in range(51)]
+    with pytest.raises(AmoCRMError, match="at most 50"):
+        client.tasks.create(tasks)
+
+
+def test_update_raises_on_too_many_tasks(client: AmoCRM) -> None:
+    tasks = [Task(id=i) for i in range(51)]
+    with pytest.raises(AmoCRMError, match="at most 50"):
+        client.tasks.update(tasks)

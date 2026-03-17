@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar, TypeVar
 
 
 class CustomFieldsMixin:
@@ -128,3 +128,47 @@ class CustomFieldValue:
     def to_dict(self) -> dict[str, Any]:
         """Сериализовать в словарь для отправки в API."""
         return {"field_id": self.field_id, "values": self.values}
+
+
+_M = TypeVar("_M", bound="BaseModel")
+
+
+class BaseModel(CustomFieldsMixin):
+    """Базовый класс DTO-моделей AmoCRM с общей логикой ``from_dict``/``to_dict``.
+
+    Подклассы должны быть датаклассами и определять ``_scalar_fields`` —
+    кортеж имён полей, которые берутся напрямую из словаря API.
+    """
+
+    _scalar_fields: ClassVar[tuple[str, ...]] = ()
+    tags: list[Tag] | None
+    custom_fields_values: list[CustomFieldValue] | None
+
+    @classmethod
+    def from_dict(cls: type[_M], data: dict[str, Any]) -> _M:
+        """Создать экземпляр из словаря API AmoCRM."""
+        kwargs: dict[str, Any] = {k: data.get(k) for k in cls._scalar_fields}
+        tags_raw = data.get("_embedded", {}).get("tags")
+        cf_raw = data.get("custom_fields_values")
+        if tags_raw is not None:
+            kwargs["tags"] = [Tag.from_dict(t) for t in tags_raw]
+        if cf_raw is not None:
+            kwargs["custom_fields_values"] = [
+                CustomFieldValue.from_dict(cf) for cf in cf_raw
+            ]
+        return cls(**kwargs)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Сериализовать в словарь для API, исключая поля со значением ``None``."""
+        result: dict[str, Any] = {
+            k: getattr(self, k)
+            for k in self._scalar_fields
+            if getattr(self, k) is not None
+        }
+        if self.tags is not None:
+            result["tags"] = [t.to_dict() for t in self.tags]
+        if self.custom_fields_values is not None:
+            result["custom_fields_values"] = [
+                cf.to_dict() for cf in self.custom_fields_values
+            ]
+        return result

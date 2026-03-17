@@ -1,33 +1,9 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
-
-from amocrm import AmoCRM, OAuthConfig
+from amocrm import AmoCRM
 from amocrm.models.pipelines import Pipeline, PipelineStatus, StatusDescription
 
-
-@pytest.fixture
-def client() -> AmoCRM:
-    storage = MagicMock()
-    storage.load.return_value = ("token123", "refresh123")
-    oauth = OAuthConfig(
-        client_id="id",
-        client_secret="secret",
-        redirect_uri="https://example.com/callback",
-        storage=storage,
-    )
-    return AmoCRM(subdomain="test", oauth=oauth)
-
-
-def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:
-    mock = MagicMock()
-    mock.status_code = status_code
-    mock.ok = status_code < 400
-    mock.content = b"data" if status_code != 204 else b""
-    mock.json.return_value = json_data
-    mock.text = str(json_data)
-    return mock
-
+from .conftest import mock_response
 
 # ------------------------------------------------------------------ #
 # PipelinesResource                                                    #
@@ -42,7 +18,7 @@ def test_list_pipelines(client: AmoCRM) -> None:
             ]
         }
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.list()
 
@@ -59,7 +35,7 @@ def test_list_pipelines(client: AmoCRM) -> None:
 
 def test_get_pipeline(client: AmoCRM) -> None:
     api_response = {"id": 1, "name": "Main", "sort": 10, "account_id": 999}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.get(1)
 
@@ -75,7 +51,7 @@ def test_get_pipeline(client: AmoCRM) -> None:
 def test_create_pipelines(client: AmoCRM) -> None:
     new_pipeline = Pipeline(name="New", sort=20)
     api_response = {"_embedded": {"pipelines": [{"id": 5, "name": "New", "sort": 20}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.create([new_pipeline])
 
@@ -93,7 +69,7 @@ def test_create_pipelines(client: AmoCRM) -> None:
 def test_update_pipeline(client: AmoCRM) -> None:
     data = Pipeline(name="Updated", sort=30)
     api_response = {"id": 1, "name": "Updated", "sort": 30}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.update(1, data)
 
@@ -107,7 +83,7 @@ def test_update_pipeline(client: AmoCRM) -> None:
 
 
 def test_delete_pipeline(client: AmoCRM) -> None:
-    mock_resp = _mock_response({}, status_code=204)
+    mock_resp = mock_response({}, status_code=204)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.delete(1)
 
@@ -122,7 +98,7 @@ def test_list_statuses(client: AmoCRM) -> None:
     api_response = {
         "_embedded": {"statuses": [{"id": 10, "name": "New", "pipeline_id": 1}]}
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.list_statuses(1)
 
@@ -141,7 +117,7 @@ def test_list_statuses_with_descriptions(client: AmoCRM) -> None:
     api_response = {
         "_embedded": {"statuses": [{"id": 10, "name": "New", "pipeline_id": 1}]}
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.list_statuses(1, with_descriptions=True)
 
@@ -155,7 +131,7 @@ def test_list_statuses_with_descriptions(client: AmoCRM) -> None:
 
 def test_get_status(client: AmoCRM) -> None:
     api_response = {"id": 5, "name": "Won", "pipeline_id": 1, "color": "#00ff00"}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.get_status(1, 5)
 
@@ -174,7 +150,7 @@ def test_create_statuses(client: AmoCRM) -> None:
     api_response = {
         "_embedded": {"statuses": [{"id": 20, "name": "In Progress", "pipeline_id": 1}]}
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.create_statuses(1, [new_status])
 
@@ -191,7 +167,7 @@ def test_create_statuses(client: AmoCRM) -> None:
 def test_update_status(client: AmoCRM) -> None:
     data = PipelineStatus(name="Done", sort=100)
     api_response = {"id": 5, "name": "Done", "pipeline_id": 1}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.update_status(1, 5, data)
 
@@ -205,7 +181,7 @@ def test_update_status(client: AmoCRM) -> None:
 
 
 def test_delete_status(client: AmoCRM) -> None:
-    mock_resp = _mock_response({}, status_code=204)
+    mock_resp = mock_response({}, status_code=204)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.pipelines.delete_status(1, 5)
 

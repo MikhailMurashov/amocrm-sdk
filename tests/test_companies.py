@@ -2,36 +2,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from amocrm import AmoCRM, Company, OAuthConfig
-from amocrm.exceptions import AmoCRMAPIError
+from amocrm import AmoCRM, Company
+from amocrm.exceptions import AmoCRMAPIError, AmoCRMError
 
-
-@pytest.fixture
-def client() -> AmoCRM:
-    storage = MagicMock()
-    storage.load.return_value = ("token123", "refresh123")
-    oauth = OAuthConfig(
-        client_id="id",
-        client_secret="secret",
-        redirect_uri="https://example.com/callback",
-        storage=storage,
-    )
-    return AmoCRM(subdomain="test", oauth=oauth)
-
-
-def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:
-    mock = MagicMock()
-    mock.status_code = status_code
-    mock.ok = status_code < 400
-    mock.content = b"data"
-    mock.json.return_value = json_data
-    mock.text = str(json_data)
-    return mock
+from .conftest import mock_response
 
 
 def test_list_companies(client: AmoCRM) -> None:
     api_response = {"_embedded": {"companies": [{"id": 1, "name": "Acme Corp"}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.list(page=1, limit=10, with_=["leads"])
 
@@ -48,7 +27,7 @@ def test_list_companies(client: AmoCRM) -> None:
 
 def test_get_company(client: AmoCRM) -> None:
     api_response = {"id": 42, "name": "Big Corp"}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.get(42)
 
@@ -65,7 +44,7 @@ def test_get_company(client: AmoCRM) -> None:
 def test_create_companies(client: AmoCRM) -> None:
     new_company = Company(name="New Corp")
     api_response = {"_embedded": {"companies": [{"id": 10, "name": "New Corp"}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.create([new_company])
 
@@ -83,7 +62,7 @@ def test_create_companies(client: AmoCRM) -> None:
 def test_update_companies(client: AmoCRM) -> None:
     updated_company = Company(id=10, name="Updated Corp")
     api_response = {"_embedded": {"companies": [{"id": 10, "name": "Updated Corp"}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.update([updated_company])
 
@@ -101,7 +80,7 @@ def test_update_companies(client: AmoCRM) -> None:
 def test_update_one_company(client: AmoCRM) -> None:
     data = Company(id=5, name="Patched Corp")
     api_response = {"id": 5, "name": "Patched Corp"}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.update_one(data)
 
@@ -177,8 +156,8 @@ def test_roundtrip_company() -> None:
 def test_list_all_autopagination(client: AmoCRM) -> None:
     page1_items = [{"id": i, "name": f"Company {i}"} for i in range(1, 51)]
     page2_items = [{"id": i, "name": f"Company {i}"} for i in range(51, 58)]
-    mock_resp1 = _mock_response({"_embedded": {"companies": page1_items}})
-    mock_resp2 = _mock_response({"_embedded": {"companies": page2_items}})
+    mock_resp1 = mock_response({"_embedded": {"companies": page1_items}})
+    mock_resp2 = mock_response({"_embedded": {"companies": page2_items}})
     with patch.object(
         client._session, "request", side_effect=[mock_resp1, mock_resp2]
     ) as mock_req:
@@ -191,7 +170,7 @@ def test_list_all_autopagination(client: AmoCRM) -> None:
 
 def test_list_single_page_explicit(client: AmoCRM) -> None:
     api_response = {"_embedded": {"companies": [{"id": 10, "name": "Acme"}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.companies.list(page=2, limit=20)
 
@@ -205,9 +184,21 @@ def test_list_single_page_explicit(client: AmoCRM) -> None:
 
 
 def test_list_empty_result(client: AmoCRM) -> None:
-    mock_resp = _mock_response({"_embedded": {"companies": []}})
+    mock_resp = mock_response({"_embedded": {"companies": []}})
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = list(client.companies.list())
 
     mock_req.assert_called_once()
     assert result == []
+
+
+def test_create_raises_on_too_many_companies(client: AmoCRM) -> None:
+    companies = [Company(name=f"C{i}") for i in range(51)]
+    with pytest.raises(AmoCRMError, match="at most 50"):
+        client.companies.create(companies)
+
+
+def test_update_raises_on_too_many_companies(client: AmoCRM) -> None:
+    companies = [Company(id=i) for i in range(51)]
+    with pytest.raises(AmoCRMError, match="at most 50"):
+        client.companies.update(companies)

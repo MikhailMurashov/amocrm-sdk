@@ -58,7 +58,7 @@ class InMemoryTokenStorage:
     _refresh_token: str | None = None
 
     def save(self, access_token: str, refresh_token: str) -> None:
-        """Сохранить токены в модель Django и вызвать ``instance.save()``.
+        """Сохранить токены в память.
 
         Args:
             access_token: Токен доступа OAuth 2.0.
@@ -68,7 +68,7 @@ class InMemoryTokenStorage:
         self._refresh_token = refresh_token
 
     def load(self) -> tuple[str, str]:
-        """Загрузить токены из полей модели Django.
+        """Загрузить токены из памяти.
 
         Returns:
             Кортеж ``(access_token, refresh_token)``.

@@ -15,12 +15,19 @@ class PipelinesResource:
     Эндпоинт: ``/api/v4/leads/pipelines``.
     """
 
-    def __init__(self, client: AmoCRM) -> None:
+    def __init__(
+        self,
+        client: AmoCRM,
+        dto_class: type[Pipeline] = Pipeline,
+    ) -> None:
         """
         Args:
             client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
+            dto_class: Класс DTO для десериализации воронок. По умолчанию
+                :class:`~amocrm.models.pipelines.Pipeline`.
         """
         self._client = client
+        self._dto_class = dto_class
 
     # ------------------------------------------------------------------ #
     # Pipelines                                                            #
@@ -37,7 +44,8 @@ class PipelinesResource:
         """
         raw = self._client._request("GET", "/api/v4/leads/pipelines")
         return [
-            Pipeline.from_dict(d) for d in raw.get("_embedded", {}).get("pipelines", [])
+            self._dto_class.from_dict(d)
+            for d in raw.get("_embedded", {}).get("pipelines", [])
         ]
 
     def get(self, pipeline_id: int) -> Pipeline:
@@ -53,7 +61,7 @@ class PipelinesResource:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
         raw = self._client._request("GET", f"/api/v4/leads/pipelines/{pipeline_id}")
-        return Pipeline.from_dict(raw)
+        return self._dto_class.from_dict(raw)
 
     def create(self, pipelines: builtins.list[Pipeline]) -> builtins.list[Pipeline]:
         """Создать одну или несколько воронок.
@@ -73,7 +81,8 @@ class PipelinesResource:
             json=[p.to_dict() for p in pipelines],
         )
         return [
-            Pipeline.from_dict(d) for d in raw.get("_embedded", {}).get("pipelines", [])
+            self._dto_class.from_dict(d)
+            for d in raw.get("_embedded", {}).get("pipelines", [])
         ]
 
     def update(self, pipeline_id: int, data: Pipeline) -> Pipeline:
@@ -94,7 +103,7 @@ class PipelinesResource:
             f"/api/v4/leads/pipelines/{pipeline_id}",
             json=data.to_dict(),
         )
-        return Pipeline.from_dict(raw)
+        return self._dto_class.from_dict(raw)
 
     def delete(self, pipeline_id: int) -> None:
         """Удалить воронку по идентификатору.

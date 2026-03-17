@@ -175,7 +175,7 @@
    try:
        client.leads.create([Lead(name=f"Deal {i}") for i in range(51)])
    except AmoCRMError as e:
-       print(e)  # create allows at most 50 leads per request
+       print(e)  # create allows at most 50 items per request
 
    try:
        lead = Lead(contacts=[Contact(id=1), Contact(id=2)])

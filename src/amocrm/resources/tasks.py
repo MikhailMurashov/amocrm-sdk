@@ -2,27 +2,20 @@ from __future__ import annotations
 
 import builtins
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-from ..exceptions import AmoCRMError
 from ..models.tasks import Task
-from ._utils import _iter_all_pages
-
-if TYPE_CHECKING:
-    from ..client import AmoCRM
+from ._base import BaseResource
 
 
-class TasksResource:
+class TasksResource(BaseResource[Task]):
     """Ресурс для работы с задачами AmoCRM (``/api/v4/tasks``)."""
 
-    def __init__(self, client: AmoCRM) -> None:
-        """
-        Args:
-            client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
-        """
-        self._client = client
+    _path = "/api/v4/tasks"
+    _embedded_key = "tasks"
+    _dto_class = Task
 
-    def list(
+    def list(  # type: ignore[override]
         self,
         *,
         page: int | None = None,
@@ -49,27 +42,9 @@ class TasksResource:
         Raises:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
-        params: dict[str, Any] = {}
-        if limit is not None:
-            params["limit"] = limit
-        if filter is not None:
-            for key, value in filter.items():
-                params[f"filter[{key}]"] = value
-        if order is not None:
-            for key, value in order.items():
-                params[f"order[{key}]"] = value
-        if page is not None:
-            params["page"] = page
-            raw = self._client._request("GET", "/api/v4/tasks", params=params)
-            return [
-                Task.from_dict(d) for d in raw.get("_embedded", {}).get("tasks", [])
-            ]
-        return (
-            Task.from_dict(d)
-            for d in _iter_all_pages(self._client, "/api/v4/tasks", "tasks", params)
-        )
+        return super().list(page=page, limit=limit, filter=filter, order=order)
 
-    def get(self, task_id: int) -> Task:
+    def get(self, task_id: int) -> Task:  # type: ignore[override]
         """Получить задачу по идентификатору.
 
         Args:
@@ -81,60 +56,4 @@ class TasksResource:
         Raises:
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
-        raw = self._client._request("GET", f"/api/v4/tasks/{task_id}")
-        return Task.from_dict(raw)
-
-    def create(self, tasks: builtins.list[Task]) -> builtins.list[Task]:
-        """Создать одну или несколько задач.
-
-        Args:
-            tasks: Список задач для создания.
-
-        Returns:
-            Список созданных задач с заполненными идентификаторами.
-
-        Raises:
-            AmoCRMAPIError: При ошибке API (статус не 2xx).
-        """
-        raw = self._client._request(
-            "POST", "/api/v4/tasks", json=[task.to_dict() for task in tasks]
-        )
-        return [Task.from_dict(d) for d in raw.get("_embedded", {}).get("tasks", [])]
-
-    def update(self, tasks: builtins.list[Task]) -> builtins.list[Task]:
-        """Обновить одну или несколько задач (каждая должна содержать ``id``).
-
-        Args:
-            tasks: Список задач для обновления. Каждая задача обязана
-                содержать заполненное поле ``id``.
-
-        Returns:
-            Список обновлённых задач.
-
-        Raises:
-            AmoCRMAPIError: При ошибке API (статус не 2xx).
-        """
-        raw = self._client._request(
-            "PATCH", "/api/v4/tasks", json=[task.to_dict() for task in tasks]
-        )
-        return [Task.from_dict(d) for d in raw.get("_embedded", {}).get("tasks", [])]
-
-    def update_one(self, data: Task) -> Task:
-        """Обновить одну задачу по идентификатору.
-
-        Args:
-            data: Объект с обновляемыми полями. Поле ``id`` обязательно.
-
-        Returns:
-            Обновлённый объект :class:`~amocrm.models.tasks.Task`.
-
-        Raises:
-            AmoCRMError: Если ``data.id`` не задан.
-            AmoCRMAPIError: При ошибке API (статус не 2xx).
-        """
-        if data.id is None:
-            raise AmoCRMError("Task.id must be set for update_one")
-        raw = self._client._request(
-            "PATCH", f"/api/v4/tasks/{data.id}", json=data.to_dict()
-        )
-        return Task.from_dict(raw)
+        return super().get(task_id)

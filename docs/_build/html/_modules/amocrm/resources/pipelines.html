@@ -43,6 +43,9 @@
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../token_refresh.html">Управление токенами</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
 
@@ -92,12 +95,19 @@
 
 <div class="viewcode-block" id="PipelinesResource.__init__">
 <a class="viewcode-back" href="../../../api.html#amocrm.resources.pipelines.PipelinesResource.__init__">[документация]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">AmoCRM</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">client</span><span class="p">:</span> <span class="n">AmoCRM</span><span class="p">,</span>
+        <span class="n">dto_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Pipeline</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.</span>
+<span class="sd">            dto_class: Класс DTO для десериализации воронок. По умолчанию</span>
+<span class="sd">                :class:`~amocrm.models.pipelines.Pipeline`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dto_class</span> <span class="o">=</span> <span class="n">dto_class</span></div>
 
 
     <span class="c1"># ------------------------------------------------------------------ #</span>
@@ -117,7 +127,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/api/v4/leads/pipelines&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_embedded&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pipelines&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dto_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_embedded&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pipelines&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="p">]</span></div>
 
 
@@ -136,7 +147,7 @@
 <span class="sd">            AmoCRMAPIError: При ошибке API (статус не 2xx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/api/v4/leads/pipelines/</span><span class="si">{</span><span class="n">pipeline_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PipelinesResource.create">
@@ -159,7 +170,8 @@
             <span class="n">json</span><span class="o">=</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_embedded&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pipelines&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dto_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_embedded&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pipelines&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="p">]</span></div>
 
 
@@ -183,7 +195,7 @@
             <span class="sa">f</span><span class="s2">&quot;/api/v4/leads/pipelines/</span><span class="si">{</span><span class="n">pipeline_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PipelinesResource.delete">

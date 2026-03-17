@@ -3,37 +3,16 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from amocrm import AmoCRM, Lead, OAuthConfig
+from amocrm import AmoCRM, Lead
 from amocrm.exceptions import AmoCRMAPIError, AmoCRMError
 from amocrm.models import Company, Contact
 
-
-@pytest.fixture
-def client() -> AmoCRM:
-    storage = MagicMock()
-    storage.load.return_value = ("token123", "refresh123")
-    oauth = OAuthConfig(
-        client_id="id",
-        client_secret="secret",
-        redirect_uri="https://example.com/callback",
-        storage=storage,
-    )
-    return AmoCRM(subdomain="test", oauth=oauth)
-
-
-def _mock_response(json_data: dict, status_code: int = 200) -> MagicMock:
-    mock = MagicMock()
-    mock.status_code = status_code
-    mock.ok = status_code < 400
-    mock.content = b"data"
-    mock.json.return_value = json_data
-    mock.text = str(json_data)
-    return mock
+from .conftest import mock_response
 
 
 def test_list_leads(client: AmoCRM) -> None:
     api_response = {"_embedded": {"leads": [{"id": 1, "name": "Deal 1", "price": 500}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.leads.list(page=1, limit=10, with_=["contacts"])
 
@@ -51,7 +30,7 @@ def test_list_leads(client: AmoCRM) -> None:
 
 def test_get_lead(client: AmoCRM) -> None:
     api_response = {"id": 42, "name": "Big Deal", "price": 1000}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.leads.get(42)
 
@@ -67,7 +46,7 @@ def test_get_lead(client: AmoCRM) -> None:
 
 
 def test_get_lead_with_empty_with(client: AmoCRM) -> None:
-    mock_resp = _mock_response({"id": 42})
+    mock_resp = mock_response({"id": 42})
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         client.leads.get(42, with_=[])
 
@@ -83,7 +62,7 @@ def test_create_leads(client: AmoCRM) -> None:
     api_response = {
         "_embedded": {"leads": [{"id": 10, "name": "New Deal", "price": 5000}]}
     }
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.leads.create([new_lead])
 
@@ -101,7 +80,7 @@ def test_create_leads(client: AmoCRM) -> None:
 def test_update_leads(client: AmoCRM) -> None:
     updated_lead = Lead(id=10, price=9000)
     api_response = {"_embedded": {"leads": [{"id": 10, "price": 9000}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.leads.update([updated_lead])
 
@@ -213,7 +192,7 @@ def test_lead_to_dict_with_contacts_and_company() -> None:
 def test_create_complex_with_linked_entities(client: AmoCRM) -> None:
     lead = Lead(name="Deal", contacts=[Contact(id=5)], company=Company(id=10))
     api_response = {"_embedded": {"leads": [{"id": 99, "name": "Deal"}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.leads.create_complex([lead])
 
@@ -255,8 +234,8 @@ def test_list_all_autopagination(client: AmoCRM) -> None:
     page2_items = [
         {"id": i, "name": f"Deal {i}", "price": i * 10} for i in range(51, 61)
     ]
-    mock_resp1 = _mock_response({"_embedded": {"leads": page1_items}})
-    mock_resp2 = _mock_response({"_embedded": {"leads": page2_items}})
+    mock_resp1 = mock_response({"_embedded": {"leads": page1_items}})
+    mock_resp2 = mock_response({"_embedded": {"leads": page2_items}})
     with patch.object(
         client._session, "request", side_effect=[mock_resp1, mock_resp2]
     ) as mock_req:
@@ -269,7 +248,7 @@ def test_list_all_autopagination(client: AmoCRM) -> None:
 
 def test_list_single_page_explicit(client: AmoCRM) -> None:
     api_response = {"_embedded": {"leads": [{"id": 5, "name": "Deal 5", "price": 50}]}}
-    mock_resp = _mock_response(api_response)
+    mock_resp = mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = client.leads.list(page=2, limit=10)
 
@@ -283,7 +262,7 @@ def test_list_single_page_explicit(client: AmoCRM) -> None:
 
 
 def test_list_empty_result(client: AmoCRM) -> None:
-    mock_resp = _mock_response({"_embedded": {"leads": []}})
+    mock_resp = mock_response({"_embedded": {"leads": []}})
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
         result = list(client.leads.list())
 

@@ -1,36 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, ClassVar
 
-from .common import CustomFieldsMixin, CustomFieldValue, Tag
+from .common import BaseModel, CustomFieldValue, Tag
 from .companies import Company
 from .contacts import Contact
 
-_LEAD_SCALAR_FIELDS = (
-    "id",
-    "name",
-    "price",
-    "status_id",
-    "pipeline_id",
-    "responsible_user_id",
-    "group_id",
-    "created_by",
-    "updated_by",
-    "created_at",
-    "updated_at",
-    "closed_at",
-    "closest_task_at",
-    "is_deleted",
-    "loss_reason_id",
-    "score",
-    "account_id",
-    "labor_cost",
-)
-
 
 @dataclass(kw_only=True)
-class Lead(CustomFieldsMixin):
+class Lead(BaseModel):
     """DTO-модель сделки AmoCRM.
 
     Attributes:
@@ -54,7 +33,30 @@ class Lead(CustomFieldsMixin):
         labor_cost: Затраченное время (в минутах).
         tags: Список тегов сделки.
         custom_fields_values: Список значений кастомных полей.
+        contacts: Список связанных контактов.
+        company: Связанная компания.
     """
+
+    _scalar_fields: ClassVar[tuple[str, ...]] = (
+        "id",
+        "name",
+        "price",
+        "status_id",
+        "pipeline_id",
+        "responsible_user_id",
+        "group_id",
+        "created_by",
+        "updated_by",
+        "created_at",
+        "updated_at",
+        "closed_at",
+        "closest_task_at",
+        "is_deleted",
+        "loss_reason_id",
+        "score",
+        "account_id",
+        "labor_cost",
+    )
 
     id: int | None = None
     name: str | None = None
@@ -84,53 +86,27 @@ class Lead(CustomFieldsMixin):
         """Создать экземпляр из словаря API AmoCRM."""
         embedded = data.get("_embedded", {})
         tags_raw = embedded.get("tags")
+        cf_raw = data.get("custom_fields_values")
         contacts_raw = embedded.get("contacts")
         companies_raw = embedded.get("companies")
-        cf_raw = data.get("custom_fields_values")
-        return cls(
-            id=data.get("id"),
-            name=data.get("name"),
-            price=data.get("price"),
-            status_id=data.get("status_id"),
-            pipeline_id=data.get("pipeline_id"),
-            responsible_user_id=data.get("responsible_user_id"),
-            group_id=data.get("group_id"),
-            created_by=data.get("created_by"),
-            updated_by=data.get("updated_by"),
-            created_at=data.get("created_at"),
-            updated_at=data.get("updated_at"),
-            closed_at=data.get("closed_at"),
-            closest_task_at=data.get("closest_task_at"),
-            is_deleted=data.get("is_deleted"),
-            loss_reason_id=data.get("loss_reason_id"),
-            score=data.get("score"),
-            account_id=data.get("account_id"),
-            labor_cost=data.get("labor_cost"),
-            tags=[Tag.from_dict(t) for t in tags_raw] if tags_raw is not None else None,
-            custom_fields_values=(
-                [CustomFieldValue.from_dict(cf) for cf in cf_raw]
-                if cf_raw is not None
-                else None
-            ),
-            contacts=(
-                [Contact.from_dict(c) for c in contacts_raw] if contacts_raw else None
-            ),
-            company=Company.from_dict(companies_raw[0]) if companies_raw else None,
+        kwargs: dict[str, Any] = {k: data.get(k) for k in cls._scalar_fields}
+        if tags_raw is not None:
+            kwargs["tags"] = [Tag.from_dict(t) for t in tags_raw]
+        if cf_raw is not None:
+            kwargs["custom_fields_values"] = [
+                CustomFieldValue.from_dict(cf) for cf in cf_raw
+            ]
+        kwargs["contacts"] = (
+            [Contact.from_dict(c) for c in contacts_raw] if contacts_raw else None
         )
+        kwargs["company"] = (
+            Company.from_dict(companies_raw[0]) if companies_raw else None
+        )
+        return cls(**kwargs)
 
     def to_dict(self) -> dict[str, Any]:
         """Сериализовать в словарь для API, исключая поля со значением ``None``."""
-        result: dict[str, Any] = {
-            k: getattr(self, k)
-            for k in _LEAD_SCALAR_FIELDS
-            if getattr(self, k) is not None
-        }
-        if self.tags is not None:
-            result["tags"] = [t.to_dict() for t in self.tags]
-        if self.custom_fields_values is not None:
-            result["custom_fields_values"] = [
-                cf.to_dict() for cf in self.custom_fields_values
-            ]
+        result = super().to_dict()
         embedded: dict[str, Any] = {}
         if self.contacts is not None:
             embedded["contacts"] = [c.to_dict() for c in self.contacts]

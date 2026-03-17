@@ -28,6 +28,12 @@ API Reference
 Ресурсы
 -------
 
+Базовый ресурс
+~~~~~~~~~~~~~~
+
+.. automodule:: amocrm.resources._base
+   :members:
+
 Сделки
 ~~~~~~
 

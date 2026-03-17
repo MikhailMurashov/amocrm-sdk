@@ -1,89 +1,18 @@
 from __future__ import annotations
 
 import builtins
-from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any
 
 from ..exceptions import AmoCRMError
 from ..models.leads import Lead
-from ._utils import _iter_all_pages
-
-_MAX_LEADS_PER_REQUEST = 50
-
-if TYPE_CHECKING:
-    from ..client import AmoCRM
+from ._base import BaseResource
 
 
-class LeadsResource:
+class LeadsResource(BaseResource[Lead]):
     """Ресурс для работы со сделками AmoCRM (``/api/v4/leads``)."""
 
-    def __init__(self, client: AmoCRM, dto_class: type[Lead] = Lead) -> None:
-        """
-        Args:
-            client: Экземпляр клиента :class:`~amocrm.client.AmoCRM`.
-            dto_class: Класс DTO для десериализации сделок. По умолчанию
-                :class:`~amocrm.models.leads.Lead`. Передайте подкласс,
-                чтобы получать экземпляры собственного класса.
-        """
-        self._client = client
-        self._dto_class = dto_class
-
-    def list(
-        self,
-        *,
-        page: int | None = None,
-        limit: int | None = None,
-        query: str | None = None,
-        filter: dict[str, Any] | None = None,
-        order: dict[str, str] | None = None,
-        with_: builtins.list[str] | None = None,
-    ) -> builtins.list[Lead] | Iterator[Lead]:
-        """Получить список сделок с пагинацией и фильтрами.
-
-        Args:
-            page: Номер страницы (начиная с 1). Если не передан — автоматически
-                обходит все страницы и возвращает ``Iterator[Lead]``.
-            limit: Количество сделок на странице (максимум 250). По умолчанию 50
-                при авто-пагинации.
-            query: Строка полнотекстового поиска.
-            filter: Словарь фильтров вида ``{"field": "value"}``; ключи
-                преобразуются в параметры ``filter[field]=value``.
-            order: Словарь сортировки вида ``{"field": "asc"|"desc"}``; ключи
-                преобразуются в параметры ``order[field]=asc``.
-            with_: Список дополнительных данных для подгрузки (например,
-                ``["contacts", "companies"]``).
-
-        Returns:
-            Если ``page`` передан — список объектов :class:`~amocrm.models.leads.Lead`.
-            Если ``page`` не передан — ``Iterator[Lead]`` по всем страницам.
-
-        Raises:
-            AmoCRMAPIError: При ошибке API (статус не 2xx).
-        """
-        params: dict[str, Any] = {}
-        if limit is not None:
-            params["limit"] = limit
-        if query is not None:
-            params["query"] = query
-        if filter is not None:
-            for key, value in filter.items():
-                params[f"filter[{key}]"] = value
-        if order is not None:
-            for key, value in order.items():
-                params[f"order[{key}]"] = value
-        if with_ is not None:
-            params["with"] = ",".join(with_)
-        if page is not None:
-            params["page"] = page
-            raw = self._client._request("GET", "/api/v4/leads", params=params)
-            return [
-                self._dto_class.from_dict(d)
-                for d in raw.get("_embedded", {}).get("leads", [])
-            ]
-        return (
-            self._dto_class.from_dict(d)
-            for d in _iter_all_pages(self._client, "/api/v4/leads", "leads", params)
-        )
+    _path = "/api/v4/leads"
+    _embedded_key = "leads"
+    _dto_class = Lead
 
     def get(
         self,
@@ -111,82 +40,7 @@ class LeadsResource:
         """
         if with_ is None:
             with_ = ["contacts"]
-        params: dict[str, Any] = {}
-        if with_:
-            params["with"] = ",".join(with_)
-        raw = self._client._request("GET", f"/api/v4/leads/{lead_id}", params=params)
-        return self._dto_class.from_dict(raw)
-
-    def create(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
-        """Создать одну или несколько сделок.
-
-        Args:
-            leads: Список сделок для создания.
-
-        Returns:
-            Список созданных сделок с заполненными идентификаторами.
-
-        Raises:
-            AmoCRMError: Если передано более 50 сделок за один запрос.
-            AmoCRMAPIError: При ошибке API (статус не 2xx).
-        """
-        if len(leads) > _MAX_LEADS_PER_REQUEST:
-            raise AmoCRMError(
-                f"create allows at most {_MAX_LEADS_PER_REQUEST} leads per request"
-            )
-        raw = self._client._request(
-            "POST", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
-        )
-        return [
-            self._dto_class.from_dict(d)
-            for d in raw.get("_embedded", {}).get("leads", [])
-        ]
-
-    def update(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
-        """Обновить одну или несколько сделок (каждая должна содержать ``id``).
-
-        Args:
-            leads: Список сделок для обновления. Каждая сделка обязана
-                содержать заполненное поле ``id``.
-
-        Returns:
-            Список обновлённых сделок.
-
-        Raises:
-            AmoCRMError: Если передано более 50 сделок за один запрос.
-            AmoCRMAPIError: При ошибке API (статус не 2xx).
-        """
-        if len(leads) > _MAX_LEADS_PER_REQUEST:
-            raise AmoCRMError(
-                f"update allows at most {_MAX_LEADS_PER_REQUEST} leads per request"
-            )
-        raw = self._client._request(
-            "PATCH", "/api/v4/leads", json=[lead.to_dict() for lead in leads]
-        )
-        return [
-            self._dto_class.from_dict(d)
-            for d in raw.get("_embedded", {}).get("leads", [])
-        ]
-
-    def update_one(self, data: Lead) -> Lead:
-        """Обновить одну сделку по идентификатору.
-
-        Args:
-            data: Объект с обновляемыми полями. Поле ``id`` обязательно.
-
-        Returns:
-            Обновлённый объект :class:`~amocrm.models.leads.Lead`.
-
-        Raises:
-            AmoCRMError: Если ``data.id`` не задан.
-            AmoCRMAPIError: При ошибке API (статус не 2xx).
-        """
-        if data.id is None:
-            raise AmoCRMError("Lead.id must be set for update_one")
-        raw = self._client._request(
-            "PATCH", f"/api/v4/leads/{data.id}", json=data.to_dict()
-        )
-        return self._dto_class.from_dict(raw)
+        return super().get(lead_id, with_=with_)
 
     def create_complex(self, leads: builtins.list[Lead]) -> builtins.list[Lead]:
         """Сложное создание сделок со связанными сущностями.
@@ -205,9 +59,9 @@ class LeadsResource:
                 более одного контакта.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
-        if len(leads) > _MAX_LEADS_PER_REQUEST:
+        if len(leads) > self._max_per_request:
             raise AmoCRMError(
-                f"create_complex allows at most {_MAX_LEADS_PER_REQUEST} leads"
+                f"create_complex allows at most {self._max_per_request} leads"
                 " per request"
             )
         for lead in leads:
@@ -216,7 +70,4 @@ class LeadsResource:
         raw = self._client._request(
             "POST", "/api/v4/leads/complex", json=[lead.to_dict() for lead in leads]
         )
-        return [
-            self._dto_class.from_dict(d)
-            for d in raw.get("_embedded", {}).get("leads", [])
-        ]
+        return self._parse_list(raw)
