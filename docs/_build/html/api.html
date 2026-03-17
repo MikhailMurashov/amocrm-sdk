@@ -46,6 +46,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="token_refresh.html">Управление токенами</a></li>
 <li class="toctree-l1"><a class="reference internal" href="codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-amocrm.client">Клиент</a><ul>
@@ -705,20 +706,20 @@ access_token / refresh_token из произвольного хранилища
 
 <dl class="py method">
 <dt class="sig sig-object py" id="amocrm.resources.leads.LeadsResource.update_one">
-<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lead_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/leads.html#LeadsResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.leads.LeadsResource.update_one" title="Ссылка на это определение"></a></dt>
+<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/leads.html#LeadsResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.leads.LeadsResource.update_one" title="Ссылка на это определение"></a></dt>
 <dd><p>Обновить одну сделку по идентификатору.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lead_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Идентификатор сделки.</p></li>
-<li><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><em>Lead</em></a>) – Объект с обновляемыми полями.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><em>Lead</em></a>) – Объект с обновляемыми полями. Поле <code class="docutils literal notranslate"><span class="pre">id</span></code> обязательно.</p>
 </dd>
 <dt class="field-even">Результат<span class="colon">:</span></dt>
 <dd class="field-even"><p>Обновлённый объект <a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lead</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Исключение<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMError" title="amocrm.exceptions.AmoCRMError"><strong>AmoCRMError</strong></a> – Если <code class="docutils literal notranslate"><span class="pre">data.id</span></code> не задан.</p></li>
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#amocrm.models.leads.Lead" title="amocrm.models.leads.Lead"><em>Lead</em></a></p>
@@ -888,20 +889,20 @@ access_token / refresh_token из произвольного хранилища
 
 <dl class="py method">
 <dt class="sig sig-object py" id="amocrm.resources.contacts.ContactsResource.update_one">
-<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/contacts.html#ContactsResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.contacts.ContactsResource.update_one" title="Ссылка на это определение"></a></dt>
+<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/contacts.html#ContactsResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.contacts.ContactsResource.update_one" title="Ссылка на это определение"></a></dt>
 <dd><p>Обновить один контакт по идентификатору.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>contact_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Идентификатор контакта.</p></li>
-<li><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><em>Contact</em></a>) – Объект с обновляемыми полями.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><em>Contact</em></a>) – Объект с обновляемыми полями. Поле <code class="docutils literal notranslate"><span class="pre">id</span></code> обязательно.</p>
 </dd>
 <dt class="field-even">Результат<span class="colon">:</span></dt>
 <dd class="field-even"><p>Обновлённый объект <a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contact</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Исключение<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMError" title="amocrm.exceptions.AmoCRMError"><strong>AmoCRMError</strong></a> – Если <code class="docutils literal notranslate"><span class="pre">data.id</span></code> не задан.</p></li>
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#amocrm.models.contacts.Contact" title="amocrm.models.contacts.Contact"><em>Contact</em></a></p>
@@ -1045,20 +1046,20 @@ access_token / refresh_token из произвольного хранилища
 
 <dl class="py method">
 <dt class="sig sig-object py" id="amocrm.resources.companies.CompaniesResource.update_one">
-<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">company_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/companies.html#CompaniesResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.companies.CompaniesResource.update_one" title="Ссылка на это определение"></a></dt>
+<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/companies.html#CompaniesResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.companies.CompaniesResource.update_one" title="Ссылка на это определение"></a></dt>
 <dd><p>Обновить одну компанию по идентификатору.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>company_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Идентификатор компании.</p></li>
-<li><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><em>Company</em></a>) – Объект с обновляемыми полями.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><em>Company</em></a>) – Объект с обновляемыми полями. Поле <code class="docutils literal notranslate"><span class="pre">id</span></code> обязательно.</p>
 </dd>
 <dt class="field-even">Результат<span class="colon">:</span></dt>
 <dd class="field-even"><p>Обновлённый объект <a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><code class="xref py py-class docutils literal notranslate"><span class="pre">Company</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Исключение<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMError" title="amocrm.exceptions.AmoCRMError"><strong>AmoCRMError</strong></a> – Если <code class="docutils literal notranslate"><span class="pre">data.id</span></code> не задан.</p></li>
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#amocrm.models.companies.Company" title="amocrm.models.companies.Company"><em>Company</em></a></p>
@@ -1428,20 +1429,20 @@ access_token / refresh_token из произвольного хранилища
 
 <dl class="py method">
 <dt class="sig sig-object py" id="amocrm.resources.tasks.TasksResource.update_one">
-<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/tasks.html#TasksResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.tasks.TasksResource.update_one" title="Ссылка на это определение"></a></dt>
+<span class="sig-name descname"><span class="pre">update_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/resources/tasks.html#TasksResource.update_one"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.resources.tasks.TasksResource.update_one" title="Ссылка на это определение"></a></dt>
 <dd><p>Обновить одну задачу по идентификатору.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Параметры<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Идентификатор задачи.</p></li>
-<li><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.tasks.Task" title="amocrm.models.tasks.Task"><em>Task</em></a>) – Объект с обновляемыми полями.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#amocrm.models.tasks.Task" title="amocrm.models.tasks.Task"><em>Task</em></a>) – Объект с обновляемыми полями. Поле <code class="docutils literal notranslate"><span class="pre">id</span></code> обязательно.</p>
 </dd>
 <dt class="field-even">Результат<span class="colon">:</span></dt>
 <dd class="field-even"><p>Обновлённый объект <a class="reference internal" href="#amocrm.models.tasks.Task" title="amocrm.models.tasks.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Исключение<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMError" title="amocrm.exceptions.AmoCRMError"><strong>AmoCRMError</strong></a> – Если <code class="docutils literal notranslate"><span class="pre">data.id</span></code> не задан.</p></li>
+<li><p><a class="reference internal" href="#amocrm.exceptions.AmoCRMAPIError" title="amocrm.exceptions.AmoCRMAPIError"><strong>AmoCRMAPIError</strong></a> – При ошибке API (статус не 2xx).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#amocrm.models.tasks.Task" title="amocrm.models.tasks.Task"><em>Task</em></a></p>
@@ -1522,6 +1523,57 @@ access_token / refresh_token из произвольного хранилища
 </dd>
 <dt class="field-even">Тип результата<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.models.common.CustomFieldsMixin.set_cf_value">
+<span class="sig-name descname"><span class="pre">set_cf_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/models/common.html#CustomFieldsMixin.set_cf_value"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.models.common.CustomFieldsMixin.set_cf_value" title="Ссылка на это определение"></a></dt>
+<dd><p>Установить единственное значение кастомного поля.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.models.common.CustomFieldsMixin.set_cf_values">
+<span class="sig-name descname"><span class="pre">set_cf_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/models/common.html#CustomFieldsMixin.set_cf_values"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.models.common.CustomFieldsMixin.set_cf_values" title="Ссылка на это определение"></a></dt>
+<dd><p>Установить несколько значений кастомного поля (multiselect).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>values</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.models.common.CustomFieldsMixin.set_cf_raw">
+<span class="sig-name descname"><span class="pre">set_cf_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/models/common.html#CustomFieldsMixin.set_cf_raw"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.models.common.CustomFieldsMixin.set_cf_raw" title="Ссылка на это определение"></a></dt>
+<dd><p>Установить raw-значения кастомного поля (например, smart_address).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>values</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

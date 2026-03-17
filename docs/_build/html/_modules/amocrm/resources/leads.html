@@ -44,6 +44,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../token_refresh.html">Управление токенами</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
@@ -262,21 +263,23 @@
 
 <div class="viewcode-block" id="LeadsResource.update_one">
 <a class="viewcode-back" href="../../../api.html#amocrm.resources.leads.LeadsResource.update_one">[документация]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lead_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Lead</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lead</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Lead</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lead</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Обновить одну сделку по идентификатору.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            lead_id: Идентификатор сделки.</span>
-<span class="sd">            data: Объект с обновляемыми полями.</span>
+<span class="sd">            data: Объект с обновляемыми полями. Поле ``id`` обязательно.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Обновлённый объект :class:`~amocrm.models.leads.Lead`.</span>
 
 <span class="sd">        Raises:</span>
+<span class="sd">            AmoCRMError: Если ``data.id`` не задан.</span>
 <span class="sd">            AmoCRMAPIError: При ошибке API (статус не 2xx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AmoCRMError</span><span class="p">(</span><span class="s2">&quot;Lead.id must be set for update_one&quot;</span><span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span>
-            <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/api/v4/leads/</span><span class="si">{</span><span class="n">lead_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/api/v4/leads/</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
 

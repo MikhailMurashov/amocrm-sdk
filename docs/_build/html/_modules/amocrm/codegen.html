@@ -44,6 +44,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../token_refresh.html">Управление токенами</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
@@ -132,6 +133,12 @@
     <span class="s2">&quot;date_time&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;int | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
     <span class="s2">&quot;birthday&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;int | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
     <span class="s2">&quot;smart_address&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;dict[str, Any] | None&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cf_raw&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">_SETTER_METHOD_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;get_cf_value&quot;</span><span class="p">:</span> <span class="s2">&quot;set_cf_value&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_cf_values&quot;</span><span class="p">:</span> <span class="s2">&quot;set_cf_values&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_cf_raw&quot;</span><span class="p">:</span> <span class="s2">&quot;set_cf_raw&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># Поля датаклассов Lead/Contact/Company — конфликты по имени нужно разрешать</span>
@@ -272,11 +279,10 @@
     <span class="n">bool_special</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Сгенерировать код property для одного поля.&quot;&quot;&quot;</span>
-    <span class="n">docstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;&quot;&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">, id=</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">)&quot;&quot;&quot;&#39;</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;    @property&quot;</span><span class="p">,</span>
         <span class="sa">f</span><span class="s2">&quot;    def </span><span class="si">{</span><span class="n">prop_name</span><span class="si">}</span><span class="s2">(self) -&gt; </span><span class="si">{</span><span class="n">return_type</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">,</span>
-        <span class="sa">f</span><span class="s2">&quot;        </span><span class="si">{</span><span class="n">docstring</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s1">&#39;        &quot;&quot;&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">, id=</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">)&quot;&quot;&quot;&#39;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="k">if</span> <span class="n">bool_special</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span>
@@ -285,8 +291,15 @@
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;        return self.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)  # type: ignore[no-any-return]&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;        return self.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
         <span class="p">]</span>
+    <span class="n">setter_method</span> <span class="o">=</span> <span class="n">_SETTER_METHOD_MAP</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+    <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;    @</span><span class="si">{</span><span class="n">prop_name</span><span class="si">}</span><span class="s2">.setter&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;    def </span><span class="si">{</span><span class="n">prop_name</span><span class="si">}</span><span class="s2">(self, value: </span><span class="si">{</span><span class="n">return_type</span><span class="si">}</span><span class="s2">) -&gt; None:&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;        self.</span><span class="si">{</span><span class="n">setter_method</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, value)&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 
 
@@ -344,9 +357,6 @@
     <span class="p">)</span>
 
     <span class="n">header_lines</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;# Generated by amocrm-sdk codegen. DO NOT EDIT.&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# Regenerate: from amocrm.codegen import generate_custom_fields_dto&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="s2">&quot;from __future__ import annotations&quot;</span><span class="p">,</span>
         <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">]</span>

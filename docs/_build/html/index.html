@@ -46,6 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="token_refresh.html">Управление токенами</a></li>
 <li class="toctree-l1"><a class="reference internal" href="codegen.html">Кодогенератор (Codegen)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
@@ -119,11 +120,11 @@
 
 <span class="c1"># 4. Обновление контакта</span>
 <span class="n">contact</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Иван Петров&quot;</span>
-<span class="n">client</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">contact</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">contact</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">contact</span><span class="p">)</span>
 
 <span class="c1"># 5. Обновление компании</span>
 <span class="n">company</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;ООО Лютик&quot;</span>
-<span class="n">client</span><span class="o">.</span><span class="n">companies</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">company</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">company</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">companies</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">company</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -140,7 +141,7 @@
 <span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">contacts</span><span class="p">)</span>       <span class="c1"># list[Contact] | None</span>
 <span class="n">lead</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="mi">9000</span>
-<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">lead</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">lead</span><span class="p">)</span>
 
 <span class="n">new_lead</span> <span class="o">=</span> <span class="n">Lead</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Big Deal&quot;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;vip&quot;</span><span class="p">)])</span>
 <span class="n">created</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">new_lead</span><span class="p">])</span>
@@ -175,7 +176,7 @@
 
 <span class="n">task</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">task</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Updated text&quot;</span>
-<span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">task</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 
 <span class="n">new_task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Call client&quot;</span><span class="p">,</span> <span class="n">task_type_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">complete_till</span><span class="o">=</span><span class="mi">1700000000</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="n">lead</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;leads&quot;</span><span class="p">)</span>
 <span class="n">created</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">new_task</span><span class="p">])</span>
@@ -223,14 +224,21 @@
 <li class="toctree-l2"><a class="reference internal" href="pagination.html#id4">Сигнал конца данных</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="token_refresh.html">Управление токенами</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="token_refresh.html#id2">Реактивное обновление по 401</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token_refresh.html#id3">Проактивное обновление по истечению срока</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token_refresh.html#id4">Хранилище токенов</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="codegen.html">Кодогенератор (Codegen)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="codegen.html#id1">Обзор</a></li>
 <li class="toctree-l2"><a class="reference internal" href="codegen.html#id2">Быстрый старт</a></li>
 <li class="toctree-l2"><a class="reference internal" href="codegen.html#id3">Пример сгенерированного файла</a></li>
 <li class="toctree-l2"><a class="reference internal" href="codegen.html#configure-dto">Подключение к клиенту через <code class="docutils literal notranslate"><span class="pre">configure_dto</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="codegen.html#id4">Транслитерация имён</a></li>
-<li class="toctree-l2"><a class="reference internal" href="codegen.html#id5">Конфигурация</a></li>
-<li class="toctree-l2"><a class="reference internal" href="codegen.html#id6">Использование без записи в файл</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen.html#id5">Запись значений через сеттеры</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen.html#id6">Конфигурация</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen.html#id7">Использование без записи в файл</a></li>
 <li class="toctree-l2"><a class="reference internal" href="codegen.html#api">API-справочник</a></li>
 </ul>
 </li>
