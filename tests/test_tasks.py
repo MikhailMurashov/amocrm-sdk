@@ -121,11 +121,11 @@ def test_update_tasks() -> None:
 
 def test_update_one_task() -> None:
     client = _client()
-    data = Task(text="Done", is_completed=True)
+    data = Task(id=20, text="Done", is_completed=True)
     api_response = {"id": 20, "text": "Done", "is_completed": True}
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
-        result = client.tasks.update_one(20, data)
+        result = client.tasks.update_one(data)
 
     mock_req.assert_called_once_with(
         "PATCH",

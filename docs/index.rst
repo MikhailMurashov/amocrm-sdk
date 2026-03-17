@@ -49,11 +49,11 @@ Python SDK для работы с REST API AmoCRM.
 
    # 4. Обновление контакта
    contact.name = "Иван Петров"
-   client.contacts.update_one(contact.id, contact)
+   client.contacts.update_one(contact)
 
    # 5. Обновление компании
    company.name = "ООО Лютик"
-   client.companies.update_one(company.id, company)
+   client.companies.update_one(company)
 
 Работа с ресурсами
 ------------------
@@ -71,7 +71,7 @@ Python SDK для работы с REST API AmoCRM.
    lead = client.leads.get(42)
    print(lead.contacts)       # list[Contact] | None
    lead.price = 9000
-   client.leads.update_one(lead.id, lead)
+   client.leads.update_one(lead)
 
    new_lead = Lead(name="Big Deal", price=50000, tags=[Tag(name="vip")])
    created = client.leads.create([new_lead])
@@ -106,7 +106,7 @@ Python SDK для работы с REST API AmoCRM.
 
    task = client.tasks.get(10)
    task.text = "Updated text"
-   client.tasks.update_one(task.id, task)
+   client.tasks.update_one(task)
 
    new_task = Task(text="Call client", task_type_id=1, complete_till=1700000000, entity_id=lead.id, entity_type="leads")
    created = client.tasks.create([new_task])

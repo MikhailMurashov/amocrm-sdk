@@ -77,7 +77,7 @@
    client.leads.update([Lead(id=10, price=9000)])
 
    # Обновить одну сделку по ID
-   client.leads.update_one(10, Lead(price=9000))
+   client.leads.update_one(Lead(id=10, price=9000))
 
 .. warning::
 

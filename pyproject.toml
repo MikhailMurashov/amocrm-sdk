@@ -41,7 +41,7 @@ select = ["E", "F", "I"]
 
 [tool.mypy]
 strict = true
-exclude = ["src/amocrm/models/custom\\.py"]
+exclude = ["src/amocrm/models/my_models\\.py"]
 
 [dependency-groups]
 dev = [

@@ -99,11 +99,11 @@ def test_update_companies(client: AmoCRM) -> None:
 
 
 def test_update_one_company(client: AmoCRM) -> None:
-    data = Company(name="Patched Corp")
+    data = Company(id=5, name="Patched Corp")
     api_response = {"id": 5, "name": "Patched Corp"}
     mock_resp = _mock_response(api_response)
     with patch.object(client._session, "request", return_value=mock_resp) as mock_req:
-        result = client.companies.update_one(5, data)
+        result = client.companies.update_one(data)
 
     mock_req.assert_called_once_with(
         "PATCH",

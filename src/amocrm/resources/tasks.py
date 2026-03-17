@@ -4,6 +4,7 @@ import builtins
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
+from ..exceptions import AmoCRMError
 from ..models.tasks import Task
 from ._utils import _iter_all_pages
 
@@ -118,20 +119,22 @@ class TasksResource:
         )
         return [Task.from_dict(d) for d in raw.get("_embedded", {}).get("tasks", [])]
 
-    def update_one(self, task_id: int, data: Task) -> Task:
+    def update_one(self, data: Task) -> Task:
         """Обновить одну задачу по идентификатору.
 
         Args:
-            task_id: Идентификатор задачи.
-            data: Объект с обновляемыми полями.
+            data: Объект с обновляемыми полями. Поле ``id`` обязательно.
 
         Returns:
             Обновлённый объект :class:`~amocrm.models.tasks.Task`.
 
         Raises:
+            AmoCRMError: Если ``data.id`` не задан.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if data.id is None:
+            raise AmoCRMError("Task.id must be set for update_one")
         raw = self._client._request(
-            "PATCH", f"/api/v4/tasks/{task_id}", json=data.to_dict()
+            "PATCH", f"/api/v4/tasks/{data.id}", json=data.to_dict()
         )
         return Task.from_dict(raw)

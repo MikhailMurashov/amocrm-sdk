@@ -4,6 +4,7 @@ import builtins
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
+from ..exceptions import AmoCRMError
 from ..models.contacts import Contact
 from ._utils import _iter_all_pages
 
@@ -143,20 +144,22 @@ class ContactsResource:
         items = raw.get("_embedded", {}).get("contacts", [])
         return [self._dto_class.from_dict(d) for d in items]
 
-    def update_one(self, contact_id: int, data: Contact) -> Contact:
+    def update_one(self, data: Contact) -> Contact:
         """Обновить один контакт по идентификатору.
 
         Args:
-            contact_id: Идентификатор контакта.
-            data: Объект с обновляемыми полями.
+            data: Объект с обновляемыми полями. Поле ``id`` обязательно.
 
         Returns:
             Обновлённый объект :class:`~amocrm.models.contacts.Contact`.
 
         Raises:
+            AmoCRMError: Если ``data.id`` не задан.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if data.id is None:
+            raise AmoCRMError("Contact.id must be set for update_one")
         raw = self._client._request(
-            "PATCH", f"/api/v4/contacts/{contact_id}", json=data.to_dict()
+            "PATCH", f"/api/v4/contacts/{data.id}", json=data.to_dict()
         )
         return self._dto_class.from_dict(raw)

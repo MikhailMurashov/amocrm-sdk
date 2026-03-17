@@ -100,11 +100,11 @@ company = lead.company      # Company
 
 # 4. Обновление контакта
 contact.name = "Иван Петров"
-client.contacts.update_one(contact.id, contact)
+client.contacts.update_one(contact)
 
 # 5. Обновление компании
 company.name = "ООО Лютик"
-client.companies.update_one(company.id, company)
+client.companies.update_one(company)
 ```
 
 ### Пагинация

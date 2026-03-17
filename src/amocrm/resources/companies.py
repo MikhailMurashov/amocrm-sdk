@@ -4,6 +4,7 @@ import builtins
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
+from ..exceptions import AmoCRMError
 from ..models.companies import Company
 from ._utils import _iter_all_pages
 
@@ -143,20 +144,22 @@ class CompaniesResource:
         items = raw.get("_embedded", {}).get("companies", [])
         return [self._dto_class.from_dict(d) for d in items]
 
-    def update_one(self, company_id: int, data: Company) -> Company:
+    def update_one(self, data: Company) -> Company:
         """Обновить одну компанию по идентификатору.
 
         Args:
-            company_id: Идентификатор компании.
-            data: Объект с обновляемыми полями.
+            data: Объект с обновляемыми полями. Поле ``id`` обязательно.
 
         Returns:
             Обновлённый объект :class:`~amocrm.models.companies.Company`.
 
         Raises:
+            AmoCRMError: Если ``data.id`` не задан.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if data.id is None:
+            raise AmoCRMError("Company.id must be set for update_one")
         raw = self._client._request(
-            "PATCH", f"/api/v4/companies/{company_id}", json=data.to_dict()
+            "PATCH", f"/api/v4/companies/{data.id}", json=data.to_dict()
         )
         return self._dto_class.from_dict(raw)

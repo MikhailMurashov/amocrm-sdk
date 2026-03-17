@@ -168,21 +168,23 @@ class LeadsResource:
             for d in raw.get("_embedded", {}).get("leads", [])
         ]
 
-    def update_one(self, lead_id: int, data: Lead) -> Lead:
+    def update_one(self, data: Lead) -> Lead:
         """Обновить одну сделку по идентификатору.
 
         Args:
-            lead_id: Идентификатор сделки.
-            data: Объект с обновляемыми полями.
+            data: Объект с обновляемыми полями. Поле ``id`` обязательно.
 
         Returns:
             Обновлённый объект :class:`~amocrm.models.leads.Lead`.
 
         Raises:
+            AmoCRMError: Если ``data.id`` не задан.
             AmoCRMAPIError: При ошибке API (статус не 2xx).
         """
+        if data.id is None:
+            raise AmoCRMError("Lead.id must be set for update_one")
         raw = self._client._request(
-            "PATCH", f"/api/v4/leads/{lead_id}", json=data.to_dict()
+            "PATCH", f"/api/v4/leads/{data.id}", json=data.to_dict()
         )
         return self._dto_class.from_dict(raw)
 
