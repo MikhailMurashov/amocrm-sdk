@@ -45,6 +45,45 @@ class CustomFieldsMixin:
             return None
         return values[0].get("enum_id")
 
+    def set_cf_value(self, field_id: int, value: Any) -> None:
+        """Установить единственное значение кастомного поля."""
+        if self.custom_fields_values is None:
+            self.custom_fields_values = []
+        for cf in self.custom_fields_values:
+            if cf.field_id == field_id:
+                cf.values = [] if value is None else [{"value": value}]
+                return
+        if value is not None:
+            self.custom_fields_values.append(
+                CustomFieldValue(field_id=field_id, values=[{"value": value}])
+            )
+
+    def set_cf_values(self, field_id: int, values: list[Any]) -> None:
+        """Установить несколько значений кастомного поля (multiselect)."""
+        if self.custom_fields_values is None:
+            self.custom_fields_values = []
+        new_values = [{"value": v} for v in values]
+        for cf in self.custom_fields_values:
+            if cf.field_id == field_id:
+                cf.values = new_values
+                return
+        self.custom_fields_values.append(
+            CustomFieldValue(field_id=field_id, values=new_values)
+        )
+
+    def set_cf_raw(self, field_id: int, values: list[dict[str, Any]] | None) -> None:
+        """Установить raw-значения кастомного поля (например, smart_address)."""
+        if self.custom_fields_values is None:
+            self.custom_fields_values = []
+        for cf in self.custom_fields_values:
+            if cf.field_id == field_id:
+                cf.values = values if values is not None else []
+                return
+        if values is not None:
+            self.custom_fields_values.append(
+                CustomFieldValue(field_id=field_id, values=values)
+            )
+
 
 @dataclass(kw_only=True)
 class Tag:

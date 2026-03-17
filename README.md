@@ -129,7 +129,7 @@ from amocrm.codegen import generate_custom_fields_dto
 
 oauth = OAuthConfig(client_id="...", client_secret="...", redirect_uri="...",
                     storage=DjangoTokenStorage(django_obj))
-generate_custom_fields_dto("mycompany", oauth, output_file="my_models.py")
+generate_custom_fields_dto("mycompany", oauth, output_file="src/amocrm/models/my_models.py")
 ```
 
 ### Подключение кастомных DTO
@@ -138,13 +138,13 @@ generate_custom_fields_dto("mycompany", oauth, output_file="my_models.py")
 `get`, `list`, `create`, `update` начнут возвращать экземпляры вашего подкласса:
 
 ```python
-from my_models import MyLead, MyContact, MyCompany
+from amocrm.models.my_models import MyLead, MyContact, MyCompany
 
 client = get_client(subdomain="mycompany", oauth=oauth)
 client.configure_dto(leads=MyLead, contacts=MyContact, companies=MyCompany)
 
-lead = client.leads.get(123)   # → MyLead
-lead.inn                        # → str | None  (property из MyLead)
+lead = client.leads.get(123)  # → MyLead
+lead.inn  # → str | None  (property из MyLead)
 
 for lead in client.leads.list():
     print(lead.istochnik_trafika)  # → str | None

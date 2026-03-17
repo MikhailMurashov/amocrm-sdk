@@ -36,3 +36,5 @@ CLAUDE.md
 
 # OS
 .DS_Store
+
+src/amocrm/models/my_models.py
