@@ -43,6 +43,7 @@
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tags.html">Теги (Tags)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
 <li class="toctree-l1"><a class="reference internal" href="token_refresh.html">Управление токенами</a></li>
 <li class="toctree-l1"><a class="reference internal" href="codegen.html">Кодогенератор (Codegen)</a></li>
@@ -113,11 +114,13 @@
 </li>
         <li><a href="api.html#amocrm.models.common.CustomFieldValue.__init__">(метод amocrm.models.common.CustomFieldValue)</a>
 </li>
-        <li><a href="api.html#amocrm.models.common.Tag.__init__">(метод amocrm.models.common.Tag)</a>
+        <li><a href="api.html#amocrm.models.common.Tag.__init__">(метод amocrm.models.common.Tag)</a>, <a href="tags.html#amocrm.models.common.Tag.__init__">[1]</a>
 </li>
         <li><a href="api.html#amocrm.models.companies.Company.__init__">(метод amocrm.models.companies.Company)</a>
 </li>
         <li><a href="api.html#amocrm.models.contacts.Contact.__init__">(метод amocrm.models.contacts.Contact)</a>
+</li>
+        <li><a href="api.html#amocrm.models.leads.ComplexLeadResult.__init__">(метод amocrm.models.leads.ComplexLeadResult)</a>
 </li>
         <li><a href="api.html#amocrm.models.leads.Lead.__init__">(метод amocrm.models.leads.Lead)</a>
 </li>
@@ -320,11 +323,17 @@
 </li>
       <li><a href="api.html#amocrm.models.companies.Company">Company (класс в amocrm.models.companies)</a>
 </li>
+      <li><a href="api.html#amocrm.models.leads.ComplexLeadResult.company_id">company_id (атрибут amocrm.models.leads.ComplexLeadResult)</a>
+</li>
       <li><a href="api.html#amocrm.models.tasks.Task.complete_till">complete_till (атрибут amocrm.models.tasks.Task)</a>
+</li>
+      <li><a href="api.html#amocrm.models.leads.ComplexLeadResult">ComplexLeadResult (класс в amocrm.models.leads)</a>
 </li>
       <li><a href="api.html#amocrm.client.AmoCRM.configure_dto">configure_dto() (метод amocrm.client.AmoCRM)</a>
 </li>
       <li><a href="api.html#amocrm.models.contacts.Contact">Contact (класс в amocrm.models.contacts)</a>
+</li>
+      <li><a href="api.html#amocrm.models.leads.ComplexLeadResult.contact_id">contact_id (атрибут amocrm.models.leads.ComplexLeadResult)</a>
 </li>
       <li><a href="api.html#amocrm.models.leads.Lead.contacts">contacts (атрибут amocrm.models.leads.Lead)</a>
 
@@ -334,14 +343,14 @@
       </ul></li>
       <li><a href="api.html#amocrm.resources.contacts.ContactsResource">ContactsResource (класс в amocrm.resources.contacts)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#amocrm.resources._base.BaseResource.create">create() (метод amocrm.resources._base.BaseResource)</a>
 
       <ul>
         <li><a href="api.html#amocrm.resources.pipelines.PipelinesResource.create">(метод amocrm.resources.pipelines.PipelinesResource)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#amocrm.resources.leads.LeadsResource.create_complex">create_complex() (метод amocrm.resources.leads.LeadsResource)</a>
 </li>
       <li><a href="api.html#amocrm.resources.pipelines.PipelinesResource.create_statuses">create_statuses() (метод amocrm.resources.pipelines.PipelinesResource)</a>
@@ -433,7 +442,9 @@
       <ul>
         <li><a href="api.html#amocrm.models.common.CustomFieldValue.from_dict">(метод класса amocrm.models.common.CustomFieldValue)</a>
 </li>
-        <li><a href="api.html#amocrm.models.common.Tag.from_dict">(метод класса amocrm.models.common.Tag)</a>
+        <li><a href="api.html#amocrm.models.common.Tag.from_dict">(метод класса amocrm.models.common.Tag)</a>, <a href="tags.html#amocrm.models.common.Tag.from_dict">[1]</a>
+</li>
+        <li><a href="api.html#amocrm.models.leads.ComplexLeadResult.from_dict">(метод класса amocrm.models.leads.ComplexLeadResult)</a>
 </li>
         <li><a href="api.html#amocrm.models.leads.Lead.from_dict">(метод класса amocrm.models.leads.Lead)</a>
 </li>
@@ -498,12 +509,14 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#amocrm.models.common.Tag.id">id (атрибут amocrm.models.common.Tag)</a>
+      <li><a href="api.html#amocrm.models.common.Tag.id">id (атрибут amocrm.models.common.Tag)</a>, <a href="tags.html#amocrm.models.common.Tag.id">[1]</a>
 
       <ul>
         <li><a href="api.html#amocrm.models.companies.Company.id">(атрибут amocrm.models.companies.Company)</a>
 </li>
         <li><a href="api.html#amocrm.models.contacts.Contact.id">(атрибут amocrm.models.contacts.Contact)</a>
+</li>
+        <li><a href="api.html#amocrm.models.leads.ComplexLeadResult.id">(атрибут amocrm.models.leads.ComplexLeadResult)</a>
 </li>
         <li><a href="api.html#amocrm.models.leads.Lead.id">(атрибут amocrm.models.leads.Lead)</a>
 </li>
@@ -584,6 +597,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#amocrm.models.leads.ComplexLeadResult.merged">merged (атрибут amocrm.models.leads.ComplexLeadResult)</a>
+</li>
       <li>
     module
 
@@ -627,7 +642,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#amocrm.models.common.Tag.name">name (атрибут amocrm.models.common.Tag)</a>
+      <li><a href="api.html#amocrm.models.common.Tag.name">name (атрибут amocrm.models.common.Tag)</a>, <a href="tags.html#amocrm.models.common.Tag.name">[1]</a>
 
       <ul>
         <li><a href="api.html#amocrm.models.companies.Company.name">(атрибут amocrm.models.companies.Company)</a>
@@ -680,6 +695,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#amocrm.auth.OAuthConfig.redirect_uri">redirect_uri (атрибут amocrm.auth.OAuthConfig)</a>
+</li>
+      <li><a href="api.html#amocrm.models.leads.ComplexLeadResult.request_id">request_id (атрибут amocrm.models.leads.ComplexLeadResult)</a>
 </li>
       <li><a href="api.html#amocrm.manager.reset">reset() (в модуле amocrm.manager)</a>
 </li>
@@ -741,7 +758,7 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#amocrm.models.common.Tag">Tag (класс в amocrm.models.common)</a>
+      <li><a href="api.html#amocrm.models.common.Tag">Tag (класс в amocrm.models.common)</a>, <a href="tags.html#amocrm.models.common.Tag">[1]</a>
 </li>
       <li><a href="api.html#amocrm.models.common.BaseModel.tags">tags (атрибут amocrm.models.common.BaseModel)</a>
 
@@ -774,7 +791,7 @@
       <ul>
         <li><a href="api.html#amocrm.models.common.CustomFieldValue.to_dict">(метод amocrm.models.common.CustomFieldValue)</a>
 </li>
-        <li><a href="api.html#amocrm.models.common.Tag.to_dict">(метод amocrm.models.common.Tag)</a>
+        <li><a href="api.html#amocrm.models.common.Tag.to_dict">(метод amocrm.models.common.Tag)</a>, <a href="tags.html#amocrm.models.common.Tag.to_dict">[1]</a>
 </li>
         <li><a href="api.html#amocrm.models.leads.Lead.to_dict">(метод amocrm.models.leads.Lead)</a>
 </li>

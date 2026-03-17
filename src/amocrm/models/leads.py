@@ -137,7 +137,7 @@ class Lead(BaseModel):
     def to_dict(self) -> dict[str, Any]:
         """Сериализовать в словарь для API, исключая поля со значением ``None``."""
         result = super().to_dict()
-        embedded: dict[str, Any] = {}
+        embedded: dict[str, Any] = result.pop("_embedded", {})
         if self.contacts is not None:
             embedded["contacts"] = [c.to_dict() for c in self.contacts]
         if self.company is not None:

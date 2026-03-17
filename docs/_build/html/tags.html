@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Теги (Tags) &mdash; документация amocrm-sdk 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6ff560e8"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=cd1d70c9"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="Пагинация" href="pagination.html" />
+    <link rel="prev" title="Сделки (Leads)" href="leads.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            amocrm-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Теги (Tags)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Чтение тегов</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Создание сущности с тегами</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Обновление тегов</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Замена всех тегов</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Добавление тега</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Удаление тега</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Удаление всех тегов</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">Фильтрация по тегам</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">Сериализация</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tag">Модель Tag</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#amocrm.models.common.Tag"><code class="docutils literal notranslate"><span class="pre">Tag</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pagination.html">Пагинация</a></li>
+<li class="toctree-l1"><a class="reference internal" href="token_refresh.html">Управление токенами</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codegen.html">Кодогенератор (Codegen)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">amocrm-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Теги (Tags)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tags.rst.txt" rel="nofollow"> Просмотреть исходный код страницы</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tags">
+<h1>Теги (Tags)<a class="headerlink" href="#tags" title="Ссылка на этот заголовок"></a></h1>
+<p>Теги доступны у сделок, контактов и компаний. Модель тега —
+<a class="reference internal" href="#amocrm.models.common.Tag" title="amocrm.models.common.Tag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tag</span></code></a> — содержит два поля: <code class="docutils literal notranslate"><span class="pre">id</span></code> и <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tag</span>
+</pre></div>
+</div>
+<section id="id1">
+<h2>Чтение тегов<a class="headerlink" href="#id1" title="Ссылка на этот заголовок"></a></h2>
+<p>При получении сущности из API теги автоматически парсятся из <code class="docutils literal notranslate"><span class="pre">_embedded.tags</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">lead</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">lead</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>То же самое для контактов и компаний:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">contact</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">company</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">companies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">contact</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>  <span class="c1"># list[Tag] | None</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">company</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>  <span class="c1"># list[Tag] | None</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>Создание сущности с тегами<a class="headerlink" href="#id2" title="Ссылка на этот заголовок"></a></h2>
+<p>Передайте список <code class="docutils literal notranslate"><span class="pre">Tag</span></code> при создании. Для новых тегов достаточно указать
+только <code class="docutils literal notranslate"><span class="pre">name</span></code> — AmoCRM создаст тег автоматически:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lead</span><span class="p">,</span> <span class="n">Tag</span>
+
+<span class="n">lead</span> <span class="o">=</span> <span class="n">Lead</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Новая сделка&quot;</span><span class="p">,</span>
+    <span class="n">price</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;vip&quot;</span><span class="p">),</span> <span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;горячий&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="n">created</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">lead</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Чтобы привязать существующий тег, передайте его <code class="docutils literal notranslate"><span class="pre">id</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">Lead</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Сделка с существующим тегом&quot;</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">12345</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">lead</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Аналогично для контактов и компаний:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">amocrm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contact</span><span class="p">,</span> <span class="n">Company</span><span class="p">,</span> <span class="n">Tag</span>
+
+<span class="n">contact</span> <span class="o">=</span> <span class="n">Contact</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Иван Иванов&quot;</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;важный клиент&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">contact</span><span class="p">])</span>
+
+<span class="n">company</span> <span class="o">=</span> <span class="n">Company</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ООО Ромашка&quot;</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;партнёр&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">companies</span><span class="o">.</span><span class="n">create</span><span class="p">([</span><span class="n">company</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Обновление тегов<a class="headerlink" href="#id3" title="Ссылка на этот заголовок"></a></h2>
+<section id="id4">
+<h3>Замена всех тегов<a class="headerlink" href="#id4" title="Ссылка на этот заголовок"></a></h3>
+<p>Присвойте новый список тегов и обновите сущность:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">lead</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;vip&quot;</span><span class="p">),</span> <span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;приоритет&quot;</span><span class="p">)]</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">lead</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>Добавление тега<a class="headerlink" href="#id5" title="Ссылка на этот заголовок"></a></h3>
+<p>Добавьте тег к существующему списку:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">lead</span><span class="o">.</span><span class="n">tags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">lead</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">lead</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;новый тег&quot;</span><span class="p">))</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">lead</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>Удаление тега<a class="headerlink" href="#id6" title="Ссылка на этот заголовок"></a></h3>
+<p>Отфильтруйте нужный тег из списка:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">lead</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span>
+    <span class="n">lead</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">lead</span><span class="o">.</span><span class="n">tags</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;горячий&quot;</span><span class="p">]</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">lead</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>Удаление всех тегов<a class="headerlink" href="#id7" title="Ссылка на этот заголовок"></a></h3>
+<p>Передайте пустой список:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">lead</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">lead</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>Фильтрация по тегам<a class="headerlink" href="#id8" title="Ссылка на этот заголовок"></a></h2>
+<p>AmoCRM API позволяет фильтровать сущности по тегам через параметр <code class="docutils literal notranslate"><span class="pre">filter</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># По ID тега</span>
+<span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tag_id&quot;</span><span class="p">:</span> <span class="mi">12345</span><span class="p">}):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># По нескольким тегам (OR)</span>
+<span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tag_id&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">12345</span><span class="p">,</span> <span class="mi">67890</span><span class="p">]}):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>Сериализация<a class="headerlink" href="#id9" title="Ссылка на этот заголовок"></a></h2>
+<p>При вызове <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> теги помещаются на верхний уровень словаря
+(а не в <code class="docutils literal notranslate"><span class="pre">_embedded</span></code>). Это соответствует формату AmoCRM API для операций записи:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lead</span> <span class="o">=</span> <span class="n">Lead</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Сделка&quot;</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;vip&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="n">lead</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="c1"># {&quot;name&quot;: &quot;Сделка&quot;, &quot;tags&quot;: [{&quot;name&quot;: &quot;vip&quot;}]}</span>
+</pre></div>
+</div>
+</section>
+<section id="tag">
+<h2>Модель Tag<a class="headerlink" href="#tag" title="Ссылка на этот заголовок"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="amocrm.models.common.Tag">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">amocrm.models.common.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/models/common.html#Tag"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.models.common.Tag" title="Ссылка на это определение"></a></dt>
+<dd><p>Базовые классы: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Тег сущности AmoCRM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Переменные<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – Идентификатор тега.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Название тега.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Параметры<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amocrm.models.common.Tag.id">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#amocrm.models.common.Tag.id" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amocrm.models.common.Tag.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#amocrm.models.common.Tag.name" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.models.common.Tag.from_dict">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/models/common.html#Tag.from_dict"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.models.common.Tag.from_dict" title="Ссылка на это определение"></a></dt>
+<dd><p>Создать экземпляр из словаря API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#amocrm.models.common.Tag" title="amocrm.models.common.Tag"><em>Tag</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.models.common.Tag.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/amocrm/models/common.html#Tag.to_dict"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#amocrm.models.common.Tag.to_dict" title="Ссылка на это определение"></a></dt>
+<dd><p>Сериализовать в словарь, исключая поля со значением <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amocrm.models.common.Tag.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amocrm.models.common.Tag.__init__" title="Ссылка на это определение"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
+        <a href="leads.html" class="btn btn-neutral float-left" title="Сделки (Leads)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
+        <a href="pagination.html" class="btn btn-neutral float-right" title="Пагинация" accesskey="n" rel="next">Следующая <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права . </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

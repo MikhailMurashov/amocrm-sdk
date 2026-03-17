@@ -152,12 +152,10 @@ def test_roundtrip_lead() -> None:
     assert payload["name"] == "Original Deal"
     assert payload["price"] == 9000
     assert payload["status_id"] == 10
-    assert payload["tags"] == [{"id": 3, "name": "promo"}]
+    assert payload["_embedded"]["tags"] == [{"id": 3, "name": "promo"}]
     assert payload["custom_fields_values"] == [
         {"field_id": 101, "values": [{"value": "hello"}]}
     ]
-    # Теги на верхнем уровне payload, не во _embedded
-    assert "_embedded" not in payload
 
 
 def test_lead_from_dict_with_contacts_and_company() -> None:

@@ -43,6 +43,7 @@
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tags.html">Теги (Tags)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pagination.html">Пагинация</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../token_refresh.html">Управление токенами</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../codegen.html">Кодогенератор (Codegen)</a></li>
@@ -77,9 +78,10 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmoCRMError</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..models.leads</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lead</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.leads</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComplexLeadResult</span><span class="p">,</span> <span class="n">Lead</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseResource</span>
 
 
@@ -125,7 +127,9 @@
 
 <div class="viewcode-block" id="LeadsResource.create_complex">
 <a class="viewcode-back" href="../../../api.html#amocrm.resources.leads.LeadsResource.create_complex">[документация]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leads</span><span class="p">:</span> <span class="n">builtins</span><span class="o">.</span><span class="n">list</span><span class="p">[</span><span class="n">Lead</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">list</span><span class="p">[</span><span class="n">Lead</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_complex</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">leads</span><span class="p">:</span> <span class="n">builtins</span><span class="o">.</span><span class="n">list</span><span class="p">[</span><span class="n">Lead</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">list</span><span class="p">[</span><span class="n">ComplexLeadResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Сложное создание сделок со связанными сущностями.</span>
 
 <span class="sd">        Использует эндпоинт ``POST /api/v4/leads/complex``, позволяющий</span>
@@ -135,7 +139,8 @@
 <span class="sd">            leads: Список сделок для создания.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Список созданных сделок с заполненными идентификаторами.</span>
+<span class="sd">            Список результатов создания с идентификаторами сделок и связанных</span>
+<span class="sd">            сущностей.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            AmoCRMError: Если передано более 50 сделок или у сделки</span>
@@ -150,10 +155,10 @@
         <span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">lead</span><span class="o">.</span><span class="n">contacts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">lead</span><span class="o">.</span><span class="n">contacts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">AmoCRMError</span><span class="p">(</span><span class="s2">&quot;create_complex allows at most 1 contact per lead&quot;</span><span class="p">)</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span>
+        <span class="n">raw</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span>  <span class="c1"># type: ignore[assignment]</span>
             <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/api/v4/leads/complex&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">[</span><span class="n">lead</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">lead</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_list</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ComplexLeadResult</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">]</span></div>
 </div>
 
 </pre></div>

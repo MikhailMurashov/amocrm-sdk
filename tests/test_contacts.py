@@ -159,11 +159,10 @@ def test_roundtrip_contact() -> None:
     assert payload["name"] == "Original Contact"
     assert payload["first_name"] == "Updated"
     assert payload["last_name"] == "Contact"
-    assert payload["tags"] == [{"id": 3, "name": "promo"}]
+    assert payload["_embedded"]["tags"] == [{"id": 3, "name": "promo"}]
     assert payload["custom_fields_values"] == [
         {"field_id": 101, "values": [{"value": "hello"}]}
     ]
-    assert "_embedded" not in payload
 
 
 def test_list_all_autopagination(client: AmoCRM) -> None:

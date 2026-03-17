@@ -166,7 +166,9 @@ class BaseModel(CustomFieldsMixin):
             if getattr(self, k) is not None
         }
         if self.tags is not None:
-            result["tags"] = [t.to_dict() for t in self.tags]
+            result.setdefault("_embedded", {})["tags"] = [
+                t.to_dict() for t in self.tags
+            ]
         if self.custom_fields_values is not None:
             result["custom_fields_values"] = [
                 cf.to_dict() for cf in self.custom_fields_values

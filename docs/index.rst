@@ -138,6 +138,7 @@ Python SDK для работы с REST API AmoCRM.
    :caption: Документация
 
    leads
+   tags
    pagination
    token_refresh
    codegen

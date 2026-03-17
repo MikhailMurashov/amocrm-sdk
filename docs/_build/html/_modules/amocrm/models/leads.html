@@ -43,6 +43,7 @@
               <p class="caption" role="heading"><span class="caption-text">Документация</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../leads.html">Сделки (Leads)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tags.html">Теги (Tags)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pagination.html">Пагинация</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../token_refresh.html">Управление токенами</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../codegen.html">Кодогенератор (Codegen)</a></li>
@@ -82,6 +83,42 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">CustomFieldValue</span><span class="p">,</span> <span class="n">Tag</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.companies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Company</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.contacts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contact</span>
+
+
+<div class="viewcode-block" id="ComplexLeadResult">
+<a class="viewcode-back" href="../../../api.html#amocrm.models.leads.ComplexLeadResult">[документация]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComplexLeadResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Результат создания сделки через ``/api/v4/leads/complex``.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: Идентификатор созданной сделки.</span>
+<span class="sd">        contact_id: Идентификатор связанного контакта.</span>
+<span class="sd">        company_id: Идентификатор связанной компании.</span>
+<span class="sd">        merged: Признак слияния с существующей сделкой.</span>
+<span class="sd">        request_id: Список идентификаторов запросов.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">contact_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">company_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">merged</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">request_id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ComplexLeadResult.from_dict">
+<a class="viewcode-back" href="../../../api.html#amocrm.models.leads.ComplexLeadResult.from_dict">[документация]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ComplexLeadResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Создать экземпляр из словаря API AmoCRM.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+            <span class="n">contact_id</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;contact_id&quot;</span><span class="p">),</span>
+            <span class="n">company_id</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;company_id&quot;</span><span class="p">),</span>
+            <span class="n">merged</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;merged&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_id&quot;</span><span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="Lead">

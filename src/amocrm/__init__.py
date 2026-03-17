@@ -13,7 +13,7 @@ from .models.leads import ComplexLeadResult, Lead
 from .models.pipelines import Pipeline, PipelineStatus, StatusDescription
 from .models.tasks import Task
 
-__version__ = "0.3.3"
+__version__ = "0.4.0"
 __all__ = [
     "AmoCRM",
     "OAuthConfig",
