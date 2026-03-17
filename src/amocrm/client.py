@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import base64
+import json as _json
+import time
 from typing import Any
 
 import requests
@@ -17,6 +20,26 @@ from .resources.pipelines import PipelinesResource
 from .resources.tasks import TasksResource
 
 _TOKEN_URL = "https://www.amocrm.ru/oauth2/access_token"
+_REFRESH_BUFFER = 60  # секунд до истечения токена — обновить заранее
+
+
+def _jwt_expiry(token: str) -> float | None:
+    """Извлечь время истечения (``exp``) из JWT без проверки подписи.
+
+    Returns:
+        Unix-timestamp истечения или ``None``, если токен не является JWT
+        или не содержит поле ``exp``.
+    """
+    try:
+        parts = token.split(".")
+        if len(parts) != 3:
+            return None
+        payload = parts[1]
+        payload += "=" * (-len(payload) % 4)
+        data = _json.loads(base64.urlsafe_b64decode(payload))
+        return float(data["exp"])
+    except Exception:
+        return None
 
 
 class AmoCRM:
@@ -41,6 +64,7 @@ class AmoCRM:
         self._oauth = oauth
         access_token, refresh_token = oauth.storage.load()
         self._refresh_token = refresh_token
+        self._access_token_expires_at: float | None = _jwt_expiry(access_token)
         self._session = requests.Session()
         self._session.headers.update({"Authorization": f"Bearer {access_token}"})
         self._leads: LeadsResource | None = None
@@ -78,6 +102,10 @@ class AmoCRM:
         data = resp.json()
         new_access = data["access_token"]
         new_refresh = data["refresh_token"]
+        expires_in: int = data.get("expires_in", 86400)
+        self._access_token_expires_at = (
+            _jwt_expiry(new_access) or time.time() + expires_in
+        )
         self._session.headers.update({"Authorization": f"Bearer {new_access}"})
         self._refresh_token = new_refresh
         self._oauth.storage.save(new_access, new_refresh)
@@ -101,6 +129,11 @@ class AmoCRM:
         Raises:
             AmoCRMAPIError: Если статус ответа не 2xx (после возможного повтора).
         """
+        if (
+            self._access_token_expires_at is not None
+            and time.time() >= self._access_token_expires_at - _REFRESH_BUFFER
+        ):
+            self._refresh_tokens()
         url = self._base_url + path
         response = self._session.request(method, url, **kwargs)
         if response.status_code == 401:
